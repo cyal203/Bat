@@ -5,3 +5,5 @@ cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) &&
 
 DEL /F /S /Q C:\WINDOWS\Temp\*.* && DEL /F /S /Q C:\WINDOWS\Prefetch\*.* && del /s /f /q %temp%\* && del /q /f /s %TEMP%\*
 
+exit
+
