@@ -129,7 +129,6 @@ cls
 @echo off
 :menu
 ECHO. DESEJA EXECUTAR A DEFRAG DE DISCO (S/N)
- 
 Set /p op= digite sua opcao:
 if %op% equ s goto s
 if %op% equ n goto n
