@@ -129,9 +129,11 @@ cls
 @echo off
 :menu
 
-Set /p op= DESEJA EXECUTAR A DEFRAG DE DISCO (S/N):
+Set /p op= DESEJA EXECUTAR A DEFRAG DE DISCO (s/n):
 if %op% equ s goto s
 if %op% equ n goto n
+if %op% equ S goto s
+if %op% equ N goto n
 
 :s
 Defrag C: /U
