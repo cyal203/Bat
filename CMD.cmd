@@ -118,32 +118,21 @@ for /d %%u in (C:\Users\*) do (if exist "%%u\AppData\Local\TeamViewer\EdgeBrowse
 for /d %%u in (C:\Users\*) do (if exist "%%u\AppData\Local\TeamViewer\EdgeBrowserControl" (forfiles /P "%%u\AppData\Local\TeamViewer\EdgeBrowserControl" /M "index.*" /C "cmd /c del @path"))
 
 REM ******************** ABRE A LIMPEZA DE DISCO ********************
-@echo off
-Set Version=4
-SetConsoleWindowInfo("mode con:cols=50 lines=20")
-set w=[97m
-set p=[95m
-set b=[96m
-%B%
-:: Enable ANSI Escape Sequences
-Reg.exe add "HKCU\CONSOLE" /v "VirtualTerminalLevel" /t REG_DWORD /d "1" /f  > nul
-
-::Enable Delayed Expansion
-setlocal EnableDelayedExpansion > nul
 cls 
 
-::Run as admin (this is so the tweaks apply properly)
-chcp 65001 >nul 2>&1
-cls 
 
-echo.
-echo. ╔════════════════════════════════════════════════════╗
-echo. ║                                                    ║
-echo  ║   %w% EXECUTANDO LIMPEZA DE DISCO     %b% ║
-echo. ║                                                    ║
-echo. ╚════════════════════════════════════════════════════╝
+echo EXECUTANDO LIMPEZA DE DISCO
 
 cleanmgr C:
 PAUSE
 REM ******************** EXECUTA A DEFRAGMENTAÇÃO DE DISCO ********************
+ECHO. DESEJA EXECUTAR A DEFRAGMENTACAO DO DISCO S/N 
+SET /p digite sua opcao:
+if %op% equ s goto 1
+if %op% equ n goto 2
+
+:1
 Defrag C: /U
+
+:2
+exit
