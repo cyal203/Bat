@@ -120,15 +120,33 @@ REM ******************* ABRE O PLANO DE PERFORMACE DEVE SER SELECIONADO MANUALME
 systempropertiesperformance
 
 REM ******************** ABRE A LIMPEZA DE DISCO ********************
-echo. EXECUTANDO LIMPEZA DE DISCO......
+:menu1
+
+Set /p op= DESEJA EXECUTAR LIMPEZA DE DISCO (S/N):
+if %op% equ s goto s
+if %op% equ n goto n
+if %op% equ S goto s
+if %op% equ N goto n
+
+:s
 cleanmgr C:
+
+
+:n
+goto menu
+
+
+
+
+echo. EXECUTANDO LIMPEZA DE DISCO......
+
 
 REM ******************** EXECUTA A DEFRAGMENTAÇÃO DE DISCO ********************
 cls
 @echo off
 :menu
 
-Set /p op= DESEJA EXECUTAR A DEFRAG DE DISCO (s/n):
+Set /p op= DESEJA EXECUTAR A DEFRAG DE DISCO (S/N):
 if %op% equ s goto s
 if %op% equ n goto n
 if %op% equ S goto s
