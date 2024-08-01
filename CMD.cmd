@@ -116,9 +116,26 @@ for /d %%u in (C:\Users\*) do (if exist "%%u\AppData\Local\TeamViewer\EdgeBrowse
 for /d %%u in (C:\Users\*) do (if exist "%%u\AppData\Local\TeamViewer\EdgeBrowserControl" (forfiles /P "%%u\AppData\Local\TeamViewer\EdgeBrowserControl" /M "f_*." /C "cmd /c del @path"))
 for /d %%u in (C:\Users\*) do (if exist "%%u\AppData\Local\TeamViewer\EdgeBrowserControl" (forfiles /P "%%u\AppData\Local\TeamViewer\EdgeBrowserControl" /M "data.*" /C "cmd /c del @path"))
 for /d %%u in (C:\Users\*) do (if exist "%%u\AppData\Local\TeamViewer\EdgeBrowserControl" (forfiles /P "%%u\AppData\Local\TeamViewer\EdgeBrowserControl" /M "index.*" /C "cmd /c del @path"))
-CLS
 
 REM ******************** ABRE A LIMPEZA DE DISCO ********************
+@echo off
+Set Version=4
+SetConsoleWindowInfo("mode con:cols=50 lines=20")
+set w=[97m
+set p=[95m
+set b=[96m
+%B%
+:: Enable ANSI Escape Sequences
+Reg.exe add "HKCU\CONSOLE" /v "VirtualTerminalLevel" /t REG_DWORD /d "1" /f  > nul
+
+::Enable Delayed Expansion
+setlocal EnableDelayedExpansion > nul
+cls 
+
+::Run as admin (this is so the tweaks apply properly)
+chcp 65001 >nul 2>&1
+cls 
+
 echo.
 echo. ╔════════════════════════════════════════════════════╗
 echo. ║                                                    ║
