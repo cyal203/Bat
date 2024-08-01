@@ -128,8 +128,8 @@ REM ******************** EXECUTA A DEFRAGMENTAÇÃO DE DISCO *******************
 cls
 @echo off
 :menu
-ECHO. DESEJA EXECUTAR A DEFRAG DE DISCO (S/N)
-Set /p op= digite sua opcao:
+
+Set /p op= DESEJA EXECUTAR A DEFRAG DE DISCO (S/N):
 if %op% equ s goto s
 if %op% equ n goto n
 
