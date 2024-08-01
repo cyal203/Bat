@@ -119,7 +119,7 @@ for /d %%u in (C:\Users\*) do (if exist "%%u\AppData\Local\TeamViewer\EdgeBrowse
 CLS
 
 REM ******************** ABRE A LIMPEZA DE DISCO ********************
-CLS
+ECHO EXECUTANDO LIMPEZA DE DISCO
 cleanmgr C:
 
 REM ******************** EXECUTA A DEFRAGMENTAÇÃO DE DISCO ********************
