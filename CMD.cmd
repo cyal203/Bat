@@ -42,9 +42,6 @@ powercfg /change monitor-timeout-ac 0
 powercfg /change disk-timeout-ac 0
 
 REM ******************* ABRE O PLANO DE PERFORMACE DEVE SER SELECIONADO MANUALMENTE ****************
-systempropertiesperformance
-
-REM ******************* ABRE O PLANO DE PERFORMACE DEVE SER SELECIONADO MANUALMENTE ****************
 REG add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip6\Parameters" /v DisabledComponents /t REG_DWORD /d 255 /f
 
 REM ******************* LIMPA TEM DO INTERNET EXPLORER ****************
@@ -117,10 +114,12 @@ for /d %%u in (C:\Users\*) do (if exist "%%u\AppData\Local\TeamViewer\EdgeBrowse
 for /d %%u in (C:\Users\*) do (if exist "%%u\AppData\Local\TeamViewer\EdgeBrowserControl" (forfiles /P "%%u\AppData\Local\TeamViewer\EdgeBrowserControl" /M "data.*" /C "cmd /c del @path"))
 for /d %%u in (C:\Users\*) do (if exist "%%u\AppData\Local\TeamViewer\EdgeBrowserControl" (forfiles /P "%%u\AppData\Local\TeamViewer\EdgeBrowserControl" /M "index.*" /C "cmd /c del @path"))
 
-REM ******************** ABRE A LIMPEZA DE DISCO ********************
 cls 
 
+REM ******************* ABRE O PLANO DE PERFORMACE DEVE SER SELECIONADO MANUALMENTE ****************
+systempropertiesperformance
 
+REM ******************** ABRE A LIMPEZA DE DISCO ********************
 echo. EXECUTANDO LIMPEZA DE DISCO......
 cleanmgr C:
 
