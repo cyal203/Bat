@@ -125,6 +125,7 @@ echo. EXECUTANDO LIMPEZA DE DISCO......
 cleanmgr C:
 
 REM ******************** EXECUTA A DEFRAGMENTAÇÃO DE DISCO ********************
+cls
 @echo off
 :menu
 ECHO. DESEJA EXECUTAR A DEFRAG DE DISCO (S/N)
