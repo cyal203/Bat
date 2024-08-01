@@ -131,15 +131,8 @@ if %op% equ N goto n
 :s
 cleanmgr C:
 
-
 :n
 goto menu
-
-
-
-
-echo. EXECUTANDO LIMPEZA DE DISCO......
-
 
 REM ******************** EXECUTA A DEFRAGMENTAÇÃO DE DISCO ********************
 cls
