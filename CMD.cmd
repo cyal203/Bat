@@ -121,18 +121,21 @@ REM ******************** ABRE A LIMPEZA DE DISCO ********************
 cls 
 
 
-echo EXECUTANDO LIMPEZA DE DISCO
-
+echo. EXECUTANDO LIMPEZA DE DISCO......
 cleanmgr C:
-PAUSE
+
 REM ******************** EXECUTA A DEFRAGMENTAÇÃO DE DISCO ********************
-ECHO. DESEJA EXECUTAR A DEFRAGMENTACAO DO DISCO S/N 
-SET /p digite sua opcao:
-if %op% equ s goto 1
-if %op% equ n goto 2
+@echo off
+:menu
+ECHO. DESEJA EXECUTAR A DEFRAG DE DISCO (S/N)
+ 
+Set /p op= digite sua opcao:
+if %op% equ s goto s
+if %op% equ n goto n
 
-:1
+:s
 Defrag C: /U
+exit
 
-:2
+:n
 exit
