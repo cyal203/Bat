@@ -39,6 +39,21 @@ wmic datafile where name="C:\\Program Files (x86)\\FNX\\SisOcr Offline\\SisOCR.O
 pause
 
 REM ******************* AJUSTANDO RESOLUÇÃO DE UPLOAD ****************
+
+
+:menu1
+
+Set /p op= DESEJA ALTERAR A RESOLUCAO DE UP PARA 1024X768 (S/N):
+if %op% equ s goto s
+if %op% equ n goto n
+if %op% equ S goto s
+if %op% equ N goto n
+
+:n
+exit
+
+
+:s
 echo AJUSTANDO RESOLUCAO DE UPLOAD
 setlocal enabledelayedexpansion
 
