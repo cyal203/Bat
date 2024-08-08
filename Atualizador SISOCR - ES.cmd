@@ -39,7 +39,7 @@ wmic datafile where name="C:\\Program Files (x86)\\FNX\\SisOcr Offline\\SisOCR.O
 pause
 
 REM ******************* AJUSTANDO RESOLUÇÃO DE UPLOAD ****************
-echo AJUSTANDO RESOLUÇÃO DE UPLOAD
+echo AJUSTANDO RESOLUCAO DE UPLOAD
 setlocal enabledelayedexpansion
 
 set "file=C:\captura\imgUp.ini"
@@ -65,7 +65,7 @@ echo Y=768>>"%tempfile%"
 rem Substitui o arquivo original pelo arquivo temporário
 move /y "%tempfile%" "%file%"
 
-echo Verificação e alteração concluídas.
+echo Verificacao e alteracao concluidas.
 exit /b 0
 echo FINALIZADO...
 pause
