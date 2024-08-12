@@ -22,7 +22,7 @@ cls
 
 
 REM ******************* RENOMEANDO WCF ****************
-ren C:\WCFLOCAL WCFLOCAL.old2
+ren C:\WCFLOCAL WCFLOCAL.1709
 REM ******************* EXECUTANDO INSTALADOR ****************
 %temp%\WCFLocalFenox_1.7.0.12_x86.exe /silent
 cls
