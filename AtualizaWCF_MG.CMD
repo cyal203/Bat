@@ -8,7 +8,7 @@ echo Verificando a versao V1 e WCF...
 wmic datafile where name="C:\\Program Files (x86)\\Fenox V1.0\\Fnx64bits.exe" get Version && wmic datafile where name="C:\\WCFLOCAL\\bin\\PrototipoMQ.Interface.WCF.dll" get Version
 pause
 cls
-REM ******************* PARA SISOCR ****************
+REM ******************* PARA INETMGR ****************
 echo Parando Inetmgr...
 iisreset /stop
 sc stop SisMonitorOffline
