@@ -37,8 +37,6 @@ echo Finalizado
 REM ******************* VERIFICA VERSAO ****************
 echo Verificando a versao...
 wmic datafile where name="C:\\Program Files (x86)\\FNX\\SisOcr Offline\\SisOCR.Offline.Service.exe" get Version
-echo Verificacao e alteracao concluidas.
-exit /b 0
 echo FINALIZADO...
 pause
 exit
