@@ -36,7 +36,7 @@ cls
 echo Finalizado
 REM ******************* VERIFICA VERSAO ****************
 echo Verificando a versao...
-wmic datafile where name="C:\\Program Files (x86)\\FNX\\SisOcr Offline\\SisOCR.Offline.Service.exe" get Version
+wmic datafile where name="C:\\Program Files (x86)\\Fenox V1.0\\Fnx64bits.exe" get Version && wmic datafile where name="C:\\WCFLOCAL\\bin\\PrototipoMQ.Interface.WCF.dll" get Version
 echo FINALIZADO...
 pause
 exit
