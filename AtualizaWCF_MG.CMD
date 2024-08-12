@@ -11,6 +11,9 @@ cls
 REM ******************* PARA SISOCR ****************
 echo Parando Inetmgr...
 iisreset /stop
+sc stop SisMonitorOffline
+sc stop SisOcrOffline
+sc stop SisAviCreator
 cls
 REM ******************* BAIXA A NOVA VERSAO ****************
 echo Efetuando Download da nova versao 1.7.0.12...
@@ -21,62 +24,19 @@ cls
 REM ******************* RENOMEANDO WCF ****************
 ren C:\WCFLOCAL WCFLOCAL.old2
 REM ******************* EXECUTANDO INSTALADOR ****************
-%temp%\WCFLocalFenox_1.7.0.12_x86.exe 
-
-
+%temp%\WCFLocalFenox_1.7.0.12_x86.exe /silent
 cls
 REM ******************* INICIA SISOCR ****************
 echo Iniciando Serviço
 iisreset /start
+sc start SisMonitorOffline
+sc start SisOcrOffline
+sc start SisAviCreator
 cls
 echo Finalizado
 REM ******************* VERIFICA VERSAO ****************
 echo Verificando a versao...
 wmic datafile where name="C:\\Program Files (x86)\\FNX\\SisOcr Offline\\SisOCR.Offline.Service.exe" get Version
-pause
-
-REM ******************* AJUSTANDO RESOLUÇÃO DE UPLOAD ****************
-
-
-:menu1
-
-Set /p op= DESEJA ALTERAR A RESOLUCAO DE UP PARA 1024X768 (S/N):
-if %op% equ s goto s
-if %op% equ n goto n
-if %op% equ S goto s
-if %op% equ N goto n
-
-:n
-exit
-
-
-:s
-echo AJUSTANDO RESOLUCAO DE UPLOAD
-setlocal enabledelayedexpansion
-
-set "file=C:\captura\imgUp.ini"
-set "tempfile=%file%.tmp"
-
-if not exist "%file%" (
-    echo O arquivo %file% não foi encontrado.
-    exit /b 1
-)
-
-rem Cria um arquivo temporário e copia as linhas que não contêm X ou Y
-(for /f "usebackq tokens=*" %%A in ("%file%") do (
-    set "line=%%A"
-    if not "!line:~0,2!"=="X=" if not "!line:~0,2!"=="Y=" (
-        echo !line!
-    )
-)) > "%tempfile%"
-
-rem Adiciona as novas linhas X=1024 e Y=768
-echo X=1024>>"%tempfile%"
-echo Y=768>>"%tempfile%"
-
-rem Substitui o arquivo original pelo arquivo temporário
-move /y "%tempfile%" "%file%"
-
 echo Verificacao e alteracao concluidas.
 exit /b 0
 echo FINALIZADO...
