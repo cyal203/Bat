@@ -27,7 +27,7 @@ REM ******************* EXECUTANDO INSTALADOR ****************
 %temp%\WCFLocalFenox_1.7.0.12_x86.exe /silent
 cls
 REM ******************* INICIA SISOCR ****************
-echo Iniciando Serviço
+echo Iniciando Servico
 iisreset /start
 sc start SisMonitorOffline
 sc start SisOcrOffline
