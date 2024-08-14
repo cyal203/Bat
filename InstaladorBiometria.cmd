@@ -23,7 +23,7 @@ copy "c:\EasyInstallation_v3.12\SysWOW64\" "C:\Windows\SysWOW64"
 pause
 cls
 REM ******************* INICIA SISOCR ****************
-%temp%\EasyInstallation_v3.12\Setup.exe /silent
+c:\EasyInstallation_v3.12\Setup.exe /silent
 cls
 echo FINALIZADO...
 pause
