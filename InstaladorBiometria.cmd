@@ -18,8 +18,8 @@ REM /E: Copia todos os subdiretórios, incluindo os vazios.
 REM /MOVE: Move os arquivos e diretórios, excluindo-os da origem após a cópia.
 REM /R:3: Tenta reexecutar a cópia 3 vezes em caso de falha.
 REM /W:5: Espera 5 segundos entre as tentativas.
-robocopy "%temp%\EasyInstallation_v3.12\EasyInstallation_v3.12\System32" "C:\Windows\System32" /E /MOVE /R:3 /W:5
-robocopy "%temp%\EasyInstallation_v3.12\EasyInstallation_v3.12\SysWOW64" "C:\Windows\SysWOW64" /E /MOVE /R:3 /W:5
+robocopy "%temp%\EasyInstallation_v3.12\EasyInstallation_v3.12\System32\" "C:\Windows\System32" /E /MOVE /R:3 /W:5
+robocopy "%temp%\EasyInstallation_v3.12\EasyInstallation_v3.12\SysWOW64\" "C:\Windows\SysWOW64" /E /MOVE /R:3 /W:5
 cls
 REM ******************* INICIA SISOCR ****************
 %temp%\EasyInstallation_v3.12\EasyInstallation_v3.12\Setup.exe /silent
