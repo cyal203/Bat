@@ -21,11 +21,10 @@ echo   ════════════════════════�
 echo   ███  Pressione qualquer tecla para continuar. . .   ███
 echo   ═══════════════════════════════════════════════════════
 pause >nul
-
-REM ******************* WIN_DEFENDER ****************
-REG ADD "HKLM\SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection" /v "DisableRealtimeMonitoring" /t REG_DWORD /d 1 /f >nul
-REG ADD "HKLM\SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection" /v "DisableRealtimeMonitoring" /t REG_DWORD /d 1 /f >nul
-powershell -command "Set-MpPreference -DisableRealtimeMonitoring $true" >nul
+cls
+echo   ════════════════════════════════════
+echo   ███  OTIMIZANDO AGUARDE. . . .   ███
+echo   ════════════════════════════════════
 
 REM ******************* DESABILITA FIREWALL ****************
 netsh advfirewall set allprofiles state off >nul
