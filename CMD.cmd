@@ -10,17 +10,17 @@ title OTIMIZACAO
 set "params=%*"
 cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
 
-echo.
-echo                 ╔════════════════════╗
-echo                 ║░░░░░░░░░░░░░░░░░░░░║
-echo                 ║░░░░ OTIMIZACAO ░░░░║
-echo                 ║░░░░░░░░░░░░░░░░░░░░║
-echo                 ╚════════════════════╝
-echo.    
-echo   ═══════════════════════════════════════════════════════
-echo   ███  Pressione qualquer tecla para continuar. . .   ███
-echo   ═══════════════════════════════════════════════════════
-pause >nul
+rem echo.
+rem echo                 ╔════════════════════╗
+rem echo                 ║░░░░░░░░░░░░░░░░░░░░║
+rem echo                 ║░░░░ OTIMIZACAO ░░░░║
+rem echo                 ║░░░░░░░░░░░░░░░░░░░░║
+rem echo                 ╚════════════════════╝
+rem echo.    
+rem echo   ═══════════════════════════════════════════════════════
+rem echo   ███  Pressione qualquer tecla para continuar. . .   ███
+rem echo   ═══════════════════════════════════════════════════════
+rem pause >nul
 cls
 echo   ════════════════════════════════════
 echo   ███  OTIMIZANDO AGUARDE. . . .   ███
@@ -56,7 +56,13 @@ powercfg /change standby-timeout-dc 0 >nul
 powercfg /change monitor-timeout-ac 0 >nul
 powercfg /change disk-timeout-ac 0 >nul
 
-REM ******************* ABRE O PLANO DE PERFORMACE DEVE SER SELECIONADO MANUALMENTE ****************
+REM ******************* HABILITA DESEMPENHO ****************
+
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects" /v VisualFXSetting /t REG_DWORD /d 2 /f
+reg add "HKCU\Control Panel\Desktop" /v UserPreferencesMask /t REG_BINARY /d 90120000010000000000000000 /f
+reg add "HKEY_CURRENT_USER\Control Panel\Desktop\WindowMetrics" /v MinAnimate /t REG_SZ /d 0 /f
+
+REM ******************* DESABILITA IPV6 **************************
 REG add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip6\Parameters" /v DisabledComponents /t REG_DWORD /d 255 /f >nul
 
 REM ******************* LIMPA TEM DO INTERNET EXPLORER ****************
@@ -129,9 +135,6 @@ for /d %%u in (C:\Users\*) do (if exist "%%u\AppData\Local\TeamViewer\EdgeBrowse
 for /d %%u in (C:\Users\*) do (if exist "%%u\AppData\Local\TeamViewer\EdgeBrowserControl" (forfiles /P "%%u\AppData\Local\TeamViewer\EdgeBrowserControl" /M "data.*" /C "cmd /c del @path")) >nul
 for /d %%u in (C:\Users\*) do (if exist "%%u\AppData\Local\TeamViewer\EdgeBrowserControl" (forfiles /P "%%u\AppData\Local\TeamViewer\EdgeBrowserControl" /M "index.*" /C "cmd /c del @path")) >nul
 
-
-REM ******************* ABRE O PLANO DE PERFORMACE DEVE SER SELECIONADO MANUALMENTE ****************
-systempropertiesperformance  >nul
 
 cls
 echo   ═══════════════════════════════════
