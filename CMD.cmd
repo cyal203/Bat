@@ -4,23 +4,12 @@ title Fix Internet Connection
 
 call :VerPrevAdmin
 if "%Admin%"=="ops" goto :eof
-mode con: cols=60 lines=12
+mode con: cols=60 lines=9
 title OTIMIZACAO
 
 set "params=%*"
 cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
 
-rem echo.
-rem echo                 ╔════════════════════╗
-rem echo                 ║░░░░░░░░░░░░░░░░░░░░║
-rem echo                 ║░░░░ OTIMIZACAO ░░░░║
-rem echo                 ║░░░░░░░░░░░░░░░░░░░░║
-rem echo                 ╚════════════════════╝
-rem echo.    
-rem echo   ═══════════════════════════════════════════════════════
-rem echo   ███  Pressione qualquer tecla para continuar. . .   ███
-rem echo   ═══════════════════════════════════════════════════════
-rem pause >nul
 cls
 echo   ════════════════════════════════════
 echo   ███  OTIMIZANDO AGUARDE. . . .   ███
@@ -140,7 +129,7 @@ cls
 echo   ═══════════════════════════════════
 echo   ███  OTIMZACAO CONCLUIDA. . .   ███
 echo   ═══════════════════════════════════
-
+echo.
 
 REM ******************** ABRE A LIMPEZA DE DISCO ********************
 :menu1
