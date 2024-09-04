@@ -50,7 +50,7 @@ powercfg /change standby-timeout-dc 0 >nul
 powercfg /change monitor-timeout-ac 0 >nul
 powercfg /change disk-timeout-ac 0 >nul
 
-REM ******************* ABRE O PLANO DE PERFORMACE DEVE SER SELECIONADO MANUALMENTE ****************
+REM ******************* DESATIVA IPV6 ****************
 REG add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip6\Parameters" /v DisabledComponents /t REG_DWORD /d 255 /f >nul
 
 REM ******************* LIMPA TEM DO INTERNET EXPLORER ****************
@@ -61,14 +61,7 @@ del c:\$recycle.bin\* /s /q >nul
 PowerShell.exe -NoProfile -Command Clear-RecycleBin -Confirm:$false >$null >nul
 del $null >nul
 
-REM ******************** WINDOWS TEMP ********************
 
-REM Apaga todos arquivos da pasta \Windows\Temp, mantendo das pastas
-del c:\Windows\Temp\* /s /q >nul
-del /F /S /Q C:\WINDOWS\Temp\*.* >nul
-del /F /S /Q C:\WINDOWS\Prefetch\*.* >nul
-del /s /f /q %temp%\ >nul
-del /q /f /s %TEMP%\* >nul
 
 REM cria arquivo vazio.txt dentro da pasta \Windows\Temp
 type nul > c:\Windows\Temp\vazio.txt >nul
@@ -87,7 +80,7 @@ del c:\windows\logs\measuredboot\*.log >nul
 attrib -h -s C:\Windows\ServiceProfiles\NetworkService\ >nul
 attrib -h -s C:\Windows\ServiceProfiles\LocalService\ >nul
 del C:\Windows\ServiceProfiles\LocalService\AppData\Local\Temp\MpCmdRun.log >nul
-del C:\Windows\ServiceProfiles\NetworkService\AppData\Local\Temp\MpCmdRun.log >nul
+del C:\Windows\ServiceProfiles\NetworkService\AppData\Local\Temp\MpCmdRun.log >nul >nul
 attrib +h +s C:\Windows\ServiceProfiles\NetworkService\ >nul
 attrib +h +s C:\Windows\ServiceProfiles\LocalService\ >nul
 for /d %%F in (C:\Users\*) do del %%F\AppData\Local\Microsoft\*.log /s /q >nul
@@ -124,10 +117,20 @@ for /d %%u in (C:\Users\*) do (if exist "%%u\AppData\Local\TeamViewer\EdgeBrowse
 for /d %%u in (C:\Users\*) do (if exist "%%u\AppData\Local\TeamViewer\EdgeBrowserControl" (forfiles /P "%%u\AppData\Local\TeamViewer\EdgeBrowserControl" /M "index.*" /C "cmd /c del @path")) >nul
 
 
-REM ******************* PLANO DE PERFORMACE ****************
+REM ******************* ABRE O PLANO DE PERFORMACE DEVE SER SELECIONADO MANUALMENTE ****************
 reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects" /v VisualFXSetting /t REG_DWORD /d 2 /f
 reg add "HKCU\Control Panel\Desktop" /v UserPreferencesMask /t REG_BINARY /d 90120000010000000000000000 /f
 reg add "HKEY_CURRENT_USER\Control Panel\Desktop\WindowMetrics" /v MinAnimate /t REG_SZ /d 0 /f
+
+REM ******************** WINDOWS TEMP ********************
+
+REM Apaga todos arquivos da pasta \Windows\Temp, mantendo das pastas
+del c:\Windows\Temp\* /s /q >nul
+del /F /S /Q C:\WINDOWS\Temp\*.* >nul
+del /F /S /Q C:\WINDOWS\Prefetch\*.* >nul
+REM del /s /f /q %temp%\ >nul
+
+
 
 cls
 echo   ═══════════════════════════════════
