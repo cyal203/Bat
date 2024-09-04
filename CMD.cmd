@@ -59,7 +59,7 @@ Rundll32.exe InetCpl.cpl,ClearMyTracksByProcess 8 >nul
 
 REM ******************** LIXEIRA ********************
 del c:\$recycle.bin\* /s /q >nul
-PowerShell.exe -NoProfile -Command Clear-RecycleBin -Confirm:$false >$null >nul
+PowerShell.exe -NoProfile -Command Clear-RecycleBin -Confirm:$false >$null
 del $null >nul
 
 REM ******************** WINDOWS TEMP ********************
