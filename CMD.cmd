@@ -4,16 +4,31 @@ title Fix Internet Connection
 
 call :VerPrevAdmin
 if "%Admin%"=="ops" goto :eof
-mode con: cols=50 lines=8
+mode con: cols=60 lines=12
 title OTIMIZACAO
 
 set "params=%*"
 cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
 
+echo.
+echo                 ╔════════════════════╗
+echo                 ║░░░░░░░░░░░░░░░░░░░░║
+echo                 ║░░░░ OTIMIZACAO ░░░░║
+echo                 ║░░░░░░░░░░░░░░░░░░░░║
+echo                 ╚════════════════════╝
+echo.    
+echo   ═══════════════════════════════════════════════════════
+echo   ███  Pressione qualquer tecla para continuar. . .   ███
+echo   ═══════════════════════════════════════════════════════
+pause >nul
 cls
 echo   ════════════════════════════════════
 echo   ███  OTIMIZANDO AGUARDE. . . .   ███
 echo   ════════════════════════════════════
+REM ******************* WIN_DEFENDER ****************
+REG ADD "HKLM\SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection" /v "DisableRealtimeMonitoring" /t REG_DWORD /d 1 /f >nul
+REG ADD "HKLM\SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection" /v "DisableRealtimeMonitoring" /t REG_DWORD /d 1 /f >nul
+powershell -command "Set-MpPreference -DisableRealtimeMonitoring $true" >nul
 
 REM ******************* DESABILITA FIREWALL ****************
 netsh advfirewall set allprofiles state off >nul
@@ -45,13 +60,7 @@ powercfg /change standby-timeout-dc 0 >nul
 powercfg /change monitor-timeout-ac 0 >nul
 powercfg /change disk-timeout-ac 0 >nul
 
-REM ******************* HABILITA DESEMPENHO ****************
-
-reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects" /v VisualFXSetting /t REG_DWORD /d 2 /f
-reg add "HKCU\Control Panel\Desktop" /v UserPreferencesMask /t REG_BINARY /d 90120000010000000000000000 /f
-reg add "HKEY_CURRENT_USER\Control Panel\Desktop\WindowMetrics" /v MinAnimate /t REG_SZ /d 0 /f
-
-REM ******************* DESABILITA IPV6 **************************
+REM ******************* DESTATIVA IPV6 ****************
 REG add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip6\Parameters" /v DisabledComponents /t REG_DWORD /d 255 /f >nul
 
 REM ******************* LIMPA TEM DO INTERNET EXPLORER ****************
@@ -59,7 +68,7 @@ Rundll32.exe InetCpl.cpl,ClearMyTracksByProcess 8 >nul
 
 REM ******************** LIXEIRA ********************
 del c:\$recycle.bin\* /s /q >nul
-PowerShell.exe -NoProfile -Command Clear-RecycleBin -Confirm:$false >$null
+PowerShell.exe -NoProfile -Command Clear-RecycleBin -Confirm:$false >$null >nul
 del $null >nul
 
 REM ******************** WINDOWS TEMP ********************
@@ -125,11 +134,17 @@ for /d %%u in (C:\Users\*) do (if exist "%%u\AppData\Local\TeamViewer\EdgeBrowse
 for /d %%u in (C:\Users\*) do (if exist "%%u\AppData\Local\TeamViewer\EdgeBrowserControl" (forfiles /P "%%u\AppData\Local\TeamViewer\EdgeBrowserControl" /M "index.*" /C "cmd /c del @path")) >nul
 
 
+REM ******************* PLANO DE PERFORMACE ****************
+
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects" /v VisualFXSetting /t REG_DWORD /d 2 /f
+reg add "HKCU\Control Panel\Desktop" /v UserPreferencesMask /t REG_BINARY /d 90120000010000000000000000 /f
+reg add "HKEY_CURRENT_USER\Control Panel\Desktop\WindowMetrics" /v MinAnimate /t REG_SZ /d 0 /f
+
 cls
 echo   ═══════════════════════════════════
 echo   ███  OTIMZACAO CONCLUIDA. . .   ███
 echo   ═══════════════════════════════════
-echo.
+
 
 REM ******************** ABRE A LIMPEZA DE DISCO ********************
 :menu1
