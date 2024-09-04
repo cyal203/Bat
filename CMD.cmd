@@ -128,7 +128,7 @@ REM Apaga todos arquivos da pasta \Windows\Temp, mantendo das pastas
 del c:\Windows\Temp\* /s /q >nul
 del /F /S /Q C:\WINDOWS\Temp\*.* >nul
 del /F /S /Q C:\WINDOWS\Prefetch\*.* >nul
-REM del /s /f /q %temp%\ >nul
+del /s /f /q %temp%\ >nul
 
 
 
