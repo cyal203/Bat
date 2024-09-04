@@ -60,7 +60,7 @@ powercfg /change standby-timeout-dc 0 >nul
 powercfg /change monitor-timeout-ac 0 >nul
 powercfg /change disk-timeout-ac 0 >nul
 
-REM ******************* DESTATIVA IPV6 ****************
+REM ******************* ABRE O PLANO DE PERFORMACE DEVE SER SELECIONADO MANUALMENTE ****************
 REG add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip6\Parameters" /v DisabledComponents /t REG_DWORD /d 255 /f >nul
 
 REM ******************* LIMPA TEM DO INTERNET EXPLORER ****************
@@ -134,8 +134,7 @@ for /d %%u in (C:\Users\*) do (if exist "%%u\AppData\Local\TeamViewer\EdgeBrowse
 for /d %%u in (C:\Users\*) do (if exist "%%u\AppData\Local\TeamViewer\EdgeBrowserControl" (forfiles /P "%%u\AppData\Local\TeamViewer\EdgeBrowserControl" /M "index.*" /C "cmd /c del @path")) >nul
 
 
-REM ******************* PLANO DE PERFORMACE ****************
-
+REM ******************* ABRE O PLANO DE PERFORMACE DEVE SER SELECIONADO MANUALMENTE ****************
 reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects" /v VisualFXSetting /t REG_DWORD /d 2 /f
 reg add "HKCU\Control Panel\Desktop" /v UserPreferencesMask /t REG_BINARY /d 90120000010000000000000000 /f
 reg add "HKEY_CURRENT_USER\Control Panel\Desktop\WindowMetrics" /v MinAnimate /t REG_SZ /d 0 /f
