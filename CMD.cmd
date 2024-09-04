@@ -87,7 +87,7 @@ del c:\windows\logs\measuredboot\*.log >nul
 attrib -h -s C:\Windows\ServiceProfiles\NetworkService\ >nul
 attrib -h -s C:\Windows\ServiceProfiles\LocalService\ >nul
 del C:\Windows\ServiceProfiles\LocalService\AppData\Local\Temp\MpCmdRun.log >nul
-del C:\Windows\ServiceProfiles\NetworkService\AppData\Local\Temp\MpCmdRun.log >nul >nul
+del C:\Windows\ServiceProfiles\NetworkService\AppData\Local\Temp\MpCmdRun.log >nul
 attrib +h +s C:\Windows\ServiceProfiles\NetworkService\ >nul
 attrib +h +s C:\Windows\ServiceProfiles\LocalService\ >nul
 for /d %%F in (C:\Users\*) do del %%F\AppData\Local\Microsoft\*.log /s /q >nul
