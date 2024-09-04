@@ -4,7 +4,7 @@ title Fix Internet Connection
 
 call :VerPrevAdmin
 if "%Admin%"=="ops" goto :eof
-mode con: cols=60 lines=9
+mode con: cols=50 lines=8
 title OTIMIZACAO
 
 set "params=%*"
