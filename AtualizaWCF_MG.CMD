@@ -15,16 +15,16 @@ sc stop SisMonitorOffline
 sc stop SisOcrOffline
 sc stop SisAviCreator
 cls
-REM ******************* BAIXA A NOVA VERSAO ****************
-echo Efetuando Download da nova versao 1.7.0.12...
-curl -g -k -L -# -o "%temp%\WCFLocalFenox_1.7.0.12_x86.exe" "https://update.fenoxapp.com.br/Executaveis/ServicoLocal/WCFLocalFenox_1.7.0.12_x86.exe" >nul 2>&1
-cls
-
-
 REM ******************* RENOMEANDO WCF ****************
-ren C:\WCFLOCAL WCFLOCAL.1709
-REM ******************* EXECUTANDO INSTALADOR ****************
-%temp%\WCFLocalFenox_1.7.0.12_x86.exe /silent
+ren C:\WCFLOCAL WCFLOCAL.17012
+REM ******************* BAIXA A NOVA VERSAO ****************
+echo Efetuando Download da nova versao 1.7.0.13...
+curl -g -k -L -# -o "%temp%\UpdateWCFServidorLocal17013.zip" "http://update.fenoxapp.com.br/ModoOff/Install/WcfLocal/1.7.0.13/UpdateWCFServidorLocal17013.zip" >nul 2>&1
+cls
+REM ******************* EXTRAI NOVO SISOCR ****************
+echo Extraindo Arquivos...
+powershell -NoProfile Expand-Archive '%temp%\UpdateWCFServidorLocal17013.zip' -DestinationPath 'C:\WCFLOCAL' >nul 2>&1 
+
 cls
 REM ******************* INICIA SISOCR ****************
 echo Iniciando Servico
