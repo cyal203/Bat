@@ -45,6 +45,12 @@ REM Caminho do arquivo de configuração
 set FILE="C:\Program Files (x86)\Fenox V1.0\Fnx64bits.exe.config"
 REM Substitui o endereço IP no arquivo usando PowerShell
 powershell -Command "(Get-Content '%FILE%') -replace 'http://.*:8080', 'http://%IP%:8080' | Set-Content '%FILE%'"
+
+REM ******************* DELETA PASTAS ****************
+
+rmdir /s /q "C:\Program Files (x86)\Fenox V1.0.1012"
+rmdir /s /q "C:\WCFLOCAL.17012"
+
 REM ******************* INICIA SISOCR ****************
 echo Iniciando Servico
 iisreset /start
