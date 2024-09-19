@@ -1,10 +1,9 @@
 @echo off
-REM 19/09/2024 13:53
 chcp 65001 >nul
 title Versao 1.7.0.13
 call :VerPrevAdmin
 if "%Admin%"=="ops" goto :eof
-mode con: cols=50 lines=10
+mode con: cols=60 lines=10
 COLOR 1f
 setlocal
 set "params=%*"
@@ -24,20 +23,19 @@ sc stop SisAviCreator
 cls
 REM ******************* RENOMEANDO WCF e V1 ****************
 ren "C:\WCFLOCAL" "WCFLOCAL.17012"
-ren "C:\Program Files (x86)\Fenox V1" "Fenox V1.1012"
+ren "C:\Program Files (x86)\Fenox V1.0" "Fenox V1.0.1012"
 echo Pasta renomeada com sucesso.
 REM ******************* BAIXA A NOVA VERSAO ****************
 echo Efetuando Download da nova versao 1.7.0.13...
-curl -g -k -L -# -o "%temp%\UpdateWCFServidorLocal17013.zip" "http://update.fenoxapp.com.br/ModoOff/Install/WcfLocal/1.7.0.13/UpdateWCFServidorLocal17013.zip" >nul 2>&1
-curl -g -k -L -# -o "%temp%\Fnx64.zip" "http://update.fenoxapp.com.br/ModoOff/Install/SistemaLaudos/1.7.0.13/Fnx64.zip" >nul 2>&1
+curl -g -k -L -# -o "%temp%\1.7.0.13.zip" "https://www.dropbox.com/scl/fi/av89whtp4g6vwihlb1lzr/1.7.0.13.zip?rlkey=o8d83pkbqi06b79ub42yyrkmr&st=qrauww2y&dl=1" >nul 2>&1
 cls
 REM ******************* EXTRAI NOVO SISOCR ****************
 echo Extraindo Arquivos...
-powershell -NoProfile Expand-Archive '%temp%\UpdateWCFServidorLocal17013.zip' -DestinationPath 'C:\WCFLOCAL' >nul 2>&1 
-powershell -NoProfile Expand-Archive '%temp%\Fnx64.zip' -DestinationPath '%temp%\Fenox V1.0' >nul 2>&1  
-move "%temp%\Fenox V1.0" "C:\Program Files (x86)\Fenox V1.0"
-echo Pasta movida com sucesso.
-pause
+powershell -NoProfile Expand-Archive '%temp%\1.7.0.13.zip' -DestinationPath '%temp%\Fenox' >nul 2>&1 
+REM ******************* INSTALANDO ****************
+echo Instalando...
+%temp%\Fenox\Fnx_1.7.0.13_x64.exe /silent
+%temp%\Fenox\WCFLocalFenox_1.7.0.13_x86 /silent
 cls
 REM Obtém o IPv4 do computador
 for /f "tokens=2 delims=:" %%i in ('ipconfig ^| findstr /i "IPv4"') do for /f "tokens=1 delims= " %%j in ("%%i") do set IP=%%j
