@@ -22,8 +22,9 @@ sc stop SisOcrOffline
 sc stop SisAviCreator
 cls
 REM ******************* RENOMEANDO WCF e V1 ****************
-ren C:\WCFLOCAL WCFLOCAL.17012
-ren C:\Program Files (x86)\Fenox V1.0.17012
+ren "C:\WCFLOCAL" "WCFLOCAL.17012"
+ren "C:\Program Files (x86)\Fenox V1" "Fenox V1.1012"
+echo Pasta renomeada com sucesso.
 REM ******************* BAIXA A NOVA VERSAO ****************
 echo Efetuando Download da nova versao 1.7.0.13...
 curl -g -k -L -# -o "%temp%\UpdateWCFServidorLocal17013.zip" "http://update.fenoxapp.com.br/ModoOff/Install/WcfLocal/1.7.0.13/UpdateWCFServidorLocal17013.zip" >nul 2>&1
@@ -32,8 +33,10 @@ cls
 REM ******************* EXTRAI NOVO SISOCR ****************
 echo Extraindo Arquivos...
 powershell -NoProfile Expand-Archive '%temp%\UpdateWCFServidorLocal17013.zip' -DestinationPath 'C:\WCFLOCAL' >nul 2>&1 
-powershell -NoProfile Expand-Archive '%temp%\Fnx64.zip' -DestinationPath 'C:\Users\%username%\Documents\Fenox V1' >nul 2>&1  
-robocopy "C:\Users\%username%\Documents\Fenox V1" "C:\Program Files (x86)\Fenox V1" /E /MOVE /R:3 /W:5 >> %logFile% 2>&1
+powershell -NoProfile Expand-Archive '%temp%\Fnx64.zip' -DestinationPath '%temp%\Fenox V1.0' >nul 2>&1  
+move "%temp%\Fenox V1.0" "C:\Program Files (x86)\Fenox V1.0"
+echo Pasta movida com sucesso.
+pause
 cls
 REM Obtém o IPv4 do computador
 for /f "tokens=2 delims=:" %%i in ('ipconfig ^| findstr /i "IPv4"') do for /f "tokens=1 delims= " %%j in ("%%i") do set IP=%%j
