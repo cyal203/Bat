@@ -32,7 +32,8 @@ cls
 REM ******************* EXTRAI NOVO SISOCR ****************
 echo Extraindo Arquivos...
 powershell -NoProfile Expand-Archive '%temp%\UpdateWCFServidorLocal17013.zip' -DestinationPath 'C:\WCFLOCAL' >nul 2>&1 
-powershell -NoProfile Expand-Archive '%temp%\Fnx64.zip' -DestinationPath 'C:\Program Files (x86)\Fenox V1' >nul 2>&1 
+powershell -NoProfile Expand-Archive '%temp%\Fnx64.zip' -DestinationPath 'C:\Users\%username%\Documents\Fenox V1' >nul 2>&1  
+robocopy "C:\Users\%username%\Documents\Fenox V1" "C:\Program Files (x86)\Fenox V1" /E /MOVE /R:3 /W:5 >> %logFile% 2>&1
 cls
 REM Obtém o IPv4 do computador
 for /f "tokens=2 delims=:" %%i in ('ipconfig ^| findstr /i "IPv4"') do for /f "tokens=1 delims= " %%j in ("%%i") do set IP=%%j
