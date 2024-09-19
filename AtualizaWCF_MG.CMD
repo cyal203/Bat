@@ -27,7 +27,7 @@ ren C:\Program Files (x86)\Fenox V1.0.17012
 REM ******************* BAIXA A NOVA VERSAO ****************
 echo Efetuando Download da nova versao 1.7.0.13...
 curl -g -k -L -# -o "%temp%\UpdateWCFServidorLocal17013.zip" "http://update.fenoxapp.com.br/ModoOff/Install/WcfLocal/1.7.0.13/UpdateWCFServidorLocal17013.zip" >nul 2>&1
-curl -g -k -L -# -o "%temp%\UpdateWCFServidorLocal17013.zip" "http://update.fenoxapp.com.br/ModoOff/Install/SistemaLaudos/1.7.0.13/Fnx64.zip" >nul 2>&1
+curl -g -k -L -# -o "%temp%\Fnx64.zip" "http://update.fenoxapp.com.br/ModoOff/Install/SistemaLaudos/1.7.0.13/Fnx64.zip" >nul 2>&1
 cls
 REM ******************* EXTRAI NOVO SISOCR ****************
 echo Extraindo Arquivos...
