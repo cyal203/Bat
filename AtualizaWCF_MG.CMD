@@ -1,4 +1,5 @@
 @echo off
+REM 19/09/2024 13:53
 chcp 65001 >nul
 title Versao 1.7.0.13
 call :VerPrevAdmin
