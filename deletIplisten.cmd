@@ -1,5 +1,9 @@
 @echo off
-setlocal enabledelayedexpansion
+setlocal
+
+rem Mostra os IPs atuais no iplisten
+echo Listando IPs atuais no iplisten:
+netsh http show iplisten
 
 rem Remove todos os IPs do iplisten
 for /f "tokens=2 delims=:" %%I in ('netsh http show iplisten ^| findstr /R "IP"') do (
