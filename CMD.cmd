@@ -15,11 +15,14 @@ cls
 echo   ════════════════════════════════════
 echo   ███  OTIMIZANDO AGUARDE. . . .   ███
 echo   ════════════════════════════════════
+
+REM ******************* FINALIZANDO SERVIÇOS QUE NÃO RESPONDEM********
+taskkill /f /fi "status eq not responding"
 REM ******************* WIN_DEFENDER ****************
 REG ADD "HKLM\SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection" /v "DisableRealtimeMonitoring" /t REG_DWORD /d 1 /f >nul
 REG ADD "HKLM\SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection" /v "DisableRealtimeMonitoring" /t REG_DWORD /d 1 /f >nul
 powershell -command "Set-MpPreference -DisableRealtimeMonitoring $true" >nul
-
+timeout /t 1 /nobreak >nul
 REM ******************* DESABILITA FIREWALL ****************
 netsh advfirewall set allprofiles state off >nul
 
@@ -34,7 +37,7 @@ REG ADD HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /V Enable
 
 REM ******************* DESABILITA HIBERNAÇÃO ****************
 powercfg.exe /hibernate off >nul
-
+timeout /t 1 /nobreak >nul
 REM ******************* DESABILITA APLICATIVOS EM SEGUNDO PLANO ****************
 REG add "HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\BackgroundAccessApplications" /v GlobalUserDisabled /t REG_DWORD /d 1 /f >nul
 REG ADD "HKCU\Software\Microsoft\Windows\CurrentVersion\BackgroundAccessApplications" /V GlobalUserDisabled /T REG_DWORD /D 1 /F >nul
@@ -44,14 +47,54 @@ REG ADD "HKLM\Software\Policies\Microsoft\Windows\AppPrivacy" /V LetAppsRunInBac
 REM ******************* DESABILITA XBOX GameDVR ****************
 REG add "HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\GameDVR" /v AppCaptureEnabled /t REG_DWORD /d 0 /f >nul
 
+REM ******************* DESABILITA DEFENDER ******************
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows Defender" /v "DisableAntiSpyware" /t REG_DWORD /d 1 /f >nul
+sc stop WinDefend
+sc config WinDefend start= disabled
+
 REM ******************* TORNA O ESQUEMA DE ENERGIA ATIVO FAZENDO ALTERAÇÕES SIGNIFICANTES ****************
 powercfg /setactive 381b4222-f694-41f0-9685-ff5bb260df2e >nul
 powercfg /change standby-timeout-dc 0 >nul
 powercfg /change monitor-timeout-ac 0 >nul
 powercfg /change disk-timeout-ac 0 >nul
-
+timeout /t 2 /nobreak >nul
 REM ******************* DESATIVA IPV6 ****************
 REG add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip6\Parameters" /v DisabledComponents /t REG_DWORD /d 255 /f >nul
+
+REM ********** DESATIVA INDEXAÇÃO *************
+sc stop "WSearch" >nul
+sc config "WSearch" start=disabled >nul
+
+REM ******************* DESATIVA TELEMETRIA **********************
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\DataCollection" /v AllowTelemetry /t REG_DWORD /d 0 /f >nul
+reg add "HKEY_CURRENT_USER\Software\Microsoft\Siuf\Rules" /v NumberOfSIUFInPeriod /t REG_DWORD /d 0 /f >nul
+reg add "HKEY_CURRENT_USER\Software\Microsoft\Siuf\Rules" /v PeriodInNanoSeconds /t REG_QWORD /d 0 /f >nul
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\DataCollection" /v "AllowTelemetry" /t REG_DWORD /d 0 /f >nul
+timeout /t 2 /nobreak >nul
+sc stop DiagTrack >nul
+sc delete DiagTrack >nul
+sc stop dmwappushservice >nul
+sc delete dmwappushservice >nul
+timeout /t 2 /nobreak >nul
+
+REM ******************* DESATIVA SERVIÇOS********
+sc config Fax start= disabled >nul
+sc config "Remote Desktop Services" start= disabled >nul
+sc config "Diagnostic Policy Service" start= disabled >nul
+sc config "Distributed Link Tracking Client" start= disabled >nul
+sc config "Offline Files" start= disabled >nul
+sc config "Windows Error Reporting Service" start= disabled >nul
+sc config "Windows Search" start= disabled >nul
+sc config "SysMain" start= disabled >nul
+sc delete SysMain >nul
+sc config "SIMNextLocalRecording" start= disabled >nul
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v SystemPaneSuggestionsEnabled /t REG_DWORD /d 0 /f >nul
+
+REM ******************* DESATIVA CORTANA ************
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Search" /v "AllowCortana" /t REG_DWORD /d 0 /f >nul
+taskkill /f /im SearchUI.exe >nul
+
+
 
 REM ******************* LIMPA TEM DO INTERNET EXPLORER ****************
 Rundll32.exe InetCpl.cpl,ClearMyTracksByProcess 8 >nul
@@ -60,8 +103,7 @@ REM ******************** LIXEIRA ********************
 del c:\$recycle.bin\* /s /q >nul
 PowerShell.exe -NoProfile -Command Clear-RecycleBin -Confirm:$false >$null >nul
 del $null >nul
-
-
+timeout /t 2 /nobreak >nul
 
 REM cria arquivo vazio.txt dentro da pasta \Windows\Temp
 type nul > c:\Windows\Temp\vazio.txt >nul
@@ -117,11 +159,11 @@ for /d %%u in (C:\Users\*) do (if exist "%%u\AppData\Local\TeamViewer\EdgeBrowse
 for /d %%u in (C:\Users\*) do (if exist "%%u\AppData\Local\TeamViewer\EdgeBrowserControl" (forfiles /P "%%u\AppData\Local\TeamViewer\EdgeBrowserControl" /M "index.*" /C "cmd /c del @path")) >nul
 
 
-REM ******************* ABRE O PLANO DE PERFORMACE DEVE SER SELECIONADO MANUALMENTE ****************
-reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects" /v VisualFXSetting /t REG_DWORD /d 2 /f
-reg add "HKCU\Control Panel\Desktop" /v UserPreferencesMask /t REG_BINARY /d 90120000010000000000000000 /f
-reg add "HKEY_CURRENT_USER\Control Panel\Desktop\WindowMetrics" /v MinAnimate /t REG_SZ /d 0 /f
-
+REM ******************* DESATIVA EFEITOS VISUAIS ****************
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects" /v VisualFXSetting /t REG_DWORD /d 2 /f >nul
+reg add "HKCU\Control Panel\Desktop" /v UserPreferencesMask /t REG_BINARY /d 90120000010000000000000000 /f >nul
+reg add "HKEY_CURRENT_USER\Control Panel\Desktop\WindowMetrics" /v MinAnimate /t REG_SZ /d 0 /f >nul
+reg add "HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\PushNotifications" /v ToastEnabled /t REG_DWORD /d 0 /f >nul
 REM ******************** WINDOWS TEMP ********************
 
 REM Apaga todos arquivos da pasta \Windows\Temp, mantendo das pastas
