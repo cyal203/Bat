@@ -17,24 +17,46 @@ echo   ███  OTIMIZANDO AGUARDE. . . .   ███
 echo   ════════════════════════════════════
 
 REM ******************* FINALIZANDO SERVIÇOS QUE NÃO RESPONDEM********
-taskkill /f /fi "status eq not responding"
-REM ******************* WIN_DEFENDER ****************
+taskkill /f /fi "status eq not responding" >nul
+CLS
+echo.
+echo FINALIZANDO SERVICOS (1/18)
+timeout /t 2 /nobreak >nul
+REM ******************* DESABILITA DEFENDER ****************
 REG ADD "HKLM\SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection" /v "DisableRealtimeMonitoring" /t REG_DWORD /d 1 /f >nul
 REG ADD "HKLM\SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection" /v "DisableRealtimeMonitoring" /t REG_DWORD /d 1 /f >nul
 powershell -command "Set-MpPreference -DisableRealtimeMonitoring $true" >nul
-timeout /t 1 /nobreak >nul
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows Defender" /v "DisableAntiSpyware" /t REG_DWORD /d 1 /f >nul
+sc stop WinDefend>nul
+sc config WinDefend start= disabled
+CLS
+echo.
+ECHO WINDOWS DEFENDER (2/18)
+timeout /t 2 /nobreak >nul
 REM ******************* DESABILITA FIREWALL ****************
 netsh advfirewall set allprofiles state off >nul
-
+CLS
+echo.
+ECHO FIREWALL (3/18)
+timeout /t 2 /nobreak >nul
 REM ******************* REDEFINIR PROBLEMAS DE TCP/IP ****************
 netsh winsock reset >nul
-
+CLS
+echo.
+ECHO TCIP (4/18)
+timeout /t 2 /nobreak >nul
 REM ******************* ATUALIZA DIRETIVA DE GRUPO ****************
 gpupdate /force >nul
-
+CLS
+echo.
+ECHO POLITICAS (5/18)
+timeout /t 2 /nobreak >nul
 REM ******************* DESBLOQUEIA INSTALAÇÃO DE SOFTWARE ****************
 REG ADD HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /V EnableLUA /T REG_DWORD /D 0 /F >nul
-
+CLS
+echo.
+ECHO INSTALACAO SOFTWARE (6/18)
+timeout /t 2 /nobreak >nul
 REM ******************* DESABILITA HIBERNAÇÃO ****************
 powercfg.exe /hibernate off >nul
 timeout /t 1 /nobreak >nul
@@ -43,40 +65,52 @@ REG add "HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\BackgroundA
 REG ADD "HKCU\Software\Microsoft\Windows\CurrentVersion\BackgroundAccessApplications" /V GlobalUserDisabled /T REG_DWORD /D 1 /F >nul
 REG ADD "HKCU\Software\Microsoft\Windows\CurrentVersion\Search" /V BackgroundAppGlobalToggle /T REG_DWORD /D 0 /F >nul
 REG ADD "HKLM\Software\Policies\Microsoft\Windows\AppPrivacy" /V LetAppsRunInBackground /T REG_DWORD /D 2 /F >nul
-
+CLS
+echo.
+ECHO HIBERNACAO (7/18)
+timeout /t 2 /nobreak >nul
 REM ******************* DESABILITA XBOX GameDVR ****************
 REG add "HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\GameDVR" /v AppCaptureEnabled /t REG_DWORD /d 0 /f >nul
-
-REM ******************* DESABILITA DEFENDER ******************
-reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows Defender" /v "DisableAntiSpyware" /t REG_DWORD /d 1 /f >nul
-sc stop WinDefend
-sc config WinDefend start= disabled
-
+CLS
+echo.
+ECHO DESABILITA XBOX (8/18)
+timeout /t 2 /nobreak >nul
 REM ******************* TORNA O ESQUEMA DE ENERGIA ATIVO FAZENDO ALTERAÇÕES SIGNIFICANTES ****************
 powercfg /setactive 381b4222-f694-41f0-9685-ff5bb260df2e >nul
 powercfg /change standby-timeout-dc 0 >nul
 powercfg /change monitor-timeout-ac 0 >nul
 powercfg /change disk-timeout-ac 0 >nul
 timeout /t 2 /nobreak >nul
+CLS
+echo.
+ECHO OTIMIZA ENERGIA(9/18)
+timeout /t 2 /nobreak >nul
 REM ******************* DESATIVA IPV6 ****************
 REG add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip6\Parameters" /v DisabledComponents /t REG_DWORD /d 255 /f >nul
-
+CLS
+echo.
+ECHO DESABILITA IPV6 (10/18)
+timeout /t 2 /nobreak >nul
 REM ********** DESATIVA INDEXAÇÃO *************
 sc stop "WSearch" >nul
 sc config "WSearch" start=disabled >nul
-
+CLS
+echo.
+ECHO DESATIVA INDEXACAO (11/18)
+timeout /t 2 /nobreak >nul
 REM ******************* DESATIVA TELEMETRIA **********************
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\DataCollection" /v AllowTelemetry /t REG_DWORD /d 0 /f >nul
 reg add "HKEY_CURRENT_USER\Software\Microsoft\Siuf\Rules" /v NumberOfSIUFInPeriod /t REG_DWORD /d 0 /f >nul
 reg add "HKEY_CURRENT_USER\Software\Microsoft\Siuf\Rules" /v PeriodInNanoSeconds /t REG_QWORD /d 0 /f >nul
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\DataCollection" /v "AllowTelemetry" /t REG_DWORD /d 0 /f >nul
-timeout /t 2 /nobreak >nul
 sc stop DiagTrack >nul
 sc delete DiagTrack >nul
 sc stop dmwappushservice >nul
 sc delete dmwappushservice >nul
+CLS
+echo.
+ECHO DESATIVA TELEMETRIA (12/18)
 timeout /t 2 /nobreak >nul
-
 REM ******************* DESATIVA SERVIÇOS********
 sc config Fax start= disabled >nul
 sc config "Remote Desktop Services" start= disabled >nul
@@ -89,31 +123,37 @@ sc config "SysMain" start= disabled >nul
 sc delete SysMain >nul
 sc config "SIMNextLocalRecording" start= disabled >nul
 reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v SystemPaneSuggestionsEnabled /t REG_DWORD /d 0 /f >nul
-
+CLS
+echo.
+ECHO DESABILITA SERVICOS NAO UTILIZADOS (13/18)
+timeout /t 2 /nobreak >nul
 REM ******************* DESATIVA CORTANA ************
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Search" /v "AllowCortana" /t REG_DWORD /d 0 /f >nul
 taskkill /f /im SearchUI.exe >nul
-
-
-
+CLS
+echo.
+ECHO DESABILITA CORTANA (14/18)
+timeout /t 2 /nobreak >nul
 REM ******************* LIMPA TEM DO INTERNET EXPLORER ****************
 Rundll32.exe InetCpl.cpl,ClearMyTracksByProcess 8 >nul
-
+CLS
+echo.
+ECHO LIMPA CACHE DO INTERNET EXPLORER (15/18)
+timeout /t 2 /nobreak >nul
 REM ******************** LIXEIRA ********************
 del c:\$recycle.bin\* /s /q >nul
 PowerShell.exe -NoProfile -Command Clear-RecycleBin -Confirm:$false >$null >nul
 del $null >nul
+CLS
+echo.
+ECHO LIMPA LIXEIRA (16/18)
 timeout /t 2 /nobreak >nul
-
 REM cria arquivo vazio.txt dentro da pasta \Windows\Temp
 type nul > c:\Windows\Temp\vazio.txt >nul
-
 REM apaga todas as pastas vazias dentro da pasta \Windows\Temp (mas não apaga a própria pasta)
 robocopy c:\Windows\Temp c:\Windows\Temp /s /move /NFL /NDL /NJH /NJS /nc /ns /np >nul
-
 REM Apaga arquivo vazio.txt dentro da pasta \Windows\Temp
 del c:\Windows\Temp\vazio.txt >nul
-
 REM ******************** ARQUIVOS DE LOG DO WINDOWS ********************
 del C:\Windows\Logs\cbs\*.log >nul
 del C:\Windows\setupact.log >nul
@@ -134,7 +174,10 @@ del C:\Windows\inf\*.log /s /q >nul
 del C:\Windows\logs\*.log /s /q >nul
 del C:\Windows\SoftwareDistribution\*.log /s /q >nul
 del C:\Windows\Microsoft.NET\*.log /s /q >nul
-
+CLS
+echo.
+ECHO LIMPA ARQUIVOS DE LOG (17/18)
+timeout /t 2 /nobreak >nul
 REM ******************** ARQUIVOS DE LOG DO ONEDRIVE ********************
 taskkill /F /IM "OneDrive.exe"
 for /d %%F in (C:\Users\*) do del %%F\AppData\Local\Microsoft\OneDrive\setup\logs\*.log /s /q >nul
@@ -164,15 +207,16 @@ reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects" 
 reg add "HKCU\Control Panel\Desktop" /v UserPreferencesMask /t REG_BINARY /d 90120000010000000000000000 /f >nul
 reg add "HKEY_CURRENT_USER\Control Panel\Desktop\WindowMetrics" /v MinAnimate /t REG_SZ /d 0 /f >nul
 reg add "HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\PushNotifications" /v ToastEnabled /t REG_DWORD /d 0 /f >nul
+CLS
+echo.
+ECHO DESATIVA EFEITOS VISUAIS (18/18)
+timeout /t 2 /nobreak >nul
 REM ******************** WINDOWS TEMP ********************
-
 REM Apaga todos arquivos da pasta \Windows\Temp, mantendo das pastas
 del c:\Windows\Temp\* /s /q >nul
 del /F /S /Q C:\WINDOWS\Temp\*.* >nul
 del /F /S /Q C:\WINDOWS\Prefetch\*.* >nul
 del /s /f /q %temp%\ >nul
-
-
 
 cls
 echo   ═══════════════════════════════════
