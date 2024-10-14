@@ -7,6 +7,6 @@ rd /s /q "%APPDATA%\Mozilla\Firefox\Profiles\*.default\cache2"
 
 echo Limpando cache do Microsoft Edge...
 rd /s /q "%LOCALAPPDATA%\Microsoft\Edge\User Data\Default\Cache"
-
+cls
 echo Cache limpo com sucesso!
 pause
