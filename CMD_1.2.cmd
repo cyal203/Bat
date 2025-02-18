@@ -289,12 +289,10 @@ if %op% equ N goto n
 :s
 REM ******************** WINDOWS TEMP ********************
 cleanmgr C:
-timeout /t 3 /nobreak >nul
-del c:\Windows\Temp\* /s /q >nul
-del /F /S /Q C:\WINDOWS\Temp\*.* >nul
-del /F /S /Q C:\WINDOWS\Prefetch\*.* >nul
-del /s /f /q %temp%\ >nul
-timeout /t 3 /nobreak >nul
+::del c:\Windows\Temp\* /s /q >nul
+::del /F /S /Q C:\WINDOWS\Temp\*.* >nul
+::del /F /S /Q C:\WINDOWS\Prefetch\*.* >nul
+::del /s /f /q %temp%\ >nul
 
 :n
 goto menu
