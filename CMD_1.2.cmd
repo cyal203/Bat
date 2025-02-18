@@ -52,7 +52,7 @@ echo Adicionado ip ao Iplisten:%w% !CURRENT_IP! %b%
 netsh http add iplisten ip=!CURRENT_IP!  >nul
 netsh http add iplisten ip=127.0.0.1  >nul
 ipconfig /flushdns  >nul
-pause
+timeout /t 3 /nobreak >nul
 cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
 :digitacao
 REM ******************* FINALIZANDO SERVIÇOS QUE NÃO RESPONDEM********
