@@ -271,13 +271,6 @@ echo   ════════════════════════�
 echo   ███  %w%OTIMIZANDO AGUARDE (18/18)%b%   ███
 echo   ═════════════════════════════════════ 
 timeout /t 2 /nobreak >nul
-REM ******************** WINDOWS TEMP ********************
-REM Apaga todos arquivos da pasta \Windows\Temp, mantendo das pastas
-del c:\Windows\Temp\* /s /q >nul
-del /F /S /Q C:\WINDOWS\Temp\*.* >nul
-del /F /S /Q C:\WINDOWS\Prefetch\*.* >nul
-del /s /f /q %temp%\ >nul
-timeout /t 3 /nobreak >nul
 cls
 echo   ═══════════════════════════════════
 echo   ███  %w%OTIMZACAO CONCLUIDA. . .%b%   ███
@@ -294,6 +287,12 @@ if %op% equ S goto s
 if %op% equ N goto n
 
 :s
+REM ******************** WINDOWS TEMP ********************
+del c:\Windows\Temp\* /s /q >nul
+del /F /S /Q C:\WINDOWS\Temp\*.* >nul
+del /F /S /Q C:\WINDOWS\Prefetch\*.* >nul
+del /s /f /q %temp%\ >nul
+timeout /t 3 /nobreak >nul
 cleanmgr C:
 
 :n
