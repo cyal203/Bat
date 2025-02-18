@@ -1,6 +1,7 @@
 @echo off
 chcp 65001 >nul
-title Versão 1.1
+title Versão 1.2
+REM ----- DATA - 07/02/2025 -----------
 call :VerPrevAdmin
 if "%Admin%"=="ops" goto :eof
 mode con: cols=45 lines=12
@@ -22,7 +23,6 @@ Set /p option= %w%Escolha uma Opcao:%b%
 if %option%==1 goto digitacao
 if %option%==2 goto servidor
 
-REM ----- DATA - 07/02/2025 -----------
 echo.
 cls
 echo   ═════════════════════════════════════
