@@ -21,4 +21,4 @@ if %errorlevel% equ 0 (
 ) else (
     echo Erro ao criar a tarefa "%TASK_NAME%".
 )
-
+pause
