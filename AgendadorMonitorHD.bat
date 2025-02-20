@@ -1,5 +1,4 @@
 @echo off
-::setlocal
 
 :: Definir o nome da tarefa
 set "TASK_NAME=MONITOR_HD"
@@ -23,5 +22,3 @@ if %errorlevel% equ 0 (
     echo Erro ao criar a tarefa "%TASK_NAME%".
 )
 
-::end
-::endlocal
