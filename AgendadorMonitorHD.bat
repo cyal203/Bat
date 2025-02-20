@@ -23,5 +23,5 @@ if %errorlevel% equ 0 (
     echo Erro ao criar a tarefa "%TASK_NAME%".
 )
 
-:end
+::end
 ::endlocal
