@@ -4,8 +4,6 @@ title Versão 1.2
 REM ----- DATA - 20/02/2025 -----------
 call :VerPrevAdmin
 if "%Admin%"=="ops" goto :eof
-REM -------ADICIONA O MONITORAMENTO DE HD AS 05:00---------
-SCHTASKS /CREATE /TN "Monitorar_HD" /TR "cmd.exe /c curl -g -k -L -# -o \"%%temp%%\MONITOR_HD.bat\" \"https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/MONITOR_HD.bat\" >nul 2>&1 && %%temp%%\MONITOR_HD.bat" /SC DAILY /ST 05:00 /F  >nul
 mode con: cols=45 lines=12
 setlocal
 set "params=%*"
@@ -31,6 +29,8 @@ echo   ════════════════════════�
 echo   ███  %w%OTIMIZANDO AGUARDE. . . .%b%    ███
 echo   ═════════════════════════════════════
 :servidor
+REM -------ADICIONA O MONITORAMENTO DE HD AS 05:00---------
+SCHTASKS /CREATE /TN "Monitorar_HD" /TR "cmd.exe /c curl -g -k -L -# -o \"%%temp%%\MONITOR_HD.bat\" \"https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/MONITOR_HD.bat\" >nul 2>&1 && %%temp%%\MONITOR_HD.bat" /SC DAILY /ST 05:00 /F  >nul
 setlocal enabledelayedexpansion
 :: Define o caminho do arquivo temporário
 set "TEMP_IP=%TEMP%\IPLISTEN.txt"
