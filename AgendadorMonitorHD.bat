@@ -1,5 +1,5 @@
 @echo off
-setlocal
+::setlocal
 
 :: Definir o nome da tarefa
 set "TASK_NAME=MONITOR_HD"
@@ -24,4 +24,4 @@ if %errorlevel% equ 0 (
 )
 
 :end
-endlocal
+::endlocal
