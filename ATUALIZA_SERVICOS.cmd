@@ -1,5 +1,5 @@
 @echo off
-
+REM -----05/03/2025
 set "params=%*"
 cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
 cls
@@ -39,7 +39,7 @@ goto end
 cls
 echo Data: %currentDate% > %logFile%
 set "filePath=C:\\Program Files (x86)\\FNX\\SisOcr Offline\\SisOCR.Offline.Service.exe"
-set "expectedVersion=7.3.5.0"
+set "expectedVersion=7.4.0.0"
 for /f "tokens=2 delims==" %%i in ('wmic datafile where name^="%filePath%" get Version /value') do set "fileVersion=%%i"
 chcp 65001 >nul 2>&1
 echo ╔══════════════════════════════════════╗
@@ -95,9 +95,9 @@ taskkill /IM SisAviCreator.exe /F
 taskkill /IM SisMonitorOffline.exe /F
 taskkill /IM SSisOCR.Offline.Service.exe /F
 echo Efetuando Download... >> %logFile% 2>&1
-curl -g -k -L -# -o "%temp%\SisOcrOffline7350.zip" "https://update.fenoxapp.com.br/ModoOff/Install/Ocr/SisOcrOffline7350.zip" >nul 2>&1
+curl -g -k -L -# -o "%temp%\SisOcrOffline7400.zip" "https://update.fenoxapp.com.br/ModoOff/Install/Ocr/SisOcrOffline7400.zip" >nul 2>&1
 echo Extraindo Arquivos... >> %logFile% 2>&1
-powershell -NoProfile Expand-Archive '%temp%\SisOcrOffline7350.zip' -DestinationPath 'C:\SisOcr Offline' >nul 2>&1 
+powershell -NoProfile Expand-Archive '%temp%\SisOcrOffline7400.zip' -DestinationPath 'C:\SisOcr Offline' >nul 2>&1 
 robocopy "C:\SisOcr Offline" "C:\Program Files (x86)\FNX\SisOcr Offline" /E /MOVE /R:3 /W:5 >> %logFile% 2>&1
 echo Iniciando Servicos...>> %logFile% 2>&1
 sc start SisOcrOffline
@@ -106,7 +106,7 @@ sc start SisMonitorOffline
 sc start MMFnx
 cls
 set "filePath=C:\\Program Files (x86)\\FNX\\SisOcr Offline\\SisOCR.Offline.Service.exe"
-set "expectedVersion=7.3.5.0"
+set "expectedVersion=7.4.0.0"
 
 for /f "tokens=2 delims==" %%i in ('wmic datafile where name^="%filePath%" get Version /value') do set "fileVersion=%%i"
 chcp 65001 >nul 2>&1
@@ -206,7 +206,7 @@ goto menu
 
 REM *******************VERCAO SISOCR ********************
 set "filePath=C:\\Program Files (x86)\\FNX\\SisOcr Offline\\SisOCR.Offline.Service.exe"
-set "expectedVersion=7.3.5.0"
+set "expectedVersion=7.4.0.0"
 
 for /f "tokens=2 delims==" %%i in ('wmic datafile where name^="%filePath%" get Version /value') do set "fileVersion=%%i"
 chcp 65001 >nul 2>&1
@@ -264,7 +264,7 @@ cls
 
 REM ******************* BAIXA NOVAs VERSOES ****************
 echo Efetuando Download... >> %logFile% 2>&1
-curl -g -k -L -# -o "%temp%\SisOcrOffline7350.zip" "https://update.fenoxapp.com.br/ModoOff/Install/Ocr/SisOcrOffline7350.zip" >nul 2>&1
+curl -g -k -L -# -o "%temp%\SisOcrOffline7400.zip" "https://update.fenoxapp.com.br/ModoOff/Install/Ocr/SisOcrOffline7400.zip" >nul 2>&1
 cls
 curl -g -k -L -# -o "%temp%\sisavicreator121400.zip" "https://update.fenoxapp.com.br/ModoOff/Install/AviCreator/sisavicreator121400.zip" >nul 2>&1
 
@@ -273,7 +273,7 @@ cls
 
 REM ******************* EXTRAI ARQUIVOS ****************
 echo Extraindo Arquivos... >> %logFile% 2>&1
-powershell -NoProfile Expand-Archive '%temp%\SisOcrOffline7350.zip' -DestinationPath 'C:\SisOcr Offline' >nul 2>&1 
+powershell -NoProfile Expand-Archive '%temp%\SisOcrOffline7400.zip' -DestinationPath 'C:\SisOcr Offline' >nul 2>&1 
 powershell -NoProfile Expand-Archive '%temp%\sisavicreator121400.zip' -DestinationPath 'C:\SisAviCreator' >nul 2>&1 
 powershell -NoProfile Expand-Archive '%temp%\SisMonitor7131.zip' -DestinationPath 'C:\SisMonitorOffline' >nul 2>&1 
 cls
@@ -298,7 +298,7 @@ sc start MMFnx >> %logFile% 2>&1
 cls
 REM *******************VERCAO SISOCR ********************
 set "filePath=C:\\Program Files (x86)\\FNX\\SisOcr Offline\\SisOCR.Offline.Service.exe"
-set "expectedVersion=7.3.5.0"
+set "expectedVersion=7.4.0.0"
 
 for /f "tokens=2 delims==" %%i in ('wmic datafile where name^="%filePath%" get Version /value') do set "fileVersion=%%i"
 chcp 65001 >nul 2>&1
