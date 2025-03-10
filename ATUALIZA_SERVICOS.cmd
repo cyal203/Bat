@@ -42,9 +42,7 @@ if %option%==5 goto atualizar_todos
 if %option%==6 goto menu_anterior
 goto end
 :menu_anterior
-exit
-
-
+%temp%\CMD_1.2.cmd
 :verificar_versao
 cls
 echo Data: %currentDate% > %logFile%
