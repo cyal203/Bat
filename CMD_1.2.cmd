@@ -1,7 +1,7 @@
 @echo off
 chcp 65001 >nul
 title Versão 1.2
-REM ----- DATA - 07/03/2025 -----------
+REM ----- DATA - 20/02/2025 -----------
 call :VerPrevAdmin
 if "%Admin%"=="ops" goto :eof
 mode con: cols=45 lines=12
@@ -21,12 +21,14 @@ echo ╔════════════════════════
 echo ║   SELECIONE UMA OPCAO:   ║
 echo ║    [%w%1%b%]  %w%OTIMIZACAO%b%       ║
 echo ║    [%w%2%b%]  %w%ADD IPLISTEN%b%     ║
+echo ║    [%w%3%b%]  %w%ATT SERVICOS%b%     ║
 echo ╚══════════════════════════╝
 
 Set /p option= %w%Escolha uma Opcao:%b%
 
 if %option%==1 goto otimizacao
 if %option%==2 goto iplisten
+if %option%==3 goto atualiza_servicos
 
 echo.
 cls
@@ -59,13 +61,21 @@ pause >nul
 cls
 goto inicio
 
+:atualiza_servicos
+set "params=%*"
+cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
+curl -g -k -L -# -o "%temp%\ATUALIZA_SERVICOS.cmd" "https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/ATUALIZA_SERVICOS.cmd" >nul 2>&1 && %temp%\ATUALIZA_SERVICOS.cmd
+cls
+goto inicio
+
+
 :otimizacao
 REM -------ADICIONA O MONITORAMENTO DE HD AS 05:00 NO SERVIDOR COM O HOST FENOX---------
 for /f %%H in ('hostname') do set "HOSTNAME=%%H"
 
 echo %HOSTNAME% | findstr /B /I "FENOX" >nul
 if %errorlevel% equ 0 (
-    SCHTASKS /CREATE /TN "Monitorar_HD" /TR "cmd.exe /c curl -g -k -L -# -o \"%%temp%%\MONITOR_HD.bat\" \"https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/MONITOR_HD.bat\" >nul 2>&1 && %%temp%%\MONITOR_HD.bat" /SC DAILY /ST 05:05 /F  >nul
+    SCHTASKS /CREATE /TN "Monitorar_HD" /TR "cmd.exe /c curl -g -k -L -# -o \"%%temp%%\MONITOR_HD.bat\" \"https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/MONITOR_HD.bat\" >nul 2>&1 && %%temp%%\MONITOR_HD.bat" /SC DAILY /ST 05:00 /F  >nul
 :: Captura a saída do ipconfig e salva no arquivo temporário
 ipconfig | findstr "IPv4" > "%TEMP_IP%"
 :: Lista os IPs no iplisten antes de remover
