@@ -1,5 +1,10 @@
 @echo off
+chcp 65001 >nul
+title Versão 1.3
 REM -----05/03/2025
+call :VerPrevAdmin
+if "%Admin%"=="ops" goto :eof
+mode con: cols=45 lines=12
 set "params=%*"
 cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
 cls
@@ -18,11 +23,12 @@ for /f "tokens=2 delims==" %%i in ('wmic datafile where name^="%filePath%" get V
 chcp 65001 >nul 2>&1
 echo ╔══════════════════════════╗
 echo ║   Selecione uma opcao:   ║
-echo ║%w%1 - Verificar versao%b%      ║
-echo ║%w%2 - Atualizar Ocr%b%         ║
-echo ║%w%3 - Atualizar Monitor%b%     ║
-echo ║%w%4 - Atualizar Creator%b%     ║
-echo ║%w%5 - Atualizar Todos%b%       ║
+echo ║[%w%1%b%]  %w%VERIFICAR VERSAO%b%     ║
+echo ║[%w%2%b%]  %w%ATUALIZAR OCR%b%        ║
+echo ║[%w%3%b%]  %w%ATUALIZAR MONITOR%b%    ║
+echo ║[%w%4%b%]  %w%ATUALIZAR CREATOR%b%    ║
+echo ║[%w%5%b%]  %w%ATUALIZAR TODOS%b%      ║
+echo ║[%w%6%b%]  %w%MENU ANTERIOR%b%        ║
 echo ╚══════════════════════════╝
 rem choice /c 1234 /m "Escolha uma opcao"
 Set /p option= Escolha uma opcao:
@@ -33,7 +39,11 @@ if %option%==2 goto atualizar_ocr
 if %option%==3 goto atualizar_monitor
 if %option%==4 goto atualizar_creator
 if %option%==5 goto atualizar_todos
+if %option%==6 goto menu_anterior
 goto end
+:menu_anterior
+exit
+
 
 :verificar_versao
 cls
