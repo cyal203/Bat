@@ -17,12 +17,12 @@ cls
 
 REM ******************** ABRE O MENU INICIAL ********************
 :INICIO
-echo ╔══════════════════════════╗
-echo ║   SELECIONE UMA OPCAO:   ║
-echo ║    [%w%1%b%]  %w%OTIMIZACAO%b%       ║
-echo ║    [%w%2%b%]  %w%ADD IPLISTEN%b%     ║
-echo ║    [%w%3%b%]  %w%ATT SERVICOS%b%     ║
-echo ╚══════════════════════════╝
+echo        ╔══════════════════════════╗
+echo        ║   SELECIONE UMA OPCAO:   ║
+echo        ║    [%w%1%b%]  %w%OTIMIZACAO%b%       ║
+echo        ║    [%w%2%b%]  %w%ADD IPLISTEN%b%     ║
+echo        ║    [%w%3%b%]  %w%ATT SERVICOS%b%     ║
+echo        ╚══════════════════════════╝
 
 Set /p option= %w%Escolha uma Opcao:%b%
 
