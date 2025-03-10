@@ -21,15 +21,15 @@ echo Data: %currentDate% > %logFile%
 :menu
 for /f "tokens=2 delims==" %%i in ('wmic datafile where name^="%filePath%" get Version /value') do set "fileVersion=%%i"
 chcp 65001 >nul 2>&1
-echo ╔══════════════════════════╗
-echo ║   Selecione uma opcao:   ║
-echo ║[%w%1%b%]  %w%VERIFICAR VERSAO%b%     ║
-echo ║[%w%2%b%]  %w%ATUALIZAR OCR%b%        ║
-echo ║[%w%3%b%]  %w%ATUALIZAR MONITOR%b%    ║
-echo ║[%w%4%b%]  %w%ATUALIZAR CREATOR%b%    ║
-echo ║[%w%5%b%]  %w%ATUALIZAR TODOS%b%      ║
-echo ║[%w%6%b%]  %w%MENU ANTERIOR%b%        ║
-echo ╚══════════════════════════╝
+echo         ╔══════════════════════════╗
+echo         ║   Selecione uma opcao:   ║
+echo         ║[%w%1%b%]  %w%VERIFICAR VERSAO%b%     ║
+echo         ║[%w%2%b%]  %w%ATUALIZAR OCR%b%        ║
+echo         ║[%w%3%b%]  %w%ATUALIZAR MONITOR%b%    ║
+echo         ║[%w%4%b%]  %w%ATUALIZAR CREATOR%b%    ║
+echo         ║[%w%5%b%]  %w%ATUALIZAR TODOS%b%      ║
+echo         ║[%w%6%b%]  %w%MENU ANTERIOR%b%        ║
+echo         ╚══════════════════════════╝
 rem choice /c 1234 /m "Escolha uma opcao"
 Set /p option= Escolha uma opcao:
 rem set "option=%errorlevel%"
