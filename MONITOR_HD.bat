@@ -5,7 +5,7 @@ setlocal enabledelayedexpansion
 set "COMPUTADOR=%COMPUTERNAME%"
 
 :: URL do Web App do Google Apps Script
-set "URL_WEB_APP=https://script.google.com/macros/s/AKfycbwaa2pF4W1g_5xxN_nnzi6s0cvbdFugoN1_HYgeTo9MLnOVoqtwj8jj8eIXXSYoYbYW/exec"
+set "URL_WEB_APP=https://script.google.com/macros/s/AKfycbzR2md2lCjCJ8ptauU6ze-truOsDwAqvT7bnPTaqxBDlZvu5GZoJiXdiRjt3ySeZ-q2/exec"
 
 :: Arquivo temporário para armazenar os dados
 set "TEMP_FILE=%TEMP%\disk_info.txt"
