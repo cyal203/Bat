@@ -19,8 +19,7 @@ set logFile="C:\captura\logs\ATUALIZACAO_SIS.txt"
 set currentDate=%date%
 echo Data: %currentDate% > %logFile%
 :menu
-for /f "tokens=2 delims==" %%i in ('wmic datafile where name^="%filePath%" get Version /value') do set "fileVersion=%%i"
-chcp 65001 >nul 2>&1
+::for /f "tokens=2 delims==" %%i in ('wmic datafile where name^="%filePath%" get Version /value') do set "fileVersion=%%i"
 echo         ╔══════════════════════════╗
 echo         ║   Selecione uma opcao:   ║
 echo         ║[%w%1%b%]  %w%VERIFICAR VERSAO%b%     ║
@@ -352,4 +351,3 @@ pause
 endlocal
 cls
 goto menu
-:end
