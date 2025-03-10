@@ -1,7 +1,7 @@
 @echo off
 chcp 65001 >nul
 title Versão 1.2
-REM ----- DATA - 20/02/2025 -----------
+REM ----- DATA - 10/03/2025 -----------
 call :VerPrevAdmin
 if "%Admin%"=="ops" goto :eof
 mode con: cols=45 lines=12
