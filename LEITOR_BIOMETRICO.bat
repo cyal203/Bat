@@ -36,7 +36,7 @@ if %errorlevel% neq 0 (
     echo Erro ao instalar o programa.
     exit /b %errorlevel%
 )
-
+cls
 cls
 echo %w%Processo concluido! %b%
 echo.
