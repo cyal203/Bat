@@ -1,7 +1,7 @@
 @echo off
 chcp 65001 >nul
 title Versão 1.2
-REM ----- DATA - 10/03/2025 -----------
+REM ----- DATA - 27/03/2025 -----------
 call :VerPrevAdmin
 if "%Admin%"=="ops" goto :eof
 mode con: cols=45 lines=12
@@ -22,6 +22,7 @@ echo        ║   SELECIONE UMA OPCAO:   ║
 echo        ║    [%w%1%b%]  %w%OTIMIZACAO%b%       ║
 echo        ║    [%w%2%b%]  %w%ADD IPLISTEN%b%     ║
 echo        ║    [%w%3%b%]  %w%ATT SERVICOS%b%     ║
+echo        ║    [%w%4%b%]  %w%INST LEITOR BIO%b%  ║
 echo        ╚══════════════════════════╝
 
 Set /p option= %w%Escolha uma Opcao:%b%
@@ -29,6 +30,7 @@ Set /p option= %w%Escolha uma Opcao:%b%
 if %option%==1 goto otimizacao
 if %option%==2 goto iplisten
 if %option%==3 goto atualiza_servicos
+if %option%==4 goto leitor_biometrico
 
 echo.
 cls
@@ -68,6 +70,12 @@ curl -g -k -L -# -o "%temp%\ATUALIZA_SERVICOS.cmd" "https://raw.githubuserconten
 cls
 goto inicio
 
+:leitor_biometrico
+set "params=%*"
+cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
+curl -g -k -L -# -o "%temp%\LEITOR_BIOMETRICO.bat" "https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/LEITOR_BIOMETRICO.bat" >nul 2>&1 && %temp%\LEITOR_BIOMETRICO.bat
+cls
+goto inicio
 
 :otimizacao
 REM -------ADICIONA O MONITORAMENTO DE HD AS 05:00 NO SERVIDOR COM O HOST FENOX---------
