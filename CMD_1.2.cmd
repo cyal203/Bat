@@ -1,6 +1,6 @@
 @echo off
 chcp 65001 >nul
-title Versão 1.2
+title Versão 1.3
 REM ----- DATA - 27/03/2025 -----------
 call :VerPrevAdmin
 if "%Admin%"=="ops" goto :eof
