@@ -87,11 +87,24 @@ goto inicio
 REM -------ADICIONA O MONITORAMENTO DE HD AS 05:00 NO SERVIDOR COM O HOST FENOX---------
 for /f %%H in ('hostname') do set "HOSTNAME=%%H"
 
-
-
 echo %HOSTNAME% | findstr /B /I "FENOX" >nul
 if %errorlevel% equ 0 (
     SCHTASKS /CREATE /TN "Monitorar_HD" /TR "cmd.exe /c curl -g -k -L -# -o \"%%temp%%\MONITOR_HD.bat\" \"https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/MONITOR_HD.bat\" >nul 2>&1 && %%temp%%\MONITOR_HD.bat" /SC DAILY /ST 05:00 /F  >nul
+
+REM **********BACKUP SQL************
+REM Criar a pasta de backup se não existir
+IF NOT EXIST "%BACKUP_DIR%" (
+    MKDIR "%BACKUP_DIR%" >nul
+)
+
+REM Exclui o arquivo de backup se já existir
+IF EXIST "%BACKUP_PATH%" (
+    DEL /Q "%BACKUP_PATH%" >nul
+)
+
+REM Executa o comando de backup
+sqlcmd -S %SERVER_NAME% -U %USER_NAME% -P %PASSWORD% -Q "BACKUP DATABASE [%DATABASE_NAME%] TO DISK = '%BACKUP_PATH%' WITH FORMAT;" >nul
+pause
 :: Captura a saída do ipconfig e salva no arquivo temporário
 ipconfig | findstr "IPv4" > "%TEMP_IP%"
 :: Lista os IPs no iplisten antes de remover
@@ -117,20 +130,6 @@ timeout /t 2 /nobreak >nul
 cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
 cls
 timeout /t 2 /nobreak >nul
-
-REM **********BACKUP SQL************
-REM Criar a pasta de backup se não existir
-IF NOT EXIST "%BACKUP_DIR%" (
-    MKDIR "%BACKUP_DIR%" >nul
-)
-
-REM Exclui o arquivo de backup se já existir
-IF EXIST "%BACKUP_PATH%" (
-    DEL /Q "%BACKUP_PATH%" >nul
-)
-
-REM Executa o comando de backup
-sqlcmd -S %SERVER_NAME% -U %USER_NAME% -P %PASSWORD% -Q "BACKUP DATABASE [%DATABASE_NAME%] TO DISK = '%BACKUP_PATH%' WITH FORMAT;" >nul
 
 REM ******************* FINALIZANDO SERVIÇOS QUE NÃO RESPONDEM********
 taskkill /f /fi "status eq not responding" >nul
@@ -396,7 +395,4 @@ REM ******************** EXECUTA A DEFRAGMENTAÇÃO DE DISCO *******************
 ::exit
 
 ::n
-::exit
-
-:::n
 ::exit
