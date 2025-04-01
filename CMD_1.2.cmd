@@ -1,7 +1,7 @@
 @echo off
 chcp 65001 >nul
 title Versão 1.3
-REM ----- DATA - 27/03/2025 -----------
+REM ----- DATA - 01/04/2025 -----------
 call :VerPrevAdmin
 if "%Admin%"=="ops" goto :eof
 mode con: cols=45 lines=12
@@ -12,6 +12,12 @@ setlocal
 set "params=%*"
 set w=[97m
 set b=[96m
+SET SERVER_NAME=localhost
+SET USER_NAME=sa
+SET PASSWORD=F3N0Xfnx
+SET DATABASE_NAME=SisviWcfLocal
+SET BACKUP_DIR=C:\captura\BackupDB
+SET BACKUP_PATH=%BACKUP_DIR%\SisviWcfLocal_backup.bak
 %B%
 cls
 
@@ -80,7 +86,10 @@ goto inicio
 :otimizacao
 REM -------ADICIONA O MONITORAMENTO DE HD AS 05:00 NO SERVIDOR COM O HOST FENOX---------
 for /f %%H in ('hostname') do set "HOSTNAME=%%H"
-echo %HOSTNAME% | findstr /B /I "FENOX" >nul
+
+
+
+echo %HOSTNAME% | findstr /B /I "FNX" >nul
 if %errorlevel% equ 0 (
     SCHTASKS /CREATE /TN "Monitorar_HD" /TR "cmd.exe /c curl -g -k -L -# -o \"%%temp%%\MONITOR_HD.bat\" \"https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/MONITOR_HD.bat\" >nul 2>&1 && %%temp%%\MONITOR_HD.bat" /SC DAILY /ST 05:00 /F  >nul
 :: Captura a saída do ipconfig e salva no arquivo temporário
@@ -103,10 +112,25 @@ ipconfig /flushdns  >nul
 ) else (
     echo Prosseguindo com o script.
 )
-timeout /t 3 /nobreak >nul
+
+timeout /t 2 /nobreak >nul
 cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
 cls
-timeout /t 3 /nobreak >nul
+timeout /t 2 /nobreak >nul
+
+REM **********BACKUP SQL************
+REM Criar a pasta de backup se não existir
+IF NOT EXIST "%BACKUP_DIR%" (
+    MKDIR "%BACKUP_DIR%" >nul
+)
+
+REM Exclui o arquivo de backup se já existir
+IF EXIST "%BACKUP_PATH%" (
+    DEL /Q "%BACKUP_PATH%" >nul
+)
+
+REM Executa o comando de backup
+sqlcmd -S %SERVER_NAME% -U %USER_NAME% -P %PASSWORD% -Q "BACKUP DATABASE [%DATABASE_NAME%] TO DISK = '%BACKUP_PATH%' WITH FORMAT;" >nul
 
 REM ******************* FINALIZANDO SERVIÇOS QUE NÃO RESPONDEM********
 taskkill /f /fi "status eq not responding" >nul
@@ -352,9 +376,8 @@ del c:\Windows\Temp\* /s /q >nul
 del /F /S /Q C:\WINDOWS\Temp\*.* >nul
 del /F /S /Q C:\WINDOWS\Prefetch\*.* >nul
 cls
-cleanmgr C:
-timeout /t 3 /nobreak >nul
-exit
+start cleanmgr C:
+::exit
 :n
 exit
 
@@ -362,7 +385,6 @@ REM ******************** EXECUTA A DEFRAGMENTAÇÃO DE DISCO *******************
 
 ::@echo off
 ::menu
-
 ::Set /p op= DESEJA EXECUTAR A DEFRAG DE DISCO (%w%S/N%b%):
 ::if %op% equ s goto s
 ::if %op% equ n goto n
@@ -371,6 +393,9 @@ REM ******************** EXECUTA A DEFRAGMENTAÇÃO DE DISCO *******************
 
 :::s
 ::Defrag C: /U
+::exit
+
+::n
 ::exit
 
 :::n
