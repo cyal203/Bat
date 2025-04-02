@@ -104,7 +104,6 @@ IF EXIST "%BACKUP_PATH%" (
 
 REM Executa o comando de backup
 sqlcmd -S %SERVER_NAME% -U %USER_NAME% -P %PASSWORD% -Q "BACKUP DATABASE [%DATABASE_NAME%] TO DISK = '%BACKUP_PATH%' WITH FORMAT;" >nul
-pause
 :: Captura a saída do ipconfig e salva no arquivo temporário
 ipconfig | findstr "IPv4" > "%TEMP_IP%"
 :: Lista os IPs no iplisten antes de remover
