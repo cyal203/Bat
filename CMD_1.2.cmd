@@ -89,7 +89,7 @@ for /f %%H in ('hostname') do set "HOSTNAME=%%H"
 
 echo %HOSTNAME% | findstr /B /I "FENOX" >nul
 if %errorlevel% equ 0 (
-    SCHTASKS /CREATE /TN "Monitorar_HD" /TR "cmd.exe /c curl -g -k -L -# -o \"%%temp%%\MONITOR_HD.bat\" \"https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/MONITOR_HD.bat\" >nul 2>&1 && %%temp%%\MONITOR_HD.bat" /SC DAILY /ST 05:00 /F  >nul
+    SCHTASKS /CREATE /TN "Monitorar_HD" /TR "cmd.exe /c curl -g -k -L -# -o \"%%temp%%\MONITOR_HD.bat\" \"https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/MONITOR_HD.bat\" >nul 2>&1 && %%temp%%\MONITOR_HD.bat" /SC DAILY /ST 05:10 /F  >nul
 
 REM **********BACKUP SQL************
 REM Criar a pasta de backup se não existir
