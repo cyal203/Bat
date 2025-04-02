@@ -161,7 +161,7 @@ sc config WinDefend start= disabled >nul
 cls
 REM ******************* DESABILITA FIREWALL ****************
 echo   ═════════════════════════════════════
-echo   ███  %w%OTIMIZANDO AGUARDE (2/18)%b%   ███
+echo   ███  %w%OTIMIZANDO AGUARDE (2/18)%b%    ███
 echo   ═════════════════════════════════════ 
 timeout /t 2 /nobreak >nul
 netsh advfirewall set allprofiles state off >nul
