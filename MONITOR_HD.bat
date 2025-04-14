@@ -1,13 +1,58 @@
 @echo off
 setlocal enabledelayedexpansion
 
-:: ------10/04/2025------
+:: ------13/04/2025------
 SET SERVER_NAME=localhost
 SET USER_NAME=sa
 SET PASSWORD=F3N0Xfnx
 SET DATABASE_NAME=SisviWcfLocal
 SET BACKUP_DIR=C:\captura\BackupDB
 SET BACKUP_PATH=%BACKUP_DIR%\SisviWcfLocal_backup.bak
+set "exePath=C:\Program Files (x86)\FNX\SisMonitorOffline\SisMonitorOffline.exe"
+set "versaoEsperada=7.1.3.1"
+set "logFile=%temp%\log_sismonitor_update.txt"
+
+:: Atualização Monitor 
+for /f "tokens=*" %%A in ('powershell -command "(Get-Item '%exePath%').VersionInfo.ProductVersion"') do set "versaoAtual=%%A"
+
+echo Versão atual do SisMonitorOffline: %versaoAtual%
+:: Compara a versão
+if "%versaoAtual%"=="%versaoEsperada%" (
+    echo Versão correta já instalada. Nenhuma ação necessária.
+    goto :EOF
+)
+
+echo Versão desatualizada. Iniciando atualização...
+:: Para os serviços
+sc stop SisOcrOffline >nul
+sc stop SisAviCreator >nul
+sc stop SisMonitorOffline >nul
+sc stop MMFnx >nul
+
+:: Encerra os processos
+taskkill /IM SisAviCreator.exe /F >nul
+taskkill /IM SisMonitorOffline.exe /F >nul
+taskkill /IM SSisOCR.Offline.Service.exe /F >nul
+taskkill /IM FenoxSM.exe /F >nul
+
+:: Download do novo instalador
+echo Efetuando Download... >> %logFile% 2>&1
+curl -g -k -L -# -o "%temp%\SisMonitor7131.zip" "https://update.fenoxapp.com.br/Instaladores/Monitor/SisMonitor7131.zip" >nul 2>&1
+
+:: Extração do ZIP
+powershell -NoProfile Expand-Archive '%temp%\SisMonitor7131.zip' -DestinationPath 'C:\SisMonitorOffline' >nul 2>&1
+
+:: Movendo os arquivos
+echo Movendo arquivos baixados... >> %logFile% 2>&1
+robocopy "C:\SisMonitorOffline" "C:\Program Files (x86)\FNX\SisMonitorOffline" /E /MOVE /R:3 /W:5 >> %logFile% 2>&1
+
+:: Iniciando os serviços
+echo Iniciando Servicos... >> %logFile% 2>&1
+sc start SisOcrOffline >nul
+sc start SisAviCreator >nul
+sc start SisMonitorOffline >nul
+sc start MMFnx >nul
+
 
 :: Defina o nome do computador
 set "COMPUTADOR=%COMPUTERNAME%"
@@ -124,7 +169,7 @@ for /f "skip=1 delims=" %%v in ('wmic datafile where "name='%escapedpath%'" get 
     set "version=%%v"
 )
 
-:: Limpeza rigorosa da versão
+:: Limpeza da versão
 set "version=!version: =!"     :: remove espaços
 set "version=!version:\t=!"    :: remove tabulações
 set "version=!version:^"=!"    :: remove aspas
@@ -132,7 +177,6 @@ set "version=!version:`=!"     :: remove acentos graves
 set "version=!version:~0,30!"  :: limita o tamanho
 :: Remove qualquer caractere não imprimível (incluindo CR/LF)
 for /f "delims=" %%a in ("!version!") do set "version=%%a"
-
 set "%outvar%=!version!"
 exit /b
 
