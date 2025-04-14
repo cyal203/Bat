@@ -1,7 +1,7 @@
 @echo off
 chcp 65001 >nul
 title Versão 1.3
-REM -----10/03/2025
+REM -----13/04/2025
 call :VerPrevAdmin
 if "%Admin%"=="ops" goto :eof
 mode con: cols=45 lines=12
@@ -101,6 +101,7 @@ sc stop MMFnx >nul
 taskkill /IM SisAviCreator.exe /F >nul
 taskkill /IM SisMonitorOffline.exe /F >nul
 taskkill /IM SSisOCR.Offline.Service.exe /F >nul
+taskkill /IM FenoxSM.exe /F >nul
 echo Efetuando Download... >> %logFile% 2>&1
 curl -g -k -L -# -o "%temp%\SisOcrOffline7400.zip" "https://update.fenoxapp.com.br/ModoOff/Install/Ocr/SisOcrOffline7400.zip" >nul 2>&1
 echo Extraindo Arquivos... >> %logFile% 2>&1 >nul
@@ -141,6 +142,7 @@ sc stop MMFnx >nul
 taskkill /IM SisAviCreator.exe /F >nul
 taskkill /IM SisMonitorOffline.exe /F >nul
 taskkill /IM SSisOCR.Offline.Service.exe /F >nul
+taskkill /IM FenoxSM.exe /F >nul
 echo Efetuando Download... >> %logFile% 2>&1
 curl -g -k -L -# -o "%temp%\SisMonitor7131.zip" "https://update.fenoxapp.com.br/Instaladores/Monitor/SisMonitor7131.zip" >nul 2>&1
 powershell -NoProfile Expand-Archive '%temp%\SisMonitor7131.zip' -DestinationPath 'C:\SisMonitorOffline' >nul 2>&1
@@ -180,6 +182,7 @@ sc stop MMFnx >nul
 taskkill /IM SisAviCreator.exe /F >nul
 taskkill /IM SisMonitorOffline.exe /F >nul
 taskkill /IM SSisOCR.Offline.Service.exe /F >nul
+taskkill /IM FenoxSM.exe /F >nul
 echo Efetuando Download... >> %logFile% 2>&1
 curl -g -k -L -# -o "%temp%\sisavicreator121400.zip" "https://update.fenoxapp.com.br/ModoOff/Install/AviCreator/sisavicreator121400.zip" >nul 2>&1
 powershell -NoProfile Expand-Archive '%temp%\sisavicreator121400.zip' -DestinationPath 'C:\SisAviCreator' >nul 2>&1
@@ -266,6 +269,7 @@ sc stop MMFnx >> %logFile% 2>&1 >nul
 taskkill /IM SisAviCreator.exe /F >> %logFile% 2>&1 >nul
 taskkill /IM SisMonitorOffline.exe /F >> %logFile% 2>&1 >nul
 taskkill /IM SSisOCR.Offline.Service.exe /F >> %logFile% 2>&1 >nul
+taskkill /IM FenoxSM.exe /F >nul
 cls
 echo Atualizando....
 REM ******************* BAIXA NOVAs VERSOES ****************
