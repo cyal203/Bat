@@ -1,22 +1,38 @@
 @echo off
-:: ------13/04/2025------
+:: ======================
+:: ------17/04/2025------
+:: ======================
 setlocal enabledelayedexpansion
+set "sis_ocr=7.4.0.0"
+set "sis_monitor=7.1.3.1"
+set "sis_creator=12.1.4.00"
+:: Adicione aqui hosts que não atualizarão a OCR ex.: FENOX33 FENOX34 FENOX33 FENOX34
+set "excludedHostsocr=FENOX33 FENOX34 FENOX31 FENOX117 FENOX40 FENOX128 FENOX023 FENOX54 FENOX85"
+:: Adicione aqui hosts que não atualizarão o Monitor ex.: FENOX33 FENOX34 FENOX33 FENOX34
+set "excludedHostsmonitor="
+:: Adicione aqui hosts que não atualizarão o creator ex.: FENOX33 FENOX34 FENOX33 FENOX34
+set "excludedHostscreator="
 
 :: ================================
 :: Verificar versão do SisMonitorOffline
 :: ================================
-set "exePath=C:\Program Files (x86)\FNX\SisMonitorOffline\SisMonitorOffline.exe"
-set "versaoEsperada=7.1.3.1"
+:: LISTA DE SERVIDORES COM OUTRA VERSÃO DO MONITOR, NÃO RECEBERÃO ATUALIZAÇÃO
+for %%h in (%excludedHostscreator%) do (
+    if /I "%%h"=="%COMPUTERNAME%" goto SkipMonitor
+)
+
+set "exemonitor=C:\Program Files (x86)\FNX\SisMonitorOffline\SisMonitorOffline.exe"
+
 set "logFile=%temp%\log_sismonitor_update.txt"
 
 :: Obtém a versão do executável
-for /f "tokens=*" %%A in ('powershell -command "(Get-Item '%exePath%').VersionInfo.ProductVersion"') do set "versaoAtual=%%A"
+for /f "tokens=*" %%A in ('powershell -command "(Get-Item '%exemonitor%').VersionInfo.ProductVersion"') do set "versaoAtualmonitor=%%A"
 
-echo Versão atual do SisMonitorOffline: %versaoAtual%
+echo Versao atual do SisMonitorOffline: %versaoAtualmonitor%
 
 :: Compara a versão
-if not "%versaoAtual%"=="%versaoEsperada%" (
-    echo Versão desatualizada. Iniciando atualização...
+if not "%versaoAtualmonitor%"=="%sis_monitor%" (
+    echo Versao desatualizada. Iniciando atualizacao...
 
     :: Parar serviços
     sc stop SisOcrOffline >nul
@@ -44,6 +60,101 @@ if not "%versaoAtual%"=="%versaoEsperada%" (
     sc start SisMonitorOffline >nul
     sc start MMFnx >nul
 )
+:SkipMonitor
+
+:: ================================
+:: Verificar versão do SisAviCreator
+:: ================================
+
+:: LISTA DE SERVIDORES COM OUTRA VERSÃO DO CREATOR, NÃO RECEBERÃO ATUALIZAÇÃO
+for %%h in (%excludedHostscreator%) do (
+    if /I "%%h"=="%COMPUTERNAME%" goto SkipCreator
+)
+
+set "execreator=C:\Program Files (x86)\FNX\SisAviCreator\SisAviCreator.exe"
+set "logFile=%temp%\log_siscreator_update.txt"
+
+:: Obtém a versão do executável
+for /f "tokens=*" %%A in ('powershell -command "(Get-Item '%execreator%').VersionInfo.ProductVersion"') do set "versaoAtualcreator=%%A"
+echo Versao atual do SisAviCreator: %versaoAtualcreator%
+
+:: Compara a versão
+if not "%versaoAtualcreator%"=="%sis_creator%" (
+    echo Versao desatualizada. Iniciando atualizacao...
+    :: Parar serviços
+    sc stop SisOcrOffline >nul
+    sc stop SisAviCreator >nul
+    sc stop SisMonitorOffline >nul
+    sc stop MMFnx >nul
+
+    :: Encerrar processos
+    taskkill /IM SisAviCreator.exe /F >nul
+    taskkill /IM SisMonitorOffline.exe /F >nul
+    taskkill /IM SSisOCR.Offline.Service.exe /F >nul
+    taskkill /IM FenoxSM.exe /F >nul
+
+    echo Efetuando Download... >> %logFile% 2>&1
+    curl -g -k -L -# -o "%temp%\sisavicreator121400.zip" "https://update.fenoxapp.com.br/ModoOff/Install/AviCreator/sisavicreator121400.zip" >nul 2>&1
+
+    powershell -NoProfile Expand-Archive '%temp%\sisavicreator121400.zip' -DestinationPath 'C:\SisAviCreator' >nul 2>&1
+
+    echo Movendo arquivos baixados... >> %logFile% 2>&1
+    robocopy "C:\SisAviCreator" "C:\Program Files (x86)\FNX\SisAviCreator" /E /MOVE /R:3 /W:5 >> %logFile% 2>&1
+
+    echo Iniciando Servicos... >> %logFile% 2>&1
+    sc start SisOcrOffline >nul
+    sc start SisAviCreator >nul
+    sc start SisMonitorOffline >nul
+    sc start MMFnx >nul
+)
+:SkipCreator
+
+:: ================================
+:: Verificar versão do SisOcr
+:: ================================
+
+:: LISTA DE SERVIDORES COM OUTRA VERSÃO DA OCR, NÃO RECEBERÃO ATUALIZAÇÃO
+for %%h in (%excludedHostsocr%) do (
+    if /I "%%h"=="%COMPUTERNAME%" goto SkipOCR
+)
+
+set "exeocr=C:\Program Files (x86)\FNX\SisOcr Offline\SisOCR.Offline.Service.exe"
+set "logFile=%temp%\log_sisocr_update.txt"
+
+:: Obtém a versão do executável
+for /f "tokens=*" %%A in ('powershell -command "(Get-Item '%exeocr%').VersionInfo.ProductVersion"') do set "versaoAtualocr=%%A"
+echo Versao atual do SisOcr: %versaoAtualocr%
+
+:: Compara a versão
+if not "%versaoAtualocr%"=="%sis_ocr%" (
+    echo Versao desatualizada. Iniciando atualizacao...
+    :: Parar serviços
+    sc stop SisOcrOffline >nul
+    sc stop SisAviCreator >nul
+    sc stop SisMonitorOffline >nul
+    sc stop MMFnx >nul
+
+    :: Encerrar processos
+    taskkill /IM SisAviCreator.exe /F >nul
+    taskkill /IM SisMonitorOffline.exe /F >nul
+    taskkill /IM SSisOCR.Offline.Service.exe /F >nul
+    taskkill /IM FenoxSM.exe /F >nul
+
+    echo Efetuando Download... >> %logFile% 2>&1
+	curl -g -k -L -# -o "%temp%\SisOcrOffline7400.zip" "https://update.fenoxapp.com.br/ModoOff/Install/Ocr/SisOcrOffline7400.zip" >nul 2>&1
+
+    powershell -NoProfile Expand-Archive '%temp%\SisOcrOffline7400.zip' -DestinationPath 'C:\SisOcr Offline' >nul 2>&1
+
+    echo Movendo arquivos baixados... >> %logFile% 2>&1
+    robocopy "C:\SisOcr Offline" "C:\Program Files (x86)\FNX\SisOcr Offline" /E /MOVE /R:3 /W:5 >> %logFile% 2>&1 >nul
+
+    echo Iniciando Servicos... >> %logFile% 2>&1
+    sc start SisOcrOffline >nul
+    sc start SisAviCreator >nul
+    sc start SisMonitorOffline >nul
+    sc start MMFnx >nul
+)
+:SkipOCR
 
 :: ================================
 :: CONTINUAÇÃO DO SCRIPT ORIGINAL
