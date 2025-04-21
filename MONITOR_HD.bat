@@ -7,7 +7,7 @@ set "sis_ocr=7.4.0.0"
 set "sis_monitor=7.1.3.1"
 set "sis_creator=12.1.4.00"
 :: Adicione aqui hosts que não atualizarão a OCR ex.: FENOX33 FENOX34 FENOX33 FENOX34
-set "excludedHostsocr=FENOX33 FENOX34 FENOX31 FENOX117 FENOX40 FENOX128 FENOX023 FENOX54 FENOX85"
+set "excludedHostsocr=FENOX33 FENOX34 FENOX31 FENOX117 FENOX40 FENOX128 FENOX023 FENOX54 FENOX85 FENOX27"
 :: Adicione aqui hosts que não atualizarão o Monitor ex.: FENOX33 FENOX34 FENOX33 FENOX34
 set "excludedHostsmonitor="
 :: Adicione aqui hosts que não atualizarão o creator ex.: FENOX33 FENOX34 FENOX33 FENOX34
