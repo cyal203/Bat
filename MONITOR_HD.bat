@@ -191,7 +191,8 @@ set "ANYDESK_ID=!ANYDESK_ID:\t=!"
 set "ANYDESK_ID=!ANYDESK_ID:^"=!"
 
 :: Coletar informações de espaço em disco
-wmic logicaldisk get caption,freespace,size /format:csv > "%TEMP_FILE%"
+::wmic logicaldisk get caption,freespace,size /format:csv > "%TEMP_FILE%"
+wmic logicaldisk where "FileSystem='NTFS'" get caption,freespace,size /format:csv > "%TEMP_FILE%"
 
 :: Coletar informações da CPU
 set "CPU="
