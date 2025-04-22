@@ -296,10 +296,8 @@ cls
 :: ================================
 
 powershell.exe -Command "$limite=Get-Date '%ioscdata%'; $pasta='C:\captura\iosc'; Get-ChildItem -Path $pasta -Force | Where-Object {($_.Attributes -match 'Hidden') -and ($_.LastWriteTime -lt $limite)} | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue"
-
+exit /b
 :: Limpar arquivos temporários
 del "%TEMP_FILE%"
 del "%RESPONSE_FILE%"
 del "%JSON_FILE%"
-
-exit /b
