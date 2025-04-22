@@ -1,18 +1,19 @@
 @echo off
 :: ======================
-:: ------17/04/2025------
+:: ------22/04/2025------
 :: ======================
 setlocal enabledelayedexpansion
 set "sis_ocr=7.4.0.0"
 set "sis_monitor=7.1.3.1"
 set "sis_creator=12.1.4.00"
 :: Adicione aqui hosts que não atualizarão a OCR ex.: FENOX33 FENOX34 FENOX33 FENOX34
-set "excludedHostsocr=FENOX33 FENOX34 FENOX31 FENOX117 FENOX40 FENOX128 FENOX023 FENOX54 FENOX85 FENOX27"
+set "excludedHostsocr=FENOX33 FENOX34 FENOX31 FENOX117 FENOX40 FENOX128 FENOX023 FENOX54 FENOX85 FENOX27 FNXSP"
 :: Adicione aqui hosts que não atualizarão o Monitor ex.: FENOX33 FENOX34 FENOX33 FENOX34
-set "excludedHostsmonitor="
+set "excludedHostsmonitor=FNXSP"
 :: Adicione aqui hosts que não atualizarão o creator ex.: FENOX33 FENOX34 FENOX33 FENOX34
-set "excludedHostscreator="
-
+set "excludedHostscreator=FNXSP"
+:: Adicione aqui a data de limpeza dos arquivos IOSC
+set "ioscdata=2025-01-20"
 :: ================================
 :: Verificar versão do SisMonitorOffline
 :: ================================
@@ -288,9 +289,17 @@ set "version=!version:`=!"
 set "version=!version:~0,30!"
 for /f "delims=" %%a in ("!version!") do set "version=%%a"
 set "%outvar%=!version!"
-exit /b
+
+cls
+:: ================================
+:: LIMPEZA DE ARQUIVOS E PASTAS ANTIGOS OCULTOS
+:: ================================
+
+powershell.exe -Command "$limite=Get-Date '%ioscdata%'; $pasta='C:\captura\iosc'; Get-ChildItem -Path $pasta -Force | Where-Object {($_.Attributes -match 'Hidden') -and ($_.LastWriteTime -lt $limite)} | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue"
 
 :: Limpar arquivos temporários
 del "%TEMP_FILE%"
 del "%RESPONSE_FILE%"
 del "%JSON_FILE%"
+
+exit /b
