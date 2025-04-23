@@ -13,7 +13,7 @@ set "excludedHostsmonitor=FNXSP"
 :: Adicione aqui hosts que não atualizarão o creator ex.: FENOX33 FENOX34 FENOX33 FENOX34
 set "excludedHostscreator=FNXSP"
 :: Adicione aqui a data de limpeza dos arquivos IOSC
-set "ioscdata=2025-01-20"
+set "ioscdata=2025-02-01"
 :: ================================
 :: Verificar versão do SisMonitorOffline
 :: ================================
