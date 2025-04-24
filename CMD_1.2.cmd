@@ -360,38 +360,10 @@ echo   ════════════════════════�
 echo.
 timeout /t 3 /nobreak >nul
 REM ******************** ABRE A LIMPEZA DE DISCO ********************
-:menu1
-echo.
-Set /p op= DESEJA EXECUTAR LIMPEZA DE DISCO (%w%S/N%b%):
-if %op% equ s goto s
-if %op% equ n goto n
-if %op% equ S goto s
-if %op% equ N goto n
-
-:s
-REM ******************** WINDOWS TEMP ********************
-del c:\Windows\Temp\* /s /q >nul
-del /F /S /Q C:\WINDOWS\Temp\*.* >nul
-del /F /S /Q C:\WINDOWS\Prefetch\*.* >nul
+start cleanmgr.exe /d C: /VERYLOWDISK
+:: Limpa C:\Windows\Temp
+powershell -Command "Get-ChildItem -Path \"C:\Windows\Temp\" *.* -Recurse | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue"
+:: Limpa a pasta TEMP do usuário atual
+powershell -Command "Get-ChildItem -Path \"%TEMP%\" *.* -Recurse | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue"
 cls
-start cleanmgr C:
-::exit
-:n
 exit
-
-REM ******************** EXECUTA A DEFRAGMENTAÇÃO DE DISCO ********************
-
-::@echo off
-::menu
-::Set /p op= DESEJA EXECUTAR A DEFRAG DE DISCO (%w%S/N%b%):
-::if %op% equ s goto s
-::if %op% equ n goto n
-::if %op% equ S goto s
-::if %op% equ N goto n
-
-:::s
-::Defrag C: /U
-::exit
-
-::n
-::exit
