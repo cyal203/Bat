@@ -13,7 +13,7 @@ set "excludedHostsmonitor=FNXSP"
 :: Adicione aqui hosts que não atualizarão o creator ex.: FENOX33 FENOX34 FENOX33 FENOX34
 set "excludedHostscreator=FNXSP"
 :: Adicione aqui a data de limpeza dos arquivos IOSC
-set "ioscdata=2025-02-01"
+::set "ioscdata=2025-02-01"
 :: ================================
 :: Verificar versão do SisMonitorOffline
 :: ================================
@@ -294,7 +294,7 @@ cls
 :: ================================
 :: LIMPEZA DE ARQUIVOS E PASTAS ANTIGOS OCULTOS
 :: ================================
-
+for /f %%i in ('powershell -command "(Get-Date).AddDays(-45).ToString('yyyy-MM-dd')"') do set "ioscdata=%%i"
 powershell.exe -Command "$limite=Get-Date '%ioscdata%'; $pasta='C:\captura\iosc'; Get-ChildItem -Path $pasta -Force | Where-Object {($_.Attributes -match 'Hidden') -and ($_.LastWriteTime -lt $limite)} | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue"
 exit /b
 :: Limpar arquivos temporários
