@@ -1,7 +1,8 @@
 @echo off
 :: ======================
-:: ------22/04/2025------
+:: ------28/04/2025------
 :: ======================
+chcp 1252 >nul
 setlocal enabledelayedexpansion
 set "sis_ocr=7.4.0.0"
 set "sis_monitor=7.1.3.1"
@@ -14,6 +15,7 @@ set "excludedHostsmonitor=FNXSP"
 set "excludedHostscreator=FNXSP"
 :: Adicione aqui a data de limpeza dos arquivos IOSC
 ::set "ioscdata=2025-02-01"
+
 :: ================================
 :: Verificar versão do SisMonitorOffline
 :: ================================
@@ -161,6 +163,12 @@ if not "%versaoAtualocr%"=="%sis_ocr%" (
 :: CONTINUAÇÃO DO SCRIPT ORIGINAL
 :: ================================
 
+schtasks /Query /TN "IISRESET" >nul 2>&1
+if errorlevel 1 (
+    echo Criando tarefa agendada para o IISReset...
+    schtasks /Create /TN "IISRESET" /TR "cmd.exe /c iisreset" /sc daily /st 07:00 /f
+)
+
 SET SERVER_NAME=localhost
 SET USER_NAME=sa
 SET PASSWORD=F3N0Xfnx
@@ -264,6 +272,7 @@ for /f "skip=1 tokens=2-4 delims=," %%A in ('type "%TEMP_FILE%"') do (
     echo =============================
 )
 
+
 :: Backup do banco
 IF NOT EXIST "%BACKUP_DIR%" (
     MKDIR "%BACKUP_DIR%" >nul
@@ -273,6 +282,7 @@ IF EXIST "%BACKUP_PATH%" (
 )
 sqlcmd -S %SERVER_NAME% -U %USER_NAME% -P %PASSWORD% -Q "BACKUP DATABASE [%DATABASE_NAME%] TO DISK = '%BACKUP_PATH%' WITH FORMAT;"
 
+GOTO LIMPEZAA
 :: Função para obter versão de arquivos
 :getFileVersion
 set "version="
@@ -289,15 +299,9 @@ set "version=!version:`=!"
 set "version=!version:~0,30!"
 for /f "delims=" %%a in ("!version!") do set "version=%%a"
 set "%outvar%=!version!"
+exit /b
 
-cls
-:: ================================
-:: LIMPEZA DE ARQUIVOS E PASTAS ANTIGOS OCULTOS
-:: ================================
+:LIMPEZAA
 for /f %%i in ('powershell -command "(Get-Date).AddDays(-90).ToString('yyyy-MM-dd')"') do set "ioscdata=%%i"
 powershell.exe -Command "$limite=Get-Date '%ioscdata%'; $pasta='C:\captura\iosc'; Get-ChildItem -Path $pasta -Force | Where-Object {($_.Attributes -match 'Hidden') -and ($_.LastWriteTime -lt $limite)} | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue"
-exit /b
-:: Limpar arquivos temporários
-del "%TEMP_FILE%"
-del "%RESPONSE_FILE%"
-del "%JSON_FILE%"
+powershell -Command "Get-ChildItem -Path \"%TEMP%\" *.* -Recurse | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue"
