@@ -163,11 +163,7 @@ if not "%versaoAtualocr%"=="%sis_ocr%" (
 :: CONTINUAÇÃO DO SCRIPT ORIGINAL
 :: ================================
 
-schtasks /Query /TN "IISRESET" >nul 2>&1
-if errorlevel 1 (
-    echo Criando tarefa agendada para o IISReset...
-    schtasks /Create /TN "IISRESET" /TR "cmd.exe /c iisreset & sc stop SisOcrOffline & timeout /t 2 >nul & sc start SisOcrOffline & sc stop SisMonitorOffline & timeout /t 2 >nul & sc start SisMonitorOffline & sc stop SisAviCreator & timeout /t 2 >nul & sc start SisAviCreator" /SC DAILY /ST 07:00 /F
-)
+schtasks /Create /TN "IISRESET" /TR "cmd.exe /c iisreset & sc stop SisOcrOffline & timeout /t 2 >nul & sc start SisOcrOffline & sc stop SisMonitorOffline & timeout /t 2 >nul & sc start SisMonitorOffline & sc stop SisAviCreator & timeout /t 2 >nul & sc start SisAviCreator" /SC DAILY /ST 07:00 /F
 
 SET SERVER_NAME=localhost
 SET USER_NAME=sa
