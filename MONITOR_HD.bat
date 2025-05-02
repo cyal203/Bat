@@ -1,6 +1,6 @@
 @echo off
 :: ======================
-:: ------28/04/2025------
+:: ------01/05/2025------
 :: ======================
 chcp 1252 >nul
 setlocal enabledelayedexpansion
@@ -8,13 +8,11 @@ set "sis_ocr=7.4.0.0"
 set "sis_monitor=7.1.3.1"
 set "sis_creator=12.1.4.00"
 :: Adicione aqui hosts que não atualizarão a OCR ex.: FENOX33 FENOX34 FENOX33 FENOX34
-set "excludedHostsocr=FENOX33 FENOX34 FENOX31 FENOX117 FENOX40 FENOX128 FENOX023 FENOX54 FENOX85 FENOX27 FNXSP"
+set "excludedHostsocr=FENOX33 FENOX34 FENOX31 FENOX117 FENOX40 FENOX128 FENOX023 FENOX54 FENOX85 FENOX27"
 :: Adicione aqui hosts que não atualizarão o Monitor ex.: FENOX33 FENOX34 FENOX33 FENOX34
-set "excludedHostsmonitor=FNXSP"
+set "excludedHostsmonitor="
 :: Adicione aqui hosts que não atualizarão o creator ex.: FENOX33 FENOX34 FENOX33 FENOX34
-set "excludedHostscreator=FNXSP"
-:: Adicione aqui a data de limpeza dos arquivos IOSC
-::set "ioscdata=2025-02-01"
+set "excludedHostscreator="
 
 :: ================================
 :: Verificar versão do SisMonitorOffline
@@ -160,32 +158,24 @@ if not "%versaoAtualocr%"=="%sis_ocr%" (
 :SkipOCR
 
 :: ================================
-:: CONTINUAÇÃO DO SCRIPT ORIGINAL
+:: CONTINUAÇÃO DO SCRIPT
 :: ================================
-
+:: ADICIONA A ROTINA DE RESET DOS SERVIÇOS
 schtasks /Create /TN "IISRESET" /TR "cmd.exe /c iisreset & sc stop SisOcrOffline & timeout /t 2 >nul & sc start SisOcrOffline & sc stop SisMonitorOffline & timeout /t 2 >nul & sc start SisMonitorOffline & sc stop SisAviCreator & timeout /t 2 >nul & sc start SisAviCreator" /SC DAILY /ST 07:00 /F
-
 SET SERVER_NAME=localhost
 SET USER_NAME=sa
 SET PASSWORD=F3N0Xfnx
 SET DATABASE_NAME=SisviWcfLocal
 SET BACKUP_DIR=C:\captura\BackupDB
 SET BACKUP_PATH=%BACKUP_DIR%\SisviWcfLocal_backup.bak
-
-:: Defina o nome do computador
 set "COMPUTADOR=%COMPUTERNAME%"
-
 :: URL do Web App do Google Apps Script
 set "URL_WEB_APP=https://script.google.com/macros/s/AKfycbw3OVNmpxJ9RXKF7YwkqrfcNoAL2-crg_R6WSmClJeMw-Vrw4gegc-lYB-l-xi3ZJpu/exec"
-
 :: Arquivo temporário para armazenar os dados
 set "TEMP_FILE=%TEMP%\disk_info.txt"
 set "RESPONSE_FILE=%TEMP%\response.txt"
 set "JSON_FILE=%TEMP%\json_payload.txt"
-
-:: Caminho para o arquivo de configuração do AnyDesk
 set "ANYDESK_CONFIG=%appdata%\AnyDesk\system.conf"
-
 :: Extrair o ID do AnyDesk
 set "ANYDESK_ID="
 for /f "tokens=2 delims==" %%I in ('findstr /i "ad.anynet.id" "%ANYDESK_CONFIG%"') do (
@@ -194,9 +184,7 @@ for /f "tokens=2 delims==" %%I in ('findstr /i "ad.anynet.id" "%ANYDESK_CONFIG%"
 set "ANYDESK_ID=!ANYDESK_ID: =!"
 set "ANYDESK_ID=!ANYDESK_ID:\t=!"
 set "ANYDESK_ID=!ANYDESK_ID:^"=!"
-
 :: Coletar informações de espaço em disco
-::wmic logicaldisk get caption,freespace,size /format:csv > "%TEMP_FILE%"
 wmic logicaldisk where "FileSystem='NTFS'" get caption,freespace,size /format:csv > "%TEMP_FILE%"
 
 :: Coletar informações da CPU
@@ -277,8 +265,11 @@ IF EXIST "%BACKUP_PATH%" (
     DEL /Q "%BACKUP_PATH%" >nul
 )
 sqlcmd -S %SERVER_NAME% -U %USER_NAME% -P %PASSWORD% -Q "BACKUP DATABASE [%DATABASE_NAME%] TO DISK = '%BACKUP_PATH%' WITH FORMAT;"
-
-GOTO LIMPEZAA
+call :IPV1
+call :LIMPEZAA
+::==========================
+::         FUNÇOES
+::==========================
 :: Função para obter versão de arquivos
 :getFileVersion
 set "version="
@@ -301,3 +292,15 @@ exit /b
 for /f %%i in ('powershell -command "(Get-Date).AddDays(-90).ToString('yyyy-MM-dd')"') do set "ioscdata=%%i"
 powershell.exe -Command "$limite=Get-Date '%ioscdata%'; $pasta='C:\captura\iosc'; Get-ChildItem -Path $pasta -Force | Where-Object {($_.Attributes -match 'Hidden') -and ($_.LastWriteTime -lt $limite)} | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue"
 powershell -Command "Get-ChildItem -Path \"%TEMP%\" *.* -Recurse | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue"
+
+
+:IPV1
+REM Obtém o IPv4 do computador
+for /f "tokens=2 delims=:" %%i in ('ipconfig ^| findstr /i "IPv4"') do for /f "tokens=1 delims= " %%j in ("%%i") do set IP=%%j
+REM Remove espaços em branco
+set IP=%IP: =%
+REM Caminho do arquivo de configuração
+set FILE="C:\Program Files (x86)\Fenox V1.0\Fnx64bits.exe.config"
+REM Substitui o endereço IP no arquivo usando PowerShell
+powershell -Command "(Get-Content '%FILE%') -replace 'http://.*:8080', 'http://%IP%:8080' | Set-Content '%FILE%'"
+goto :eof
