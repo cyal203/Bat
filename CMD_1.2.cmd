@@ -1,10 +1,10 @@
 @echo off
 chcp 65001 >nul
-title Versão 1.3
-REM ----- DATA - 01/04/2025 -----------
+title Versão 1.4
+REM ----- DATA - 05/05/2025 -----------
 call :VerPrevAdmin
 if "%Admin%"=="ops" goto :eof
-mode con: cols=45 lines=12
+mode con: cols=50 lines=18
 setlocal enabledelayedexpansion
 :: Define o caminho do arquivo temporário
 set "TEMP_IP=%TEMP%\IPLISTEN.txt"
@@ -20,16 +20,28 @@ SET BACKUP_DIR=C:\captura\BackupDB
 SET BACKUP_PATH=%BACKUP_DIR%\SisviWcfLocal_backup.bak
 %B%
 cls
+for /F "tokens=1,2 delims=#" %%a in ('"prompt #$H#$E# & echo on & for %%b in (1) do rem"') do (set "DEL=%%a" & set "COL=%%b")
+Reg add HKCU\CONSOLE /v VirtualTerminalLevel /t REG_DWORD /d 1 /f >nul 2>&1
+(for /f %%a in ('echo prompt $E^| cmd') do set "esc=%%a" )
+: Ativar modo de cursor invisível
+echo !esc![?25l
 
 REM ******************** ABRE O MENU INICIAL ********************
 :INICIO
-echo        ╔══════════════════════════╗
-echo        ║   SELECIONE UMA OPCAO:   ║
-echo        ║    [%w%1%b%]  %w%OTIMIZACAO%b%       ║
-echo        ║    [%w%2%b%]  %w%ADD IPLISTEN%b%     ║
-echo        ║    [%w%3%b%]  %w%ATT SERVICOS%b%     ║
-echo        ║    [%w%4%b%]  %w%INST LEITOR BIO%b%  ║
-echo        ╚══════════════════════════╝
+echo.
+echo   ███████╗███████╗███╗   ██╗   █████╗ ██╗   ██╗
+echo   ██╔════╝██╔════╝████╗  ██║ ██╔═══██║ ██║ ██╔╝
+echo   ███████╗█████╗  ██╔██╗ ██║ ██║   ██║   ██╔╝
+echo   ██╔════╝██╔══╝  ██║╚██╗██║ ██║   ██║ ██╔═██╗
+echo   ██║     ███████╗██║ ╚████║ ╚██████╔╝██║   ██╗
+echo   ╚═╝     ╚══════╝╚═╝  ╚═══╝  ╚═════╝ ╚═╝   ╚═╝
+echo.
+echo              SELECIONE UMA OPCAO:
+echo.   
+echo      [%w%1%b%]%w%OTIMIZACAO%b%     [%w%2%b%]%w%ADD IPLISTEN%b%     
+echo.                 
+echo      [%w%3%b%]%w%ATT SERVICOS%b%   [%w%4%b%]%w%INST LEITOR BIO%b%    
+echo.
 
 Set /p option= %w%Escolha uma Opcao:%b%
 
@@ -58,13 +70,20 @@ for /f "tokens=2 delims=:" %%A in ('ipconfig ^| findstr "IPv4"') do (
     set "CURRENT_IP=!CURRENT_IP: =!"
 )
 :: Adiciona o IP atual e 127.0.0.1 ao iplisten
-echo Adicionado ip ao Iplisten:%w% !CURRENT_IP! %b%
-echo Adicionado ip ao Iplisten:%w%127.0.0.1 %b%
+cls
 netsh http add iplisten ip=!CURRENT_IP!  >nul
 netsh http add iplisten ip=127.0.0.1  >nul
 ipconfig /flushdns  >nul
 echo.
-echo Pressione para voltar
+echo.
+echo            ╔══════════════════════════╗
+echo            ║       Adicionado         ║
+echo            ║     ip ao Iplisten       ║
+echo            ║     %w% !CURRENT_IP! %b%     ║
+echo            ║       %w%127.0.0.1 %b%         ║
+echo            ╚══════════════════════════╝
+echo.
+echo              Pressione para voltar
 pause >nul
 cls
 goto inicio
