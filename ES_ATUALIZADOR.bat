@@ -1,5 +1,6 @@
 @echo off
 chcp 65001 >nul
+::--------06/05/2025------------
 title ATUALIZADOR ES
 call :VerPrevAdmin
 if "%Admin%"=="ops" goto :eof
@@ -113,6 +114,7 @@ REM ******************* DELETA PASTAS ****************
 rmdir /s /q "C:\Program Files (x86)\Fenox V1.0.OLD1"  >nul
 rmdir /s /q "C:\WCFLOCAL.OLD1"  >nul
 del /f "C:\Program Files (x86)\Fenox V1.0\un.config"  >nul
+del /f "C:\Program Files (x86)\Fenox V1.0\notasAtualizacao.html"  >nul
 REM ******************* INICIA SISOCR ****************
 cls
 echo   ════════════════════════════════════════
