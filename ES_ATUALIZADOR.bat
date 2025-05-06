@@ -29,7 +29,6 @@ SET VERSAOINSTWCF=WCFLocalFenox_1.3.0.18_x86.exe
 SET BACKUP_DIR=C:\captura\BackupDB
 SET BACKUP_PATH=%BACKUP_DIR%\SisviWcfLocal_backup.bak
 cls
-
 for /f "tokens=2 delims==" %%i in ('wmic datafile where name^="%filePath%" get Version /value') do set "fileVersion=%%i"
 chcp 65001 >nul 2>&1
 echo ╔══════════════════════════╗
@@ -44,7 +43,6 @@ rem set "option=%errorlevel%"
 
 if %option%==1 goto digitacao
 if %option%==2 goto servidor
-
 
 :servidor
 REM ******************* VERIFICA VERSAO ****************
@@ -148,11 +146,6 @@ IF EXIST "%BACKUP_PATH%" (
     DEL /Q "%BACKUP_PATH%" >nul
 )
 sqlcmd -S %SERVER_NAME% -U %USER_NAME% -P %PASSWORD% -Q "BACKUP DATABASE [%DATABASE_NAME%] TO DISK = '%BACKUP_PATH%' WITH FORMAT;"
-
-
-
-
-
 echo Backup do banco de dados %DATABASE_NAME% concluido com sucesso! >nul
 REM Deleta SisviWcfLocalModel
 sqlcmd -S %SERVER_NAME% -U %USER_NAME% -P %PASSWORD% -Q "DROP DATABASE [SisviWcfLocalModel];"  >nul
@@ -206,7 +199,7 @@ echo Efetuando Download da versao %VERSAOV1%...
 curl -g -k -L -# -o "%temp%\%VERSAOV1%.zip" "%LINKV1%" >nul 2>&1
 cls
 
-REM ******************* EXTRAI NOVO SISOCR ****************
+REM ******************* EXTRAI NOVO V1 ****************
 cls
 echo   ════════════════════════════════════
 echo   ███   %W%EXTRAINDO ARQUIVOS (2/4)%b%  ███
@@ -226,6 +219,7 @@ timeout /t 2 /nobreak >nul
 REM ******************* DELETA PASTAS ****************
 rmdir /s /q "C:\Program Files (x86)\Fenox V1.0.OLD1"  >nul
 del /f "C:\Program Files (x86)\Fenox V1.0\un.config"  >nul
+del /f "C:\Program Files (x86)\Fenox V1.0\notasAtualizacao.html"  >nul
 timeout /t 2 /nobreak >nul
 cls
 echo   ════════════════════════════════════
