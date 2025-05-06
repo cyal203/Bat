@@ -1,23 +1,27 @@
 @echo off
 chcp 65001 >nul
-title Versão 1.4
-REM ----- DATA - 05/05/2025 -----------
-call :VerPrevAdmin
+title Versão 1.5
+::==========================
+::EXECUTA COMO ADMINISTRADOR
+::==========================
+set "params=%*"
+cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
+
 if "%Admin%"=="ops" goto :eof
 mode con: cols=50 lines=18
 setlocal enabledelayedexpansion
-:: Define o caminho do arquivo temporário
-set "TEMP_IP=%TEMP%\IPLISTEN.txt"
-setlocal
 set "params=%*"
 set w=[97m
 set b=[96m
-SET SERVER_NAME=localhost
-SET USER_NAME=sa
-SET PASSWORD=F3N0Xfnx
-SET DATABASE_NAME=SisviWcfLocal
-SET BACKUP_DIR=C:\captura\BackupDB
-SET BACKUP_PATH=%BACKUP_DIR%\SisviWcfLocal_backup.bak
+set SERVER_NAME=localhost
+set USER_NAME=sa
+set PASSWORD=F3N0Xfnx
+set DATABASE_NAME=SisviWcfLocal
+set BACKUP_DIR=C:\captura\BackupDB
+set BACKUP_PATH=%BACKUP_DIR%\SisviWcfLocal_backup.bak
+set "TEMP_IP=%TEMP%\IPLISTEN.txt"
+set passos=31
+setlocal
 %B%
 cls
 for /F "tokens=1,2 delims=#" %%a in ('"prompt #$H#$E# & echo on & for %%b in (1) do rem"') do (set "DEL=%%a" & set "COL=%%b")
@@ -26,7 +30,6 @@ Reg add HKCU\CONSOLE /v VirtualTerminalLevel /t REG_DWORD /d 1 /f >nul 2>&1
 : Ativar modo de cursor invisível
 echo !esc![?25l
 
-REM ******************** ABRE O MENU INICIAL ********************
 :INICIO
 echo.
 echo   ███████╗███████╗███╗   ██╗   █████╗ ██╗   ██╗
@@ -42,14 +45,12 @@ echo      [%w%1%b%]%w%OTIMIZACAO%b%     [%w%2%b%]%w%ADD IPLISTEN%b%
 echo.                 
 echo      [%w%3%b%]%w%ATT SERVICOS%b%   [%w%4%b%]%w%INST LEITOR BIO%b%    
 echo.
-
 Set /p option= %w%Escolha uma Opcao:%b%
 
 if %option%==1 goto otimizacao
 if %option%==2 goto iplisten
 if %option%==3 goto atualiza_servicos
 if %option%==4 goto leitor_biometrico
-
 echo.
 cls
 echo   ═════════════════════════════════════
@@ -103,12 +104,15 @@ cls
 goto inicio
 
 :otimizacao
-REM -------ADICIONA O MONITORAMENTO DE HD AS 05:00 NO SERVIDOR COM O HOST FENOX---------
+::=======================================================
+:: ADICIONA O MONITORAMENTO NO SERVIDOR COM O HOST FENOX
+::=======================================================
+
 for /f %%H in ('hostname') do set "HOSTNAME=%%H"
 
 echo %HOSTNAME% | findstr /B /I "FENOX" >nul
 if %errorlevel% equ 0 (
-::SCHTASKS /CREATE /TN "Monitorar_HD" /TR "cmd.exe /c curl -g -k -L -# -o \"%%temp%%\MONITOR_HD.bat\" \"https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/MONITOR_HD.bat\" >nul 2>&1 && %%temp%%\MONITOR_HD.bat" /SC DAILY /ST 04:50 /F  >nul
+
 SCHTASKS /CREATE /TN "Monitorar_HD" /TR "cmd.exe /c curl -g -k -L -# -o \"%%temp%%\MONITOR_HD.bat\" \"https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/MONITOR_HD.bat\" >nul 2>&1 && %%temp%%\MONITOR_HD.bat" /SC DAILY /ST 05:15 /F /RL HIGHEST >nul
 REM **********BACKUP SQL************
 REM Criar a pasta de backup se não existir
@@ -143,246 +147,90 @@ ipconfig /flushdns  >nul
 ) else (
     echo Prosseguindo com o script.
 )
-
 timeout /t 2 /nobreak >nul
+::====================================================
+:: PROSSEGUE COM O SCRIPT EM PC NÃO SERVIDOR
+::====================================================
 cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
 cls
 timeout /t 2 /nobreak >nul
 
-REM ******************* FINALIZANDO SERVIÇOS QUE NÃO RESPONDEM********
-taskkill /f /fi "status eq not responding" >nul
-CLS
-echo.
-cls
-echo   ═════════════════════════════════════
-echo   ███  %w%OTIMIZANDO AGUARDE (1/18)%b%    ███
-echo   ═════════════════════════════════════ 
-timeout /t 2 /nobreak >nul
-REM *******************CONCEDE PERMISÃO AS PASTAS CAPTURA, WCF E FNX********
-icacls C:\Captura\StatusUpload /grant Todos:(OI)(CI)F /T /C /Q >nul
-icacls C:\Captura\StatusServicos /grant Todos:(OI)(CI)F /T /C /Q >nul
-icacls C:\Captura\SiteVerVideo /grant Todos:(OI)(CI)F /T /C /Q >nul
-icacls C:\Captura\preview /grant Todos:(OI)(CI)F /T /C /Q >nul
-icacls C:\Captura\ocr /grant Todos:(OI)(CI)F /T /C /Q >nul
-icacls C:\Captura\Msg /grant Todos:(OI)(CI)F /T /C /Q >nul
-icacls C:\Captura\Config /grant Todos:(OI)(CI)F /T /C /Q >nul
-icacls "C:\WCFLOCAL" /q /c /t /grant Todos:(OI)(CI)F >nul
-icacls "C:\Program Files (x86)\FNX" /q /c /t /grant Todos:(OI)(CI)F >nul
-icacls "C:\fnx" /q /c /t /grant Todos:(OI)(CI)F >nul
-timeout /t 2 /nobreak >nul
-REM ******************* DESABILITA DEFENDER ****************
-REG ADD "HKLM\SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection" /v "DisableRealtimeMonitoring" /t REG_DWORD /d 1 /f >nul
-REG ADD "HKLM\SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection" /v "DisableRealtimeMonitoring" /t REG_DWORD /d 1 /f >nul
-powershell -command "Set-MpPreference -DisableRealtimeMonitoring $true" >nul
-reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows Defender" /v "DisableAntiSpyware" /t REG_DWORD /d 1 /f >nul
-sc stop WinDefend>nul
-sc config WinDefend start= disabled >nul
-cls
-REM ******************* DESABILITA FIREWALL ****************
-echo   ═════════════════════════════════════
-echo   ███  %w%OTIMIZANDO AGUARDE (2/18)%b%    ███
-echo   ═════════════════════════════════════ 
-timeout /t 2 /nobreak >nul
-netsh advfirewall set allprofiles state off >nul
-cls
-REM ******************* REDEFINIR PROBLEMAS DE TCP/IP ****************
-echo   ═════════════════════════════════════
-echo   ███  %w%OTIMIZANDO AGUARDE (3/18)%b%    ███
-echo   ═════════════════════════════════════ 
-timeout /t 2 /nobreak >nul
-netsh winsock reset >nul
-cls
-REM ******************* ATUALIZA DIRETIVA DE GRUPO ****************
-echo   ═════════════════════════════════════
-echo   ███  %w%OTIMIZANDO AGUARDE (4/18)%b%    ███
-echo   ═════════════════════════════════════ 
-timeout /t 2 /nobreak >nul
-gpupdate /force >nul
-cls
-REM ******************* DESBLOQUEIA INSTALAÇÃO DE SOFTWARE ****************
-echo   ═════════════════════════════════════
-echo   ███  %w%OTIMIZANDO AGUARDE (5/18)%b%    ███
-echo   ═════════════════════════════════════ 
-timeout /t 2 /nobreak >nul
-REG ADD HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /V EnableLUA /T REG_DWORD /D 0 /F >nul
-cls
-REM ******************* DESABILITA HIBERNAÇÃO ****************
-echo   ═════════════════════════════════════
-echo   ███  %w%OTIMIZANDO AGUARDE (6/18)%b%    ███
-echo   ═════════════════════════════════════ 
-timeout /t 2 /nobreak >nul
-powercfg.exe /hibernate off >nul
-timeout /t 1 /nobreak >nul
-REM ******************* DESABILITA APLICATIVOS EM SEGUNDO PLANO ****************
-REG add "HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\BackgroundAccessApplications" /v GlobalUserDisabled /t REG_DWORD /d 1 /f >nul
-REG ADD "HKCU\Software\Microsoft\Windows\CurrentVersion\BackgroundAccessApplications" /V GlobalUserDisabled /T REG_DWORD /D 1 /F >nul
-REG ADD "HKCU\Software\Microsoft\Windows\CurrentVersion\Search" /V BackgroundAppGlobalToggle /T REG_DWORD /D 0 /F >nul
-REG ADD "HKLM\Software\Policies\Microsoft\Windows\AppPrivacy" /V LetAppsRunInBackground /T REG_DWORD /D 2 /F >nul
-cls
-REM ******************* DESABILITA XBOX GameDVR ****************
-echo   ═════════════════════════════════════
-echo   ███  %w%OTIMIZANDO AGUARDE (7/18)%b%    ███
-echo   ═════════════════════════════════════ 
-timeout /t 2 /nobreak >nul
-REG add "HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\GameDVR" /v AppCaptureEnabled /t REG_DWORD /d 0 /f >nul
-cls
-REM ******************* TORNA O ESQUEMA DE ENERGIA ATIVO FAZENDO ALTERAÇÕES SIGNIFICANTES ****************
-echo   ═════════════════════════════════════
-echo   ███  %w%OTIMIZANDO AGUARDE (8/18)%b%    ███
-echo   ═════════════════════════════════════ 
-timeout /t 2 /nobreak >nul
-powercfg /setactive 381b4222-f694-41f0-9685-ff5bb260df2e >nul
-powercfg /change standby-timeout-dc 0 >nul
-powercfg /change monitor-timeout-ac 0 >nul
-powercfg /change disk-timeout-ac 0 >nul
-powercfg /change disk-timeout-dc 0 >nul
-timeout /t 2 /nobreak >nul
-cls
-REM ******************* DESATIVA IPV6 ****************
-echo   ═════════════════════════════════════
-echo   ███  %w%OTIMIZANDO AGUARDE (9/18)%b%    ███
-echo   ═════════════════════════════════════ 
-timeout /t 2 /nobreak >nul
-REG add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip6\Parameters" /v DisabledComponents /t REG_DWORD /d 255 /f >nul
-cls
-REM ********** DESATIVA INDEXAÇÃO *************
-echo   ═════════════════════════════════════
-echo   ███  %w%OTIMIZANDO AGUARDE (10/18)%b%   ███
-echo   ═════════════════════════════════════ 
-timeout /t 2 /nobreak >nul
-sc stop "WSearch" >nul
-sc config "WSearch" start=disabled >nul
-cls
-REM ******************* DESATIVA TELEMETRIA **********************
-echo   ═════════════════════════════════════
-echo   ███  %w%OTIMIZANDO AGUARDE (11/18)%b%   ███
-echo   ═════════════════════════════════════ 
-timeout /t 2 /nobreak >nul
-reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\DataCollection" /v AllowTelemetry /t REG_DWORD /d 0 /f >nul
-reg add "HKEY_CURRENT_USER\Software\Microsoft\Siuf\Rules" /v NumberOfSIUFInPeriod /t REG_DWORD /d 0 /f >nul
-reg add "HKEY_CURRENT_USER\Software\Microsoft\Siuf\Rules" /v PeriodInNanoSeconds /t REG_QWORD /d 0 /f >nul
-reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\DataCollection" /v "AllowTelemetry" /t REG_DWORD /d 0 /f >nul
-sc stop DiagTrack >nul
-sc delete DiagTrack >nul
-sc stop dmwappushservice >nul
-sc delete dmwappushservice >nul
-cls
-REM ******************* DESATIVA SERVIÇOS********
-echo   ═════════════════════════════════════
-echo   ███  %w%OTIMIZANDO AGUARDE (12/18)%b%   ███
-echo   ═════════════════════════════════════ 
-timeout /t 2 /nobreak >nul
-sc config Fax start= disabled >nul
-sc config "Remote Desktop Services" start= disabled >nul
-sc config "Diagnostic Policy Service" start= disabled >nul
-sc config "Distributed Link Tracking Client" start= disabled >nul
-sc config "Offline Files" start= disabled >nul
-sc config "Windows Error Reporting Service" start= disabled >nul
-sc config "Windows Search" start= disabled >nul
-sc config "SysMain" start= disabled >nul
-sc delete SysMain >nul
-sc config "SIMNextLocalRecording" start= disabled >nul
-reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v SystemPaneSuggestionsEnabled /t REG_DWORD /d 0 /f >nul
-cls
-REM ******************* DESATIVA CORTANA ************
-echo   ═════════════════════════════════════
-echo   ███  %w%OTIMIZANDO AGUARDE (13/18)%b%   ███
-echo   ═════════════════════════════════════ 
-timeout /t 2 /nobreak >nul
-reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Search" /v "AllowCortana" /t REG_DWORD /d 0 /f >nul
-taskkill /f /im SearchUI.exe >nul
-cls
-REM ******************* LIMPA TEM DO INTERNET EXPLORER ****************
-echo   ═════════════════════════════════════
-echo   ███  %w%OTIMIZANDO AGUARDE (14/18)%b%   ███
-echo   ═════════════════════════════════════ 
-timeout /t 2 /nobreak >nul
-Rundll32.exe InetCpl.cpl,ClearMyTracksByProcess 8 >nul
-cls
-REM ******************** LIXEIRA ********************
-echo   ═════════════════════════════════════
-echo   ███  %w%OTIMIZANDO AGUARDE (15/18)%b%   ███
-echo   ═════════════════════════════════════ 
-timeout /t 2 /nobreak >nul
-del c:\$recycle.bin\* /s /q >nul
-PowerShell.exe -NoProfile -Command Clear-RecycleBin -Confirm:$false >$null >nul
-del $null >nul
-cls
-echo   ═════════════════════════════════════
-echo   ███  %w%OTIMIZANDO AGUARDE (16/18)%b%   ███
-echo   ═════════════════════════════════════ 
-timeout /t 2 /nobreak >nul
-REM cria arquivo vazio.txt dentro da pasta \Windows\Temp
-type nul > c:\Windows\Temp\vazio.txt >nul
-REM apaga todas as pastas vazias dentro da pasta \Windows\Temp (mas não apaga a própria pasta)
-robocopy c:\Windows\Temp c:\Windows\Temp /s /move /NFL /NDL /NJH /NJS /nc /ns /np >nul
-REM Apaga arquivo vazio.txt dentro da pasta \Windows\Temp
-del c:\Windows\Temp\vazio.txt >nul
-REM ******************** ARQUIVOS DE LOG DO WINDOWS ********************
-del C:\Windows\Logs\cbs\*.log >nul
-del C:\Windows\setupact.log >nul
-attrib -s c:\windows\logs\measuredboot\*.* >nul
-del c:\windows\logs\measuredboot\*.log >nul
-attrib -h -s C:\Windows\ServiceProfiles\NetworkService\ >nul
-attrib -h -s C:\Windows\ServiceProfiles\LocalService\ >nul
-del C:\Windows\ServiceProfiles\LocalService\AppData\Local\Temp\MpCmdRun.log >nul
-del C:\Windows\ServiceProfiles\NetworkService\AppData\Local\Temp\MpCmdRun.log >nul >nul
-attrib +h +s C:\Windows\ServiceProfiles\NetworkService\ >nul
-attrib +h +s C:\Windows\ServiceProfiles\LocalService\ >nul
-for /d %%F in (C:\Users\*) do del %%F\AppData\Local\Microsoft\*.log /s /q >nul
-del C:\Windows\Logs\MeasuredBoot\*.log  >nul
-del C:\Windows\Logs\MoSetup\*.log >nul
-del C:\Windows\Panther\*.log /s /q >nul
-del C:\Windows\Performance\WinSAT\winsat.log /s /q >nul
-del C:\Windows\inf\*.log /s /q >nul
-del C:\Windows\logs\*.log /s /q >nul
-del C:\Windows\SoftwareDistribution\*.log /s /q >nul
-del C:\Windows\Microsoft.NET\*.log /s /q >nul
-cls
-REM ******************** ARQUIVOS DE LOG DO ONEDRIVE ********************
-echo   ═════════════════════════════════════
-echo   ███  %w%OTIMIZANDO AGUARDE (17/18)%b%   ███
-echo   ═════════════════════════════════════ 
-timeout /t 2 /nobreak >nul
-taskkill /F /IM "OneDrive.exe"
-for /d %%F in (C:\Users\*) do del %%F\AppData\Local\Microsoft\OneDrive\setup\logs\*.log /s /q >nul
-for /d %%F in (C:\Users\*) do del %%F\AppData\Local\Microsoft\OneDrive\*.odl /s /q >nul
-for /d %%F in (C:\Users\*) do del %%F\AppData\Local\Microsoft\OneDrive\*.aodl /s /q >nul
-for /d %%F in (C:\Users\*) do del %%F\AppData\Local\Microsoft\OneDrive\*.otc /s /q >nul
-for /d %%F in (C:\Users\*) do del %%F\AppData\Local\OneDrive\*.qmlc /s /q >nul
-for /d %%F in (C:\Users\*) do del %%F\AppData\Local\CrashDumps\*.dmp /s /q >nul
-REM ******************** TeamViewer ********************
-for /l %%i in (1,1,12) do (for /d %%F in (C:\Users\*) do del %%F\AppData\Local\TeamViewer\EdgeBrowserControl\Persistent\data_*.  /s /q) >nul
-for /d %%u in (C:\Users\*) do (if exist "%%u\AppData\Local\TeamViewer\EdgeBrowserControl" (forfiles /P "%%u\AppData\Local\TeamViewer\EdgeBrowserControl" /S /M *_0 /C "cmd /c del @path")) >nul
-for /d %%u in (C:\Users\*) do (if exist "%%u\AppData\Local\TeamViewer\EdgeBrowserControl" (forfiles /P "%%u\AppData\Local\TeamViewer\EdgeBrowserControl" /S /M *_1 /C "cmd /c del @path")) >nul
-for /d %%u in (C:\Users\*) do (if exist "%%u\AppData\Local\TeamViewer\EdgeBrowserControl" (forfiles /P "%%u\AppData\Local\TeamViewer\EdgeBrowserControl" /S /M *_2 /C "cmd /c del @path")) >nul
-for /d %%u in (C:\Users\*) do (if exist "%%u\AppData\Local\TeamViewer\EdgeBrowserControl" (forfiles /P "%%u\AppData\Local\TeamViewer\EdgeBrowserControl" /S /M *_3 /C "cmd /c del @path")) >nul
-for /d %%u in (C:\Users\*) do (if exist "%%u\AppData\Local\TeamViewer\EdgeBrowserControl" (forfiles /P "%%u\AppData\Local\TeamViewer\EdgeBrowserControl" /S /M *_4 /C "cmd /c del @path")) >nul
-for /d %%u in (C:\Users\*) do (if exist "%%u\AppData\Local\TeamViewer\EdgeBrowserControl" (forfiles /P "%%u\AppData\Local\TeamViewer\EdgeBrowserControl" /S /M *_5 /C "cmd /c del @path")) >nul
-for /d %%u in (C:\Users\*) do (if exist "%%u\AppData\Local\TeamViewer\EdgeBrowserControl" (forfiles /P "%%u\AppData\Local\TeamViewer\EdgeBrowserControl" /M "f_*." /C "cmd /c del @path")) >nul
-for /d %%u in (C:\Users\*) do (if exist "%%u\AppData\Local\TeamViewer\EdgeBrowserControl" (forfiles /P "%%u\AppData\Local\TeamViewer\EdgeBrowserControl" /M "data.*" /C "cmd /c del @path")) >nul
-for /d %%u in (C:\Users\*) do (if exist "%%u\AppData\Local\TeamViewer\EdgeBrowserControl" (forfiles /P "%%u\AppData\Local\TeamViewer\EdgeBrowserControl" /M "index.*" /C "cmd /c del @path")) >nul
-REM ******************* DESATIVA EFEITOS VISUAIS ****************
-reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects" /v VisualFXSetting /t REG_DWORD /d 2 /f >nul
-reg add "HKCU\Control Panel\Desktop" /v UserPreferencesMask /t REG_BINARY /d 90120000010000000000000000 /f >nul
-reg add "HKEY_CURRENT_USER\Control Panel\Desktop\WindowMetrics" /v MinAnimate /t REG_SZ /d 0 /f >nul
-reg add "HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\PushNotifications" /v ToastEnabled /t REG_DWORD /d 0 /f >nul
-cls
-echo   ═════════════════════════════════════
-echo   ███  %w%OTIMIZANDO AGUARDE (18/18)%b%   ███
-echo   ═════════════════════════════════════ 
-timeout /t 1 /nobreak >nul
-cls
-echo   ═══════════════════════════════════
-echo   ███  %w%OTIMZACAO CONCLUIDA. . .%b%   ███
-echo   ═══════════════════════════════════
-echo.
-timeout /t 3 /nobreak >nul
-REM ******************** ABRE A LIMPEZA DE DISCO ********************
+call :SAFE_EXECUTE 01 %passos% "taskkill /f /fi "status eq not responding""
+
+:: Passo 2/%passos% - Configurando permissões de pastas
+call :SHOW_PROGRESS 02 %passos%
+
+icacls "C:\Captura\StatusUpload" /grant Todos:(OI)(CI)F /T /C /Q >nul 2>&1
+icacls "C:\Captura\StatusServicos" /grant Todos:(OI)(CI)F /T /C /Q >nul 2>&1
+icacls "C:\Captura\SiteVerVideo" /grant Todos:(OI)(CI)F /T /C /Q >nul 2>&1
+icacls "C:\Captura\preview" /grant Todos:(OI)(CI)F /T /C /Q >nul 2>&10
+icacls "C:\Captura\ocr" /grant Todos:(OI)(CI)F /T /C /Q >nul 2>&1
+icacls "C:\Captura\Msg" /grant Todos:(OI)(CI)F /T /C /Q >nul 2>&1
+icacls "C:\Captura\Config" /grant Todos:(OI)(CI)F /T /C /Q >nul 2>&1
+icacls "C:\WCFLOCAL" /q /c /t /grant Todos:(OI)(CI)F >nul 2>&1
+icacls "C:\Program Files (x86)\FNX" /q /c /t /grant Todos:(OI)(CI)F >nul 2>&1
+icacls "C:\fnx" /q /c /t /grant Todos:(OI)(CI)F >nul 2>&1
+
+::(continuação com SAFE_EXECUTE)
+call :SAFE_EXECUTE 03 %passos% "REG ADD "HKLM\SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection" /v "DisableRealtimeMonitoring" /t REG_DWORD /d 1 /f"
+call :SAFE_EXECUTE 04 %passos% "netsh advfirewall set allprofiles state off"
+call :SAFE_EXECUTE 05 %passos% "netsh winsock reset"
+call :SAFE_EXECUTE 06 %passos% "gpupdate /force"
+call :SAFE_EXECUTE 07 %passos% "REG ADD HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /V EnableLUA /T REG_DWORD /D 0 /F"
+call :SAFE_EXECUTE 08 %passos% "powercfg.exe /hibernate off"
+call :SAFE_EXECUTE 09 %passos% "REG add "HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\BackgroundAccessApplications" /v GlobalUserDisabled /t REG_DWORD /d 1 /f"
+call :SAFE_EXECUTE 10 %passos% "REG add "HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\GameDVR" /v AppCaptureEnabled /t REG_DWORD /d 0 /f"
+call :SAFE_EXECUTE 11 %passos% "powercfg /setactive 381b4222-f694-41f0-9685-ff5bb260df2e"
+call :SAFE_EXECUTE 12 %passos% "REG add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip6\Parameters" /v DisabledComponents /t REG_DWORD /d 255 /f"
+call :SAFE_EXECUTE 13 %passos% "sc stop "WSearch" & sc config "WSearch" start=disabled"
+call :SAFE_EXECUTE 14 %passos% "reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\DataCollection" /v AllowTelemetry /t REG_DWORD /d 0 /f"
+call :SAFE_EXECUTE 15 %passos% "sc config Fax start= disabled & sc config "Remote Desktop Services" start= disabled"
+call :SAFE_EXECUTE 16 %passos% "reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Search" /v "AllowCortana" /t REG_DWORD /d 0 /f"
+call :SAFE_EXECUTE 17 %passos% "Rundll32.exe InetCpl.cpl,ClearMyTracksByProcess 8"
+call :SAFE_EXECUTE 18 %passos% "del C:\Windows\Logs\cbs\*.log"
+call :SAFE_EXECUTE 19 %passos% "for /d %%u in (C:\Users\*) do if exist "%%u\AppData\Local\TeamViewer\EdgeBrowserControl" forfiles /P "%%u\AppData\Local\TeamViewer\EdgeBrowserControl" /M "data.*" /C "cmd /c del @path""
+call :SAFE_EXECUTE 20 %passos% "reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects" /v VisualFXSetting /t REG_DWORD /d 2 /f"
+call :SAFE_EXECUTE 21 %passos% "REG ADD "HKCU\Software\Microsoft\Windows\CurrentVersion\Search" /V BackgroundAppGlobalToggle /T REG_DWORD /D 0 /F"
+call :SAFE_EXECUTE 22 %passos% "powercfg /change standby-timeout-dc 0"
+call :SAFE_EXECUTE 23 %passos% "powercfg /change disk-timeout-ac 0"
+call :SAFE_EXECUTE 24 %passos% "sc stop "DiagTrack" & sc config "DiagTrack" start=disabled"
+call :SAFE_EXECUTE 25 %passos% "sc stop "dmwappushservice" & sc config "dmwappushservice" start=disabled"
+call :SAFE_EXECUTE 26 %passos% "sc stop "SysMain" & sc config "SysMain" start=disabled"
+call :SAFE_EXECUTE 27 %passos% "PowerShell.exe -NoProfile -Command Clear-RecycleBin -Confirm:$false"
+call :SAFE_EXECUTE 28 %passos% "del c:\$recycle.bin\* /s /q"
+call :SAFE_EXECUTE 29 %passos% "reg add "HKCU\Control Panel\Desktop" /v UserPreferencesMask /t REG_BINARY /d 90120000010000000000000000 /f"
+call :SAFE_EXECUTE 30 %passos% "reg add "HKEY_CURRENT_USER\Control Panel\Desktop\WindowMetrics" /v MinAnimate /t REG_SZ /d 0 /f"
+call :SAFE_EXECUTE 31 %passos% "reg add "HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\PushNotifications" /v ToastEnabled /t REG_DWORD /d 0 /f"
+
+call :CONCLUIDO
 start cleanmgr.exe /d C: /VERYLOWDISK
-:: Limpa C:\Windows\Temp
 powershell -Command "Get-ChildItem -Path \"C:\Windows\Temp\" *.* -Recurse | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue"
 :: Limpa a pasta TEMP do usuário atual
 powershell -Command "Get-ChildItem -Path \"%TEMP%\" *.* -Recurse | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue"
 cls
 exit
+
+:SAFE_EXECUTE
+:: Executa comandos com tratamento de erros
+call :SHOW_PROGRESS %1 %2
+(%3) >nul 2>&1
+goto :EOF
+
+:SHOW_PROGRESS
+:: Mostra apenas a contagem de progresso
+cls
+echo.
+echo       ══════════════════════════════════
+echo       ███    %w%OTIMIZANDO (%1/%2)%b%      ███
+echo       ══════════════════════════════════
+timeout /t 1 >nul
+goto :EOF
+
+:CONCLUIDO
+cls
+echo.
+echo   ═══════════════════════════════════
+echo   ███  %w%OTIMZACAO CONCLUIDA. . .%b%   ███
+echo   ═══════════════════════════════════
+timeout /t 1 >nul
+goto :EOF
