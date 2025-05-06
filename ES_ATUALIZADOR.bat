@@ -2,7 +2,6 @@
 chcp 65001 >nul
 ::--------06/05/2025------------
 title ATUALIZADOR ES
-call :VerPrevAdmin
 if "%Admin%"=="ops" goto :eof
 mode con: cols=50 lines=15
 setlocal
@@ -17,7 +16,6 @@ SET SERVER_NAME=localhost
 SET USER_NAME=sa
 SET PASSWORD=F3N0Xfnx
 SET DATABASE_NAME=SisviWcfLocal
-::SET BACKUP_PATH=C:\captura\SisviWcfLocal_backup.bak
 SET SQL_FILE=C:\WCFLOCAL\UpdateDB\SWLModel.sql
 ::===========================
 :: FORMATO DO ZIP VERSÃO.ZIP
@@ -32,10 +30,13 @@ cls
 for /f "tokens=2 delims==" %%i in ('wmic datafile where name^="%filePath%" get Version /value') do set "fileVersion=%%i"
 chcp 65001 >nul 2>&1
 echo ╔══════════════════════════╗
-echo ║   SELECIONE UMA OPCAO:   ║
-echo ║   VERSAO:%w%%VERSAOV1%%b%        ║
+echo ║                          ║
+echo ║     VERSAO:%w%%VERSAOV1%%b%      ║
+echo ║    %w%Correcao Movel 06/05%b%  ║
+echo ║                          ║
 echo ║    %w%1 - DIGITACAO%b%         ║
 echo ║    %w%2 - SERVIDOR%b%          ║
+echo ║                          ║
 echo ╚══════════════════════════╝
 rem choice /c 1234 /m "Escolha uma opcao"
 Set /p option= Escolha uma opcao:
@@ -113,6 +114,8 @@ rmdir /s /q "C:\Program Files (x86)\Fenox V1.0.OLD1"  >nul
 rmdir /s /q "C:\WCFLOCAL.OLD1"  >nul
 del /f "C:\Program Files (x86)\Fenox V1.0\un.config"  >nul
 del /f "C:\Program Files (x86)\Fenox V1.0\notasAtualizacao.html"  >nul
+ren "C:\Program Files (x86)\Fenox V1.0\Fnx64bits.exe" "Fnx64bits.exe.OLD1"
+move "%temp%\Fenox\Fnx64bits.exe" "C:\Program Files (x86)\Fenox V1.0\"
 REM ******************* INICIA SISOCR ****************
 cls
 echo   ════════════════════════════════════════
@@ -220,6 +223,8 @@ REM ******************* DELETA PASTAS ****************
 rmdir /s /q "C:\Program Files (x86)\Fenox V1.0.OLD1"  >nul
 del /f "C:\Program Files (x86)\Fenox V1.0\un.config"  >nul
 del /f "C:\Program Files (x86)\Fenox V1.0\notasAtualizacao.html"  >nul
+ren "C:\Program Files (x86)\Fenox V1.0\Fnx64bits.exe" "Fnx64bits.exe.OLD1"
+move "%temp%\Fenox\Fnx64bits.exe" "C:\Program Files (x86)\Fenox V1.0\"
 timeout /t 2 /nobreak >nul
 cls
 echo   ════════════════════════════════════
