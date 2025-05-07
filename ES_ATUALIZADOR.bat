@@ -1,5 +1,4 @@
 @echo off
-chcp 65001 >nul
 ::--------06/05/2025------------
 title ATUALIZADOR ES
 if "%Admin%"=="ops" goto :eof
@@ -27,17 +26,17 @@ SET VERSAOINSTWCF=WCFLocalFenox_1.3.0.18_x86.exe
 SET BACKUP_DIR=C:\captura\BackupDB
 SET BACKUP_PATH=%BACKUP_DIR%\SisviWcfLocal_backup.bak
 cls
-for /f "tokens=2 delims==" %%i in ('wmic datafile where name^="%filePath%" get Version /value') do set "fileVersion=%%i"
+::for /f "tokens=2 delims==" %%i in ('wmic datafile where name^="%filePath%" get Version /value') do set "fileVersion=%%i"
 chcp 65001 >nul 2>&1
-echo ╔══════════════════════════╗
-echo ║                          ║
-echo ║     VERSAO:%w%%VERSAOV1%%b%      ║
-echo ║    %w%Correcao Movel 06/05%b%  ║
-echo ║                          ║
-echo ║    %w%1 - DIGITACAO%b%         ║
-echo ║    %w%2 - SERVIDOR%b%          ║
-echo ║                          ║
-echo ╚══════════════════════════╝
+echo         ╔══════════════════════════╗
+echo         ║                          ║
+echo         ║     VERSAO:%w%%VERSAOV1%%b%      ║
+echo         ║    %w%Correcao Movel 06/05%b%  ║
+echo         ║                          ║
+echo         ║    %w%1 - DIGITACAO%b%         ║
+echo         ║    %w%2 - SERVIDOR%b%          ║
+echo         ║                          ║
+echo         ╚══════════════════════════╝
 rem choice /c 1234 /m "Escolha uma opcao"
 Set /p option= Escolha uma opcao:
 rem set "option=%errorlevel%"
@@ -134,13 +133,6 @@ echo   ════════════════════════�
 echo   ███     %w%BACKUP BANCO DE DADOS (5/6)%b%  ███
 echo   ════════════════════════════════════════ 
 timeout /t 2 /nobreak >nul
-::IF EXIST "%BACKUP_PATH%" (
-::    DEL /Q "%BACKUP_PATH%"
-::)
-
-::REM Executa o comando de backup
-::sqlcmd -S %SERVER_NAME% -U %USER_NAME% -P %PASSWORD% -Q "BACKUP DATABASE [%DATABASE_NAME%] TO DISK = '%BACKUP_PATH%' WITH FORMAT;"  >nul
-
 :: Backup do banco
 IF NOT EXIST "%BACKUP_DIR%" (
     MKDIR "%BACKUP_DIR%" >nul
