@@ -7,17 +7,22 @@
 	set "sis_ocr=7.4.0.0"
 	set "sis_monitor=7.1.3.1"
 	set "sis_creator=12.1.4.00"
+	set "TEMP_IP=%TEMP%\IPLISTEN.txt"
+::==============================================
 :: Adicione aqui hosts que não atualizarão a OCR
+::==============================================
 	set "excludedHostsocr=FENOX33 FENOX34 FENOX31 FENOX117 FENOX40 FENOX128 FENOX023 FENOX54 FENOX85 FENOX27"
+::==================================================
 :: Adicione aqui hosts que não atualizarão o Monitor
+::==================================================
 	set "excludedHostsmonitor="
+::==================================================
 :: Adicione aqui hosts que não atualizarão o creator
+::==================================================
 	set "excludedHostscreator="
-
 :: =====================================
 :: Verificar versão do SisMonitorOffline
 :: =====================================
-:: LISTA DE SERVIDORES COM OUTRA VERSÃO DO MONITOR, NÃO RECEBERÃO ATUALIZAÇÃO
 	for %%h in (%excludedHostscreator%) do (
     if /I "%%h"=="%COMPUTERNAME%" goto SkipMonitor
 )
@@ -100,7 +105,6 @@
 :: ================================
 :: Verificar versão do SisOcr
 :: ================================
-
 :: LISTA DE SERVIDORES COM OUTRA VERSÃO DA OCR, NÃO RECEBERÃO ATUALIZAÇÃO
 	for %%h in (%excludedHostsocr%) do (
     if /I "%%h"=="%COMPUTERNAME%" goto SkipOCR
@@ -142,6 +146,8 @@
 :: ADICIONA A ROTINA DE RESET DOS SERVIÇOS
 	schtasks /Create /TN "IISRESET" /TR "cmd.exe /c iisreset & sc stop SisOcrOffline & timeout /t 2 >nul & sc start SisOcrOffline & sc stop SisMonitorOffline & timeout /t 2 >nul & sc start SisMonitorOffline & sc stop SisAviCreator & timeout /t 2 >nul & sc start SisAviCreator" /SC DAILY /ST 07:00 /F /RL HIGHEST >nul
 	schtasks /Create /TN "IISRESET_INICIALIZACAO" /TR "cmd.exe /c iisreset & sc stop SisOcrOffline & timeout /t 2 >nul & sc start SisOcrOffline & sc stop SisMonitorOffline & timeout /t 2 >nul & sc start SisMonitorOffline & sc stop SisAviCreator & timeout /t 2 >nul & sc start SisAviCreator" /SC ONSTART /F /RL HIGHEST >nul
+	call :iplisten
+	pause
 	set SERVER_NAME=localhost
 	set USER_NAME=sa
 	set PASSWORD=F3N0Xfnx
@@ -277,4 +283,25 @@
 	set FILE="C:\Program Files (x86)\Fenox V1.0\Fnx64bits.exe.config"
 :: Substitui o endereço IP no arquivo usando PowerShell
 	powershell -Command "(Get-Content '%FILE%') -replace 'http://.*:8080', 'http://%IP%:8080' | Set-Content '%FILE%'"
+	goto :eof
+	
+:iplisten
+	ipconfig | findstr "IPv4" > "%TEMP_IP%"
+:: Lista os IPs no iplisten antes de remover
+	for /f "tokens=*" %%i in ('netsh http show iplisten ^| findstr /R "[0-9]\."') do (
+    set "IP=%%i"
+    netsh http delete iplisten ip=!IP! >nul
+)
+
+:: Obtém o IP atual do computador
+	for /f "tokens=2 delims=:" %%A in ('ipconfig ^| findstr "IPv4"') do (
+    set "CURRENT_IP=%%A"
+    set "CURRENT_IP=!CURRENT_IP: =!"
+)
+:: Adiciona o IP atual e 127.0.0.1 ao iplisten
+	echo Adicionado ip ao Iplisten:%w% !CURRENT_IP! %b%
+	echo Adicionado ip ao Iplisten:%w%127.0.0.1 %b%
+	netsh http add iplisten ip=!CURRENT_IP!  >nul
+	netsh http add iplisten ip=127.0.0.1  >nul
+	ipconfig /flushdns  >nul
 	goto :eof
