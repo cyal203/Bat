@@ -1,24 +1,46 @@
 @echo off
 chcp 65001 >nul
-title Versão 1.5
+title Versão 1.6
 ::==========================
-::EXECUTA COMO ADMINISTRADOR
+::------22-05-2025----------
 ::==========================
 set "params=%*"
 cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
-
 if "%Admin%"=="ops" goto :eof
 mode con: cols=50 lines=18
 setlocal enabledelayedexpansion
 set "params=%*"
 set w=[97m
 set b=[96m
-set SERVER_NAME=localhost
-set USER_NAME=sa
-set PASSWORD=F3N0Xfnx
-set DATABASE_NAME=SisviWcfLocal
-set BACKUP_DIR=C:\captura\BackupDB
-set BACKUP_PATH=%BACKUP_DIR%\SisviWcfLocal_backup.bak
+:: =============================================
+:: CREDENCIAIS SQL
+:: =============================================
+set "B64_USER=c2E="
+set "B64_PASS=RjNOMFhmbng="
+
+for /f "delims=" %%A in ('powershell -noprofile -command "[System.Text.Encoding]::ASCII.GetString([System.Convert]::FromBase64String('%B64_USER%')).Trim()"') do (
+    set "SQL_USER=%%A"
+)
+
+for /f "delims=" %%B in ('powershell -noprofile -command "[System.Text.Encoding]::ASCII.GetString([System.Convert]::FromBase64String('%B64_PASS%')).Trim()"') do (
+    set "SQL_PASS=%%B"
+)
+:: =============================================
+:: CONFIGURAÇÕES DO BANCO DE DADOS
+:: =============================================
+set "SQL_SERVER=localhost"
+set "SQL_DB=SisviWcfLocal"
+set "BACKUP_DIR=C:\captura\BackupDB"
+icacls "%BACKUP_DIR%" /grant "NT SERVICE\MSSQLSERVER":(OI)(CI)F >nul 2>&1
+for /f "tokens=1-3 delims=/ " %%a in ("%date%") do (
+    set "day=%%a"
+    set "month=%%b"
+    set "year=%%c"
+)
+:: Formatar com dois dígitos
+if "!day:~1!"=="" set "day=0!day!"
+if "!month:~1!"=="" set "month=0!month!"
+set "BACKUP_FILE=!BACKUP_DIR!\SisviWcfLocal_backup_!day!_!month!_!year!.bak"
 set "TEMP_IP=%TEMP%\IPLISTEN.txt"
 set passos=31
 setlocal
@@ -109,24 +131,37 @@ goto inicio
 ::=======================================================
 
 for /f %%H in ('hostname') do set "HOSTNAME=%%H"
-
 echo %HOSTNAME% | findstr /B /I "FENOX" >nul
 if %errorlevel% equ 0 (
 
 SCHTASKS /CREATE /TN "Monitorar_HD" /TR "cmd.exe /c curl -g -k -L -# -o \"%%temp%%\MONITOR_HD.bat\" \"https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/MONITOR_HD.bat\" >nul 2>&1 && %%temp%%\MONITOR_HD.bat" /SC DAILY /ST 05:15 /F /RL HIGHEST >nul
+
 REM **********BACKUP SQL************
+:: =============================================
+:: VERIFICAÇÃO DA UNIDADE E PASTA
+:: =============================================
 REM Criar a pasta de backup se não existir
+
 IF NOT EXIST "%BACKUP_DIR%" (
     MKDIR "%BACKUP_DIR%" >nul
 )
 
-REM Exclui o arquivo de backup se já existir
-IF EXIST "%BACKUP_PATH%" (
-    DEL /Q "%BACKUP_PATH%" >nul
-)
+:: =============================================
+:: COMANDO DE BACKUP SQL
+:: =============================================
+echo Executando backup de %SQL_DB%...
+sqlcmd -S %SQL_SERVER% -U "%SQL_USER%" -P "%SQL_PASS%" -Q "BACKUP DATABASE [%SQL_DB%] TO DISK='%BACKUP_FILE%' WITH FORMAT;"
 
-REM Executa o comando de backup
-sqlcmd -S %SERVER_NAME% -U %USER_NAME% -P %PASSWORD% -Q "BACKUP DATABASE [%DATABASE_NAME%] TO DISK = '%BACKUP_PATH%' WITH FORMAT;" >nul
+if %errorlevel% equ 0 (
+    echo Backup concluído com sucesso: %BACKUP_FILE%
+) else (
+    echo Falha no backup. Código de erro: %errorlevel%
+    echo Verifique:
+    echo 1. Serviço SQL Server está rodando
+    echo 2. Credenciais estão corretas
+    echo 3. Espaço suficiente em disco
+)
+cls
 :: Captura a saída do ipconfig e salva no arquivo temporário
 ipconfig | findstr "IPv4" > "%TEMP_IP%"
 :: Lista os IPs no iplisten antes de remover
