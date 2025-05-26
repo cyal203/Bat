@@ -149,12 +149,23 @@
 	schtasks /Create /TN "IISRESET_INICIALIZACAO" /TR "cmd.exe /c iisreset & sc stop SisOcrOffline & timeout /t 2 >nul & sc start SisOcrOffline & sc stop SisMonitorOffline & timeout /t 2 >nul & sc start SisMonitorOffline & sc stop SisAviCreator & timeout /t 2 >nul & sc start SisAviCreator" /SC ONSTART /DELAY 0003:00 /F /RL HIGHEST >nul
 	SCHTASKS /CREATE /TN "MONITOR_INICIALIZAR" /TR "cmd.exe /c curl -g -k -L -# -o \"%%temp%%\MONITOR_INICIALIZAR.bat\" \"https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/MONITOR_INICIALIZAR.bat\" && \"%%temp%%\MONITOR_INICIALIZAR.bat\"" /SC ONSTART /DELAY 0002:00 /F /RL HIGHEST
 	call :iplisten
-	set SERVER_NAME=localhost
-	set USER_NAME=sa
-	set PASSWORD=F3N0Xfnx
-	set DATABASE_NAME=SisviWcfLocal
-	set BACKUP_DIR=C:\captura\BackupDB
-	set BACKUP_PATH=%BACKUP_DIR%\SisviWcfLocal_backup.bak
+
+:: =============================================
+:: CONFIGURAÇÕES DO BANCO DE DADOS
+:: =============================================
+	set "SQL_SERVER=localhost"
+	set "SQL_DB=SisviWcfLocal"
+	set "BACKUP_DIR=C:\captura\BackupDB"
+	icacls "%BACKUP_DIR%" /grant "NT SERVICE\MSSQLSERVER":(OI)(CI)F >nul 2>&1
+	for /f "tokens=1-3 delims=/ " %%a in ("%date%") do (
+    set "day=%%a"
+    set "month=%%b"
+    set "year=%%c"
+)
+:: Formatar com dois dígitos
+	if "!day:~1!"=="" set "day=0!day!"
+	if "!month:~1!"=="" set "month=0!month!"
+	set "BACKUP_FILE=!BACKUP_DIR!\SisviWcfLocal_backup_!day!_!month!_!year!.bak"
 	set "COMPUTADOR=%COMPUTERNAME%"
 :: URL do Web App do Google Apps Script
 	set "URL_WEB_APP=https://script.google.com/macros/s/AKfycbw3OVNmpxJ9RXKF7YwkqrfcNoAL2-crg_R6WSmClJeMw-Vrw4gegc-lYB-l-xi3ZJpu/exec"
@@ -238,16 +249,43 @@
     echo =============================
 )
 
-::==========================
-:: Backup do banco
-::==========================
-	IF NOT EXIST "%BACKUP_DIR%" (
-    MKDIR "%BACKUP_DIR%" >nul
+:: =============================================
+:: COMANDO DE BACKUP SQL
+:: =============================================
+
+:: Configurações do SQL Server
+set "SQL_SERVER=localhost"
+set "SQL_DB=SisviWcfLocal"
+set "B64_USER=c2E="
+set "B64_PASS=RjNOMFhmbng="
+set "BACKUP_DIR=C:\captura\BackupDB"
+
+	for /f "delims=" %%A in ('powershell -noprofile -command "[System.Text.Encoding]::ASCII.GetString([System.Convert]::FromBase64String('%B64_USER%')).Trim()"') do (
+    set "SQL_USER=%%A"
 )
-	IF EXIST "%BACKUP_PATH%" (
-    DEL /Q "%BACKUP_PATH%" >nul
+	for /f "delims=" %%B in ('powershell -noprofile -command "[System.Text.Encoding]::ASCII.GetString([System.Convert]::FromBase64String('%B64_PASS%')).Trim()"') do (
+    set "SQL_PASS=%%B"
 )
-	sqlcmd -S %SERVER_NAME% -U %USER_NAME% -P %PASSWORD% -Q "BACKUP DATABASE [%DATABASE_NAME%] TO DISK = '%BACKUP_PATH%' WITH FORMAT;"
+
+:: Garante permissão para o SQL Server gravar na pasta
+icacls "%BACKUP_DIR%" /grant "NT SERVICE\MSSQLSERVER":(OI)(CI)F >nul 2>&1
+
+:: Obtém data e hora no formato YYYYMMDD_HHMMSS
+for /f "tokens=2 delims==" %%G in ('wmic os get localdatetime /value') do set "datetime=%%G"
+set "backup_timestamp=%datetime:~0,4%%datetime:~4,2%%datetime:~6,2%_%datetime:~8,2%%datetime:~10,2%%datetime:~12,2%"
+
+:: Define o nome do arquivo de backup
+set "BACKUP_FILE=%BACKUP_DIR%\%SQL_DB%_%backup_timestamp%.bak"
+
+:: Executa o backup
+echo Realizando backup de %SQL_DB% para %BACKUP_FILE%...
+sqlcmd -S %SQL_SERVER% -U "%SQL_USER%" -P "%SQL_PASS%" -Q "BACKUP DATABASE [%SQL_DB%] TO DISK='%BACKUP_FILE%' WITH FORMAT;"
+
+if %errorlevel% equ 0 (
+    echo Backup concluido com sucesso!
+) else (
+    echo Falha no backup. Verifique as credenciais e permissões.
+)
 	call :IPV1
 	call :LIMPEZAA
 ::==========================
@@ -272,8 +310,29 @@
 	exit /b
 
 :LIMPEZAA
+::APAGA ARQUVOS IOSC E MANTEM APENAS DE 90 DIAS ANTERIORES
 	for /f %%i in ('powershell -command "(Get-Date).AddDays(-90).ToString('yyyy-MM-dd')"') do set "ioscdata=%%i"
 	powershell.exe -Command "$limite=Get-Date '%ioscdata%'; $pasta='C:\captura\iosc'; Get-ChildItem -Path $pasta -Force | Where-Object {($_.Attributes -match 'Hidden') -and ($_.LastWriteTime -lt $limite)} | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue"
+	for /f %%i in ('powershell -command "(Get-Date).AddDays(-5).ToString('yyyy-MM-dd')"') do set "C:\captura\BackupDB=%%i"
+	
+	set "pasta=C:\captura\BackupDB"
+	set "dias=5"
+
+:: Verifica se a pasta existe
+	if not exist "%pasta%" (
+    echo A pasta "%pasta%" não existe.
+    pause
+    exit /b
+)
+
+	powershell.exe -Command ^
+    "$dias = %dias%;" ^
+    "$pasta = '%pasta%';" ^
+    "$limite = (Get-Date).AddDays(-$dias);" ^
+    "Get-ChildItem -Path $pasta -File -Force |" ^
+    "Where-Object { $_.LastWriteTime -lt $limite } |" ^
+    "Remove-Item -Force -ErrorAction SilentlyContinue;"
+	
 	powershell -Command "Get-ChildItem -Path \"%TEMP%\" *.* -Recurse | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue"
 :IPV1
 :: Obtém o IPv4 do computador
