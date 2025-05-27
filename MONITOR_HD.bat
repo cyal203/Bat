@@ -13,8 +13,8 @@ if "%1"=="/hidden" goto :MONITOR
 ) > "%temp%\runhidden.vbs"
 
 :: Executa o VBS e fecha esta instância visível
-wscript "%temp%\runhidden.vbs"
-exit /B
+start "" /B wscript "%temp%\runhidden.vbs"
+exit
 
 :MONITOR
 :: ======================
