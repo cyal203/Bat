@@ -2,7 +2,7 @@
 chcp 65001 >nul
 title Versão 1.6
 ::==========================
-::------22-05-2025----------
+::------27-05-2025----------
 ::==========================
 set "params=%*"
 cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
@@ -63,9 +63,11 @@ echo   ╚═╝     ╚══════╝╚═╝  ╚═══╝  ╚═�
 echo.
 echo              SELECIONE UMA OPCAO:
 echo.   
-echo      [%w%1%b%]%w%OTIMIZACAO%b%     [%w%2%b%]%w%ADD IPLISTEN%b%     
+echo      [%w%1%b%]%w% OTIMIZACAO%b%     [%w%2%b%]%w% ADD IPLISTEN%b%     
 echo.                 
-echo      [%w%3%b%]%w%ATT SERVICOS%b%   [%w%4%b%]%w%INST LEITOR BIO%b%    
+echo      [%w%3%b%]%w% ATT SERVICOS%b%   [%w%4%b%]%w% INST LEITOR BIO%b%
+echo.
+echo      [%w%5%b%]%w% HD 100%b% 
 echo.
 Set /p option= %w%Escolha uma Opcao:%b%
 
@@ -73,6 +75,7 @@ if %option%==1 goto otimizacao
 if %option%==2 goto iplisten
 if %option%==3 goto atualiza_servicos
 if %option%==4 goto leitor_biometrico
+if %option%==5 goto hd100
 echo.
 cls
 echo   ═════════════════════════════════════
@@ -269,3 +272,13 @@ echo   ███  %w%OTIMZACAO CONCLUIDA. . .%b%   ███
 echo   ═══════════════════════════════════
 timeout /t 1 >nul
 goto :EOF
+
+:hd100
+cls
+echo   ═══════════════════════════════════
+echo   ███  %w%VERIFICANDO ARQUIVOS. . .%b%  ███
+echo   ═══════════════════════════════════
+sfc /scannow
+dism /online /cleanup-image /restorehealth
+defrag c: /F
+exit
