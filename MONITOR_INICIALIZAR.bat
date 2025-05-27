@@ -16,7 +16,7 @@ exit /B
 
 :MONITOR
 :: ======================
-:: ------22/05/2025------
+:: ------27/05/2025------
 :: ======================
 	chcp 1252 >nul
 	setlocal enabledelayedexpansion
@@ -105,6 +105,7 @@ exit /B
 )
 	call :iplisten
 	call :IPV1
+	call :IIS
 	call :LIMPEZAA
 ::==========================
 ::         FUNÇOES
@@ -161,4 +162,16 @@ exit /B
 	netsh http add iplisten ip=!CURRENT_IP!  >nul
 	netsh http add iplisten ip=127.0.0.1  >nul
 	ipconfig /flushdns  >nul
+	goto :eof
+:IIS
+	IISRESET
+	sc stop SisOcrOffline >nul
+	sc stop SisAviCreator >nul
+	sc stop SisMonitorOffline >nul
+	sc stop MMFnx >nul
+	timeout /t 2 /nobreak >nul
+	sc start SisOcrOffline >nul
+	sc start SisAviCreator >nul
+	sc start SisMonitorOffline >nul
+	sc start MMFnx >nul
 	goto :eof
