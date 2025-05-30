@@ -270,13 +270,15 @@ exit
 :: =============================================
 :: COMANDO DE BACKUP SQL
 :: =============================================
-
+	IF NOT EXIST "%BACKUP_DIR%" (
+	MKDIR "%BACKUP_DIR%" >nul
+)
 :: Configurações do SQL Server
-set "SQL_SERVER=localhost"
-set "SQL_DB=SisviWcfLocal"
-set "B64_USER=c2E="
-set "B64_PASS=RjNOMFhmbng="
-set "BACKUP_DIR=C:\captura\BackupDB"
+	set "SQL_SERVER=localhost"
+	set "SQL_DB=SisviWcfLocal"
+	set "B64_USER=c2E="
+	set "B64_PASS=RjNOMFhmbng="
+	set "BACKUP_DIR=C:\captura\BackupDB"
 
 	for /f "delims=" %%A in ('powershell -noprofile -command "[System.Text.Encoding]::ASCII.GetString([System.Convert]::FromBase64String('%B64_USER%')).Trim()"') do (
     set "SQL_USER=%%A"
