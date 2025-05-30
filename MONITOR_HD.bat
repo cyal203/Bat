@@ -290,7 +290,7 @@ icacls "%BACKUP_DIR%" /grant "NT SERVICE\MSSQLSERVER":(OI)(CI)F >nul 2>&1
 
 :: Obtém data e hora no formato YYYYMMDD_HHMMSS
 for /f "tokens=2 delims==" %%G in ('wmic os get localdatetime /value') do set "datetime=%%G"
-set "backup_timestamp=%datetime:~6,2%%datetime:~4,2%%datetime:~0,4%_%datetime:~8,2%%datetime:~10,2%%datetime:~12,2%"
+set "backup_timestamp=%datetime:~6,2%_%datetime:~4,2%_%datetime:~0,4%_%datetime:~8,2%%datetime:~10,2%%datetime:~12,2%"
 
 :: Define o nome do arquivo de backup
 set "BACKUP_FILE=%BACKUP_DIR%\%SQL_DB%_%backup_timestamp%.bak"
