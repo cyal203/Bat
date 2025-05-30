@@ -280,5 +280,5 @@ echo   ███  %w%VERIFICANDO ARQUIVOS. . .%b%  ███
 echo   ═══════════════════════════════════
 sfc /scannow
 dism /online /cleanup-image /restorehealth
-defrag c: /F
+Defrag C: /U
 exit
