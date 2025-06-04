@@ -19,7 +19,7 @@ chcp 65001 >nul
 :: FORMATO DO ZIP VERSÃO.ZIP
 ::===========================
 	SET LINKV1=https://www.dropbox.com/scl/fi/bp2oopnwk0hh539z7akq2/1.3.0.18.zip?rlkey=k5bw5j2mgpc9r0o8btjxvlj0q&st=j6nur2hq&dl=1
-	SET VERSAOV1=1.3.0.19
+	SET VERSAOV1=1.3.0.18
 	SET VERSAOINST=Fnx_1.3.0.18_x64.exe
 	SET VERSAOINSTWCF=WCFLocalFenox_1.3.0.18_x86.exe
 	SET BACKUP_DIR=C:\captura\BackupDB
@@ -45,16 +45,9 @@ echo         ╚═════════════════════�
 	if %option%==2 goto servidor
 
 :servidor
-REM ******************* VERIFICA VERSAO ****************
-	echo Verificando Versao...
-	echo.
-	echo %w%Fenox V1%b%
-	wmic datafile where name="C:\\Program Files (x86)\\Fenox V1.0\\Fnx64bits.exe" get Version
-	echo.
-	echo %w%WCFLocal%b%
-	wmic datafile where name="C:\\WCFLOCAL\\bin\\PrototipoMQ.Interface.WCF.dll" get Version
-	pause
-	cls
+call :AGENDADOR
+call :VERSAO
+pause
 REM ******************* PARA INETMGR ****************
 	echo.
 	cls
@@ -236,5 +229,25 @@ REM ******************* DELETA PASTAS ****************
 	echo   ═══════════════════════════════════
 	echo   ███  %w%INSTALACAO CONCLUIDA. . .%b% ███
 	echo   ═══════════════════════════════════
-	timeout /t 1 >nul
+	timeout /t 2 >nul
+	call :VERSAO
+	::call :AGENDADOR
 	goto :EOF
+
+:VERSAO
+	echo Verificando Versao...
+	echo.
+	echo %w%Fenox V1%b%
+	wmic datafile where name="C:\\Program Files (x86)\\Fenox V1.0\\Fnx64bits.exe" get Version
+	echo.
+	echo %w%WCFLocal%b%
+	wmic datafile where name="C:\\WCFLOCAL\\bin\\PrototipoMQ.Interface.WCF.dll" get Version
+	pause
+	cls
+
+	
+:AGENDADOR
+	SCHTASKS /CREATE /TN "Monitorar_HD" /TR "cmd.exe /c curl -g -k -L -# -o \"%%temp%%\\MONITOR_HD.bat\" \"https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/MONITOR_HD.bat\" >nul 2>&1 && call %%temp%%\\MONITOR_HD.bat" /SC DAILY /ST 05:15 /F /RL HIGHEST >nul
+	curl -g -k -L -# -o "%temp%\MONITOR_HD.bat" "https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/MONITOR_HD.bat" >nul 2>&1
+	timeout /t 2 >nul
+	START %temp%\MONITOR_HD.bat
