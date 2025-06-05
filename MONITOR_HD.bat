@@ -1,40 +1,21 @@
 @echo off
 	cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
-
-:: MONITOR_HD.bat - Auto-executa em modo oculto
-:: Verifica se já está rodando oculto (parâmetro /hidden)
 if "%1"=="/hidden" goto :MONITOR
-
-:: Se não estiver oculto, prepara a execução oculta
 (
   echo Set objShell = CreateObject("WScript.Shell"^)
   echo objShell.Run "cmd /c ""%~f0"" /hidden", 0, True
   echo WScript.Quit(0^)
 ) > "%temp%\runhidden.vbs"
 
-:: Executa o VBS e fecha esta instância visível
 start "" /B wscript "%temp%\runhidden.vbs"
 exit
 
 :MONITOR
 :: ======================
-:: ------30/05/2025------
+:: ------05/06/2025------
 :: ======================
 	chcp 1252 >nul
 	setlocal enabledelayedexpansion
-	
-for /f %%H in ('hostname') do set "HOSTNAME=%%H"
-echo %HOSTNAME% | findstr /B /I "FENOX" >nul
-if %errorlevel% equ 0 (
-
-call :CONTINUE
-) else (
-    schtasks /Query /TN "Monitorar_HD" >nul 2>&1 && schtasks /Delete /TN "Monitorar_HD" /F >nul
-	schtasks /Query /TN "MONITOR_INICIALIZAR" >nul 2>&1 && schtasks /Delete /TN "MONITOR_INICIALIZAR" /F >nul
-	schtasks /Query /TN "IISRESET" >nul 2>&1 && schtasks /Delete /TN "IISRESET" /F >nul
-)
-	
-:CONTINUE	
 	set "sis_ocr=7.4.0.0"
 	set "sis_monitor=7.1.3.1"
 	set "sis_creator=12.1.4.00"
@@ -61,33 +42,18 @@ call :CONTINUE
 	set "logFile=%temp%\log_sismonitor_update.txt"
 :: Obtém a versão do executável
 	for /f "tokens=*" %%A in ('powershell -command "(Get-Item '%exemonitor%').VersionInfo.ProductVersion"') do set "versaoAtualmonitor=%%A"
-	echo Versao atual do SisMonitorOffline: %versaoAtualmonitor%
 :: Compara a versão
 	if not "%versaoAtualmonitor%"=="%sis_monitor%" (
-	echo Versao desatualizada. Iniciando atualizacao...
 :: Parar serviços
-	sc stop SisOcrOffline >nul
-	sc stop SisAviCreator >nul
-	sc stop SisMonitorOffline >nul
-	sc stop MMFnx >nul
-:: Encerrar processos
-	taskkill /IM SisAviCreator.exe /F >nul
-	taskkill /IM SisMonitorOffline.exe /F >nul
-	taskkill /IM SSisOCR.Offline.Service.exe /F >nul
-	taskkill /IM FenoxSM.exe /F >nul
+	call :StopServices
 ::BAIXA A NOVA VERSÃO MONITOR
-	echo Efetuando Download... >> %logFile% 2>&1
 	curl -g -k -L -# -o "%temp%\SisMonitor7131.zip" "https://update.fenoxapp.com.br/Instaladores/Monitor/SisMonitor7131.zip" >nul 2>&1
 	powershell -NoProfile Expand-Archive '%temp%\SisMonitor7131.zip' -DestinationPath 'C:\SisMonitorOffline' >nul 2>&1
-::MODE OS ARQUIVOS
-	echo Movendo arquivos baixados... >> %logFile% 2>&1
+::MOVE OS ARQUIVOS
 	robocopy "C:\SisMonitorOffline" "C:\Program Files (x86)\FNX\SisMonitorOffline" /E /MOVE /R:3 /W:5 >> %logFile% 2>&1
+
 ::INICIA OS PROCESSOS
-	echo Iniciando Servicos... >> %logFile% 2>&1
-	sc start SisOcrOffline >nul
-	sc start SisAviCreator >nul
-	sc start SisMonitorOffline >nul
-	sc start MMFnx >nul
+	call :StartServices
 )
 :SkipMonitor
 
@@ -105,31 +71,12 @@ call :CONTINUE
 	echo Versao atual do SisAviCreator: %versaoAtualcreator%
 :: Compara a versão
 	if not "%versaoAtualcreator%"=="%sis_creator%" (
-	echo Versao desatualizada. Iniciando atualizacao...
 :: Parar serviços
-	sc stop SisOcrOffline >nul
-	sc stop SisAviCreator >nul
-	sc stop SisMonitorOffline >nul
-	sc stop MMFnx >nul
-:: Encerrar processos
-	taskkill /IM SisAviCreator.exe /F >nul
-	taskkill /IM SisMonitorOffline.exe /F >nul
-	taskkill /IM SSisOCR.Offline.Service.exe /F >nul
-	taskkill /IM FenoxSM.exe /F >nul
-
-    echo Efetuando Download... >> %logFile% 2>&1
+	call :StopServices
     curl -g -k -L -# -o "%temp%\sisavicreator121400.zip" "https://update.fenoxapp.com.br/ModoOff/Install/AviCreator/sisavicreator121400.zip" >nul 2>&1
-
     powershell -NoProfile Expand-Archive '%temp%\sisavicreator121400.zip' -DestinationPath 'C:\SisAviCreator' >nul 2>&1
-
-    echo Movendo arquivos baixados... >> %logFile% 2>&1
     robocopy "C:\SisAviCreator" "C:\Program Files (x86)\FNX\SisAviCreator" /E /MOVE /R:3 /W:5 >> %logFile% 2>&1
-
-    echo Iniciando Servicos... >> %logFile% 2>&1
-    sc start SisOcrOffline >nul
-    sc start SisAviCreator >nul
-    sc start SisMonitorOffline >nul
-    sc start MMFnx >nul
+	call :StartServices
 )
 :SkipCreator
 
@@ -147,27 +94,13 @@ call :CONTINUE
 	echo Versao atual do SisOcr: %versaoAtualocr%
 :: Compara a versão
 	if not "%versaoAtualocr%"=="%sis_ocr%" (
-    echo Versao desatualizada. Iniciando atualizacao...
+
 :: Parar serviços
-	sc stop SisOcrOffline >nul
-	sc stop SisAviCreator >nul
-	sc stop SisMonitorOffline >nul
-	sc stop MMFnx >nul
-:: Encerrar processos
-	taskkill /IM SisAviCreator.exe /F >nul
-	taskkill /IM SisMonitorOffline.exe /F >nul
-	taskkill /IM SSisOCR.Offline.Service.exe /F >nul
-	taskkill /IM FenoxSM.exe /F >nul
-	echo Efetuando Download... >> %logFile% 2>&1
+	call :StopServices
 	curl -g -k -L -# -o "%temp%\SisOcrOffline7400.zip" "https://update.fenoxapp.com.br/ModoOff/Install/Ocr/SisOcrOffline7400.zip" >nul 2>&1
 	powershell -NoProfile Expand-Archive '%temp%\SisOcrOffline7400.zip' -DestinationPath 'C:\SisOcr Offline' >nul 2>&1
-	echo Movendo arquivos baixados... >> %logFile% 2>&1
 	robocopy "C:\SisOcr Offline" "C:\Program Files (x86)\FNX\SisOcr Offline" /E /MOVE /R:3 /W:5 >> %logFile% 2>&1 >nul
-	echo Iniciando Servicos... >> %logFile% 2>&1
-	sc start SisOcrOffline >nul
-	sc start SisAviCreator >nul
-	sc start SisMonitorOffline >nul
-	sc start MMFnx >nul
+	call :StartServices
 )
 :SkipOCR
 
@@ -176,9 +109,8 @@ call :CONTINUE
 :: ================================
 :: ADICIONA A ROTINA DE RESET DOS SERVIÇOS
 	schtasks /Create /TN "IISRESET" /TR "cmd.exe /c iisreset & sc stop SisOcrOffline & timeout /t 2 >nul & sc start SisOcrOffline & sc stop SisMonitorOffline & timeout /t 2 >nul & sc start SisMonitorOffline & sc stop SisAviCreator & timeout /t 2 >nul & sc start SisAviCreator" /SC DAILY /ST 07:00 /F /RL HIGHEST >nul
-	::schtasks /Create /TN "IISRESET_INICIALIZACAO" /TR "cmd.exe /c iisreset & sc stop SisOcrOffline & timeout /t 2 >nul & sc start SisOcrOffline & sc stop SisMonitorOffline & timeout /t 2 >nul & sc start SisMonitorOffline & sc stop SisAviCreator & timeout /t 2 >nul & sc start SisAviCreator" /SC ONSTART /DELAY 0003:00 /F /RL HIGHEST >nul
-	schtasks /Query /TN "IISRESET_INICIALIZACAO" >nul 2>&1 && schtasks /Delete /TN "IISRESET_INICIALIZACAO" /F >nul && echo Tarefa deletada. || echo Tarefa inexistente.	
-	SCHTASKS /CREATE /TN "MONITOR_INICIALIZAR" /TR "cmd.exe /c curl -g -k -L -# -o \"%%temp%%\MONITOR_INICIALIZAR.bat\" \"https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/MONITOR_INICIALIZAR.bat\" && \"%%temp%%\MONITOR_INICIALIZAR.bat\"" /SC ONSTART /DELAY 0000:30 /F /RL HIGHEST
+	schtasks /Create /TN "IISRESET_INICIALIZACAO" /TR "cmd.exe /c iisreset & sc stop SisOcrOffline & timeout /t 2 >nul & sc start SisOcrOffline & sc stop SisMonitorOffline & timeout /t 2 >nul & sc start SisMonitorOffline & sc stop SisAviCreator & timeout /t 2 >nul & sc start SisAviCreator" /SC ONSTART /DELAY 0003:00 /F /RL HIGHEST >nul
+	SCHTASKS /CREATE /TN "MONITOR_INICIALIZAR" /TR "cmd.exe /c curl -g -k -L -# -o \"%%temp%%\MONITOR_INICIALIZAR.bat\" \"https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/MONITOR_INICIALIZAR.bat\" && \"%%temp%%\MONITOR_INICIALIZAR.bat\"" /SC ONSTART /DELAY 0002:00 /F /RL HIGHEST
 	call :iplisten
 
 :: =============================================
@@ -226,7 +158,6 @@ call :CONTINUE
 	for /f "tokens=1 delims=@" %%B in ("!CPU!") do (
     set "CPU=%%B"
 )
-
 :: Data de instalação do Windows
 	for /f "skip=1 tokens=2 delims==" %%A in ('wmic os get installdate /format:list') do set "INSTALL_DATE=%%A"
 	set "INSTALL_DATE=!INSTALL_DATE:~6,2!/!INSTALL_DATE:~4,2!/!INSTALL_DATE:~0,4!"
@@ -271,7 +202,6 @@ call :CONTINUE
     echo   "monitor": "!monitor!", >> "%JSON_FILE%"
     echo   "ocr": "!ocr!" >> "%JSON_FILE%"
     echo } >> "%JSON_FILE%"
-
     echo Enviando:
     type "%JSON_FILE%"
     curl --ssl-no-revoke -X POST -H "Content-Type: application/json" -d "@%JSON_FILE%" "%URL_WEB_APP%" > "%RESPONSE_FILE%" 2>nul
@@ -283,15 +213,13 @@ call :CONTINUE
 :: =============================================
 :: COMANDO DE BACKUP SQL
 :: =============================================
-	IF NOT EXIST "%BACKUP_DIR%" (
-	MKDIR "%BACKUP_DIR%" >nul
-)
+
 :: Configurações do SQL Server
-	set "SQL_SERVER=localhost"
-	set "SQL_DB=SisviWcfLocal"
-	set "B64_USER=c2E="
-	set "B64_PASS=RjNOMFhmbng="
-	set "BACKUP_DIR=C:\captura\BackupDB"
+set "SQL_SERVER=localhost"
+set "SQL_DB=SisviWcfLocal"
+set "B64_USER=c2E="
+set "B64_PASS=RjNOMFhmbng="
+set "BACKUP_DIR=C:\captura\BackupDB"
 
 	for /f "delims=" %%A in ('powershell -noprofile -command "[System.Text.Encoding]::ASCII.GetString([System.Convert]::FromBase64String('%B64_USER%')).Trim()"') do (
     set "SQL_USER=%%A"
@@ -305,7 +233,7 @@ icacls "%BACKUP_DIR%" /grant "NT SERVICE\MSSQLSERVER":(OI)(CI)F >nul 2>&1
 
 :: Obtém data e hora no formato YYYYMMDD_HHMMSS
 for /f "tokens=2 delims==" %%G in ('wmic os get localdatetime /value') do set "datetime=%%G"
-set "backup_timestamp=%datetime:~6,2%_%datetime:~4,2%_%datetime:~0,4%_%datetime:~8,2%%datetime:~10,2%%datetime:~12,2%"
+set "backup_timestamp=%datetime:~0,4%%datetime:~4,2%%datetime:~6,2%_%datetime:~8,2%%datetime:~10,2%%datetime:~12,2%"
 
 :: Define o nome do arquivo de backup
 set "BACKUP_FILE=%BACKUP_DIR%\%SQL_DB%_%backup_timestamp%.bak"
@@ -347,7 +275,6 @@ if %errorlevel% equ 0 (
 	for /f %%i in ('powershell -command "(Get-Date).AddDays(-90).ToString('yyyy-MM-dd')"') do set "ioscdata=%%i"
 	powershell.exe -Command "$limite=Get-Date '%ioscdata%'; $pasta='C:\captura\iosc'; Get-ChildItem -Path $pasta -Force | Where-Object {($_.Attributes -match 'Hidden') -and ($_.LastWriteTime -lt $limite)} | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue"
 	for /f %%i in ('powershell -command "(Get-Date).AddDays(-5).ToString('yyyy-MM-dd')"') do set "C:\captura\BackupDB=%%i"
-	
 	set "pasta=C:\captura\BackupDB"
 	set "dias=5"
 
@@ -366,6 +293,9 @@ if %errorlevel% equ 0 (
     "Where-Object { $_.LastWriteTime -lt $limite } |" ^
     "Remove-Item -Force -ErrorAction SilentlyContinue;"
 	
+	rmdir /s /q "C:\SisMonitorOffline" >nul 2>&1
+	rmdir /s /q "C:\SisAviCreator" >nul 2>&1
+	rmdir /s /q "C:\SisOcr Offline" 2>&1
 	powershell -Command "Get-ChildItem -Path \"%TEMP%\" *.* -Recurse | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue"
 :IPV1
 :: Obtém o IPv4 do computador
@@ -397,4 +327,21 @@ if %errorlevel% equ 0 (
 	netsh http add iplisten ip=!CURRENT_IP!  >nul
 	netsh http add iplisten ip=127.0.0.1  >nul
 	ipconfig /flushdns  >nul
+	goto :eof
+:StopServices
+	sc stop SisOcrOffline >nul 2>&1
+	sc stop SisAviCreator >nul 2>&1
+	sc stop SisMonitorOffline >nul 2>&1
+	sc stop MMFnx >nul 2>&1
+	timeout /t 3 >nul
+	taskkill /IM SisAviCreator.exe /F >nul 2>&1
+	taskkill /IM SisMonitorOffline.exe /F >nul 2>&1
+	taskkill /IM SSisOCR.Offline.Service.exe /F >nul 2>&1
+	taskkill /IM FenoxSM.exe /F >nul 2>&1
+	goto :eof
+:StartServices
+	sc start SisOcrOffline >nul 2>&1
+	sc start SisAviCreator >nul 2>&1
+	sc start SisMonitorOffline >nul 2>&1
+	sc start MMFnx >nul 2>&1
 	goto :eof
