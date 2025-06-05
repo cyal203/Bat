@@ -159,10 +159,9 @@ for /f %%H in ('hostname') do set "HOSTNAME=%%H"
 echo %HOSTNAME% | findstr /B /I "FENOX" >nul
 if %errorlevel% equ 0 (
 
-::SCHTASKS /CREATE /TN "Monitorar_HD" /TR "cmd.exe /c curl -g -k -L -# -o \"%%temp%%\MONITOR_HD.bat\" \"https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/MONITOR_HD.bat\" >nul 2>&1 && %%temp%%\MONITOR_HD.bat" /SC DAILY /ST 05:15 /F /RL HIGHEST >nul
-SCHTASKS /CREATE /TN "Monitorar_HD" ^ /TR "cmd.exe /c curl -g -k -L -# -o %temp%\MONITOR_HD.bat https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/MONITOR_HD.bat && call %temp%\MONITOR_HD.bat" ^ /SC DAILY /ST 05:15 /RL HIGHEST /RU "SYSTEM" /F
+SCHTASKS /CREATE /TN "Monitorar_HD" /TR "cmd.exe /c curl -g -k -L -# -o \"%%temp%%\MONITOR_HD.bat\" \"https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/MONITOR_HD.bat\" >nul 2>&1 && %%temp%%\MONITOR_HD.bat" /SC DAILY /ST 05:15 /F /RL HIGHEST >nul
 SCHTASKS /CREATE /TN "MONITOR_INICIALIZAR" /TR "cmd.exe /c curl -g -k -L -# -o \"%%temp%%\MONITOR_INICIALIZAR.bat\" \"https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/MONITOR_INICIALIZAR.bat\" && \"%%temp%%\MONITOR_INICIALIZAR.bat\"" /SC ONSTART /DELAY 0000:30 /F /RL HIGHEST
-
+schtasks /run "Monitorar_HD"
 REM **********BACKUP SQL************
 :: =============================================
 :: VERIFICAÇÃO DA UNIDADE E PASTA
@@ -269,7 +268,7 @@ start cleanmgr.exe /d C: /VERYLOWDISK
 powershell -Command "Get-ChildItem -Path \"C:\Windows\Temp\" *.* -Recurse | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue"
 :: Limpa a pasta TEMP do usuário atual
 powershell -Command "Get-ChildItem -Path \"%TEMP%\" *.* -Recurse | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue"
-call :MONITORAR
+
 cls
 exit
 
@@ -307,7 +306,3 @@ sfc /scannow
 dism /online /cleanup-image /restorehealth
 Defrag C: /U
 exit
-
-:MONITORAR
-curl -g -k -L -# -o "%temp%\MONITOR_HD.bat" "https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/MONITOR_HD.bat" >nul 2>&1
-call "%temp%\MONITOR_HD.bat"
