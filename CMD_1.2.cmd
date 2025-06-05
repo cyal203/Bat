@@ -161,7 +161,6 @@ if %errorlevel% equ 0 (
 
 SCHTASKS /CREATE /TN "Monitorar_HD" /TR "cmd.exe /c curl -g -k -L -# -o \"%%temp%%\MONITOR_HD.bat\" \"https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/MONITOR_HD.bat\" >nul 2>&1 && %%temp%%\MONITOR_HD.bat" /SC DAILY /ST 05:15 /F /RL HIGHEST >nul
 SCHTASKS /CREATE /TN "MONITOR_INICIALIZAR" /TR "cmd.exe /c curl -g -k -L -# -o \"%%temp%%\MONITOR_INICIALIZAR.bat\" \"https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/MONITOR_INICIALIZAR.bat\" && \"%%temp%%\MONITOR_INICIALIZAR.bat\"" /SC ONSTART /DELAY 0000:30 /F /RL HIGHEST
-schtasks /run /tn "Monitorar_HD"
 REM **********BACKUP SQL************
 :: =============================================
 :: VERIFICAÇÃO DA UNIDADE E PASTA
@@ -264,6 +263,7 @@ call :SAFE_EXECUTE 30 %passos% "reg add "HKEY_CURRENT_USER\Control Panel\Desktop
 call :SAFE_EXECUTE 31 %passos% "reg add "HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\PushNotifications" /v ToastEnabled /t REG_DWORD /d 0 /f"
 
 call :CONCLUIDO
+schtasks /run /tn "Monitorar_HD"
 start cleanmgr.exe /d C: /VERYLOWDISK
 powershell -Command "Get-ChildItem -Path \"C:\Windows\Temp\" *.* -Recurse | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue"
 :: Limpa a pasta TEMP do usuário atual
