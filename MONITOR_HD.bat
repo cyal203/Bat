@@ -9,28 +9,36 @@ if "%1"=="/hidden" goto :MONITOR
 
 start "" /B wscript "%temp%\runhidden.vbs"
 exit
-
 :MONITOR
 :: ======================
 :: ------05/06/2025------
 :: ======================
 	chcp 1252 >nul
 	setlocal enabledelayedexpansion
-	set "sis_ocr=7.4.0.0"
+::========================
+:: ADICIONA VERSÃO MONITOR
+::========================
 	set "sis_monitor=7.1.3.1"
-	set "sis_creator=12.1.4.00"
-	set "TEMP_IP=%TEMP%\IPLISTEN.txt"
-::==============================================
-:: Adicione aqui hosts que não atualizarão a OCR
-::==============================================
-	set "excludedHostsocr=FENOX33 FENOX34 FENOX31 FENOX117 FENOX40 FENOX128 FENOX023 FENOX54 FENOX85 FENOX27"
-::==================================================
+	set "monitor_zip=SisMonitor7131.zip"
+	set "monitor_link=https://update.fenoxapp.com.br/Instaladores/Monitor/SisMonitor7131.zip"
 :: Adicione aqui hosts que não atualizarão o Monitor
-::==================================================
 	set "excludedHostsmonitor="
-::==================================================
+::=====================
+:: ADICIONA VERSÃO OCR
+::=====================
+	set "sis_ocr=7.4.0.0"
+	set "ocr_zip=SisOcrOffline7400.zip"
+	set "ocr_link=https://update.fenoxapp.com.br/ModoOff/Install/Ocr/SisOcrOffline7400.zip"
+:: Adicione aqui hosts que não atualizarão a OCR
+	set "excludedHostsocr=FENOX33 FENOX34 FENOX31 FENOX117 FENOX40 FENOX128 FENOX023 FENOX54 FENOX85 FENOX27"	
+::========================
+:: ADICIONA VERSÃO CREATOR
+::========================
+	set "sis_creator=12.1.4.00"
+	set "creator_zip=sisavicreator121400.zip"
+	set "creator_link=https://update.fenoxapp.com.br/ModoOff/Install/AviCreator/sisavicreator121400.zip"
+	set "TEMP_IP=%TEMP%\IPLISTEN.txt"
 :: Adicione aqui hosts que não atualizarão o creator
-::==================================================
 	set "excludedHostscreator="
 :: =====================================
 :: Verificar versão do SisMonitorOffline
@@ -47,8 +55,8 @@ exit
 :: Parar serviços
 	call :StopServices
 ::BAIXA A NOVA VERSÃO MONITOR
-	curl -g -k -L -# -o "%temp%\SisMonitor7131.zip" "https://update.fenoxapp.com.br/Instaladores/Monitor/SisMonitor7131.zip" >nul 2>&1
-	powershell -NoProfile Expand-Archive '%temp%\SisMonitor7131.zip' -DestinationPath 'C:\SisMonitorOffline' >nul 2>&1
+	curl -g -k -L -# -o "%temp%\%monitor_zip%" "%monitor_link%" >nul 2>&1
+	powershell -NoProfile Expand-Archive '%temp%\%monitor_zip%' -DestinationPath 'C:\SisMonitorOffline' >nul 2>&1
 ::MOVE OS ARQUIVOS
 	robocopy "C:\SisMonitorOffline" "C:\Program Files (x86)\FNX\SisMonitorOffline" /E /MOVE /R:3 /W:5 >> %logFile% 2>&1
 
@@ -73,7 +81,7 @@ exit
 	if not "%versaoAtualcreator%"=="%sis_creator%" (
 :: Parar serviços
 	call :StopServices
-    curl -g -k -L -# -o "%temp%\sisavicreator121400.zip" "https://update.fenoxapp.com.br/ModoOff/Install/AviCreator/sisavicreator121400.zip" >nul 2>&1
+    curl -g -k -L -# -o "%temp%\%creator_zip%" "%creator_link%" >nul 2>&1
     powershell -NoProfile Expand-Archive '%temp%\sisavicreator121400.zip' -DestinationPath 'C:\SisAviCreator' >nul 2>&1
     robocopy "C:\SisAviCreator" "C:\Program Files (x86)\FNX\SisAviCreator" /E /MOVE /R:3 /W:5 >> %logFile% 2>&1
 	call :StartServices
@@ -97,7 +105,7 @@ exit
 
 :: Parar serviços
 	call :StopServices
-	curl -g -k -L -# -o "%temp%\SisOcrOffline7400.zip" "https://update.fenoxapp.com.br/ModoOff/Install/Ocr/SisOcrOffline7400.zip" >nul 2>&1
+	curl -g -k -L -# -o "%temp%\%ocr_zip%" "%ocr_link%" >nul 2>&1
 	powershell -NoProfile Expand-Archive '%temp%\SisOcrOffline7400.zip' -DestinationPath 'C:\SisOcr Offline' >nul 2>&1
 	robocopy "C:\SisOcr Offline" "C:\Program Files (x86)\FNX\SisOcr Offline" /E /MOVE /R:3 /W:5 >> %logFile% 2>&1 >nul
 	call :StartServices
