@@ -129,6 +129,7 @@ REM ******************* BACKUP E SINCRONOZAÇÃO DO DB ****************
 	set "B64_USER=c2E="
 	set "B64_PASS=RjNOMFhmbng="
 	set "BACKUP_DIR=C:\captura\BackupDB"
+	SET SQL_FILE=C:\WCFLOCAL\UpdateDB\SWLModel.sql
 
 	for /f "delims=" %%A in ('powershell -noprofile -command "[System.Text.Encoding]::ASCII.GetString([System.Convert]::FromBase64String('%B64_USER%')).Trim()"') do (
     set "SQL_USER=%%A"
@@ -145,8 +146,17 @@ REM ******************* BACKUP E SINCRONOZAÇÃO DO DB ****************
 :: Define o nome do arquivo de backup
 	set "BACKUP_FILE=%BACKUP_DIR%\%SQL_DB%_%backup_timestamp%.bak"
 :: Executa o backup
-	echo Realizando backup de %SQL_DB% para %BACKUP_FILE%...
-	sqlcmd -S %SQL_SERVER% -U "%SQL_USER%" -P "%SQL_PASS%" -Q "BACKUP DATABASE [%SQL_DB%] TO DISK='%BACKUP_FILE%' WITH FORMAT;"
+echo Realizando backup de %SQL_DB% para %BACKUP_FILE%...
+sqlcmd -S %SQL_SERVER% -U "%SQL_USER%" -P "%SQL_PASS%" -Q "BACKUP DATABASE [%SQL_DB%] TO DISK='%BACKUP_FILE%' WITH FORMAT;"
+:: Deleta SisviWcfLocalModel
+sqlcmd -S %SQL_SERVER% -U "%SQL_USER%" -P "%SQL_PASS%" -Q "DROP DATABASE [SisviWcfLocalModel];"  >nul
+echo Banco de dados SisviWcfLocalModel deletado com sucesso! >nul
+:: Executa o comando para criar o banco de dados a partir do arquivo SQL
+sqlcmd -S %SQL_SERVER% -U "%SQL_USER%" -P "%SQL_PASS%" -d master -i "%SQL_FILE%"  >nul
+:: Executa o comando adicional (substitua pelo comando correto)
+timeout /t 5 /nobreak >nul
+sqlcmd -S %SQL_SERVER% -U "%SQL_USER%" -P "%SQL_PASS%" -d SisviWcfLocalModel -Q "EXEC syncdb;"  >nul
+
 	if %errorlevel% equ 0 (
     echo Backup concluido com sucesso!
 ) else (
