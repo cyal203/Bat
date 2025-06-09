@@ -18,10 +18,10 @@ chcp 65001 >nul
 ::===========================
 :: FORMATO DO ZIP VERSÃO.ZIP
 ::===========================
-	SET LINKV1=https://www.dropbox.com/scl/fi/bp2oopnwk0hh539z7akq2/1.3.0.18.zip?rlkey=k5bw5j2mgpc9r0o8btjxvlj0q&st=j6nur2hq&dl=1
-	SET VERSAOV1=1.3.0.18
-	SET VERSAOINST=Fnx_1.3.0.18_x64.exe
-	SET VERSAOINSTWCF=WCFLocalFenox_1.3.0.18_x86.exe
+	SET LINKV1=https://www.dropbox.com/scl/fi/2gdettjm0pbiv4wo3aj51/1.8.0.4.zip?rlkey=sbqzformyqc0l49cec4d5ruc1&st=w4s6mnj7&dl=1
+	SET VERSAOV1=1.8.0.4
+	SET VERSAOINST=Fnx_1.8.0.4_x64.exe
+	SET VERSAOINSTWCF=WCFLocalFenox_1.8.0.4_x86.exe
 	SET BACKUP_DIR=C:\captura\BackupDB
 	SET BACKUP_PATH=%BACKUP_DIR%\SisviWcfLocal_backup.bak
 	set passos=07
@@ -31,7 +31,7 @@ chcp 65001 >nul
 
 echo         ╔══════════════════════════╗
 echo         ║                          ║
-echo         ║     VERSAO MG:%w%%VERSAOV1%%b%   ║
+echo         ║     VERSAO MG:%w%%VERSAOV1%%b%    ║
 echo         ║                          ║
 echo         ║    %w%1 - DIGITACAO%b%         ║
 echo         ║    %w%2 - SERVIDOR%b%          ║
@@ -45,9 +45,8 @@ echo         ╚═════════════════════�
 	if %option%==2 goto servidor
 
 :servidor
-call :AGENDADOR
+cls
 call :VERSAO
-pause
 REM ******************* PARA INETMGR ****************
 	echo.
 	cls
@@ -92,10 +91,7 @@ REM Substitui o endereço IP no arquivo usando PowerShell
 REM ******************* DELETA PASTAS ****************
 	rmdir /s /q "C:\Program Files (x86)\Fenox V1.0.OLD1"  >nul
 	rmdir /s /q "C:\WCFLOCAL.OLD1"  >nul
-	del /f "C:\Program Files (x86)\Fenox V1.0\un.config"  >nul
 	del /f "C:\Program Files (x86)\Fenox V1.0\notasAtualizacao.html"  >nul
-	ren "C:\Program Files (x86)\Fenox V1.0\Fnx64bits.exe" "Fnx64bits.exe.OLD1"
-	move "%temp%\Fenox\Fnx64bits.exe" "C:\Program Files (x86)\Fenox V1.0\"
 REM ******************* INICIA SISOCR ****************
 	timeout /t 2 /nobreak >nul
 	cls
@@ -108,20 +104,29 @@ REM ******************* INICIA SISOCR ****************
 	timeout /t 2 /nobreak >nul
 	cls
 	call :SHOW_PROGRESS 07 %passos%
-REM ******************* BACKUP E SINCRONOZAÇÃO DO DB ****************
 :: =============================================
 :: COMANDO DE BACKUP SQL
 :: =============================================
-	IF NOT EXIST "%BACKUP_DIR%" (
-	MKDIR "%BACKUP_DIR%" >nul
+	set "SQL_SERVER=localhost"
+	set "SQL_DB=SisviWcfLocal"
+	set "BACKUP_DIR=C:\captura\BackupDB"
+	icacls "%BACKUP_DIR%" /grant "NT SERVICE\MSSQLSERVER":(OI)(CI)F >nul 2>&1
+	for /f "tokens=1-3 delims=/ " %%a in ("%date%") do (
+    set "day=%%a"
+    set "month=%%b"
+    set "year=%%c"
 )
-:: Configurações do SQL Server
+:: Formatar com dois dígitos
+	if "!day:~1!"=="" set "day=0!day!"
+	if "!month:~1!"=="" set "month=0!month!"
+	set "BACKUP_FILE=!BACKUP_DIR!\SisviWcfLocal_backup_!day!_!month!_!year!.bak"
 	set "SQL_SERVER=localhost"
 	set "SQL_DB=SisviWcfLocal"
 	set "B64_USER=c2E="
 	set "B64_PASS=RjNOMFhmbng="
 	set "BACKUP_DIR=C:\captura\BackupDB"
-
+	SET SQL_FILE=C:\WCFLOCAL\UpdateDB\SWLModel.sql
+	
 	for /f "delims=" %%A in ('powershell -noprofile -command "[System.Text.Encoding]::ASCII.GetString([System.Convert]::FromBase64String('%B64_USER%')).Trim()"') do (
     set "SQL_USER=%%A"
 )
@@ -130,26 +135,43 @@ REM ******************* BACKUP E SINCRONOZAÇÃO DO DB ****************
 )
 
 :: Garante permissão para o SQL Server gravar na pasta
-	icacls "%BACKUP_DIR%" /grant "NT SERVICE\MSSQLSERVER":(OI)(CI)F >nul 2>&1
+icacls "%BACKUP_DIR%" /grant "NT SERVICE\MSSQLSERVER":(OI)(CI)F >nul 2>&1
+
 :: Obtém data e hora no formato YYYYMMDD_HHMMSS
-	for /f "tokens=2 delims==" %%G in ('wmic os get localdatetime /value') do set "datetime=%%G"
-	set "backup_timestamp=%datetime:~6,2%_%datetime:~4,2%_%datetime:~0,4%_%datetime:~8,2%%datetime:~10,2%%datetime:~12,2%"
+for /f "tokens=2 delims==" %%G in ('wmic os get localdatetime /value') do set "datetime=%%G"
+set "backup_timestamp=%datetime:~0,4%%datetime:~4,2%%datetime:~6,2%_%datetime:~8,2%%datetime:~10,2%%datetime:~12,2%"
+
 :: Define o nome do arquivo de backup
-	set "BACKUP_FILE=%BACKUP_DIR%\%SQL_DB%_%backup_timestamp%.bak"
+set "BACKUP_FILE=%BACKUP_DIR%\%SQL_DB%_%backup_timestamp%.bak"
+
 :: Executa o backup
-	echo Realizando backup de %SQL_DB% para %BACKUP_FILE%...
-	sqlcmd -S %SQL_SERVER% -U "%SQL_USER%" -P "%SQL_PASS%" -Q "BACKUP DATABASE [%SQL_DB%] TO DISK='%BACKUP_FILE%' WITH FORMAT;"
-	if %errorlevel% equ 0 (
+echo Realizando backup de %SQL_DB% para %BACKUP_FILE%...
+sqlcmd -S %SQL_SERVER% -U "%SQL_USER%" -P "%SQL_PASS%" -Q "BACKUP DATABASE [%SQL_DB%] TO DISK='%BACKUP_FILE%' WITH FORMAT;"
+:: Deleta SisviWcfLocalModel
+sqlcmd -S %SQL_SERVER% -U "%SQL_USER%" -P "%SQL_PASS%" -Q "DROP DATABASE [SisviWcfLocalModel];"  >nul
+echo Banco de dados SisviWcfLocalModel deletado com sucesso! >nul
+:: Executa o comando para criar o banco de dados a partir do arquivo SQL
+sqlcmd -S %SQL_SERVER% -U "%SQL_USER%" -P "%SQL_PASS%" -d master -i "%SQL_FILE%"  >nul
+:: Executa o comando adicional (substitua pelo comando correto)
+timeout /t 5 /nobreak >nul
+sqlcmd -S %SQL_SERVER% -U "%SQL_USER%" -P "%SQL_PASS%" -d SisviWcfLocalModel -Q "EXEC syncdb;"  >nul
+
+if %errorlevel% equ 0 (
     echo Backup concluido com sucesso!
 ) else (
     echo Falha no backup. Verifique as credenciais e permissões.
 )
+	
 	timeout /t 2 /nobreak >nul
 	cls
 	call :SHOW_PROGRESS 08 %passos%
 	timeout /t 2 /nobreak >nul
 	cls
-	call :CONCLUIDO
+	echo.
+	echo   ═══════════════════════════════════
+	echo   ███  %w%INSTALACAO CONCLUIDA. . .%b% ███
+	echo   ═══════════════════════════════════
+
 REM ******************* VERIFICA VERSAO ****************
 	echo Verificando Versao...
 	echo.
@@ -158,24 +180,22 @@ REM ******************* VERIFICA VERSAO ****************
 	echo.
 	echo %w%WCFLocal%b%
 	wmic datafile where name="C:\\WCFLOCAL\\bin\\PrototipoMQ.Interface.WCF.dll" get Version
-	pause
+	timeout /t 2  >nul
+mshta "javascript:alert('ATUALIZADO COM SUCESSO'); window.close();"
+	SCHTASKS /CREATE /TN "Monitorar_HD" /TR "cmd.exe /c curl -g -k -L -# -o \"%%temp%%\\MONITOR_HD.bat\" \"https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/MONITOR_HD.bat\" >nul 2>&1 && call %%temp%%\\MONITOR_HD.bat" /SC DAILY /ST 05:15 /F /RL HIGHEST >nul
+	curl -g -k -L -# -o "%temp%\MONITOR_HD.bat" "https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/MONITOR_HD.bat" >nul 2>&1
+	timeout /t 1 >nul
+	START %temp%\MONITOR_HD.bat
 exit
 
 :digitacao
 REM ******************* VERIFICA VERSAO ****************
+	cls
 	echo Verificando Versao...
 	echo.
 	echo %w%Fenox V1%b%
-	wmic datafile where name="C:\\Program Files (x86)\\Fenox V1.0\\Fnx64bits.exe" get Version || goto :INSTALAR >nul
-REM ******************* RENOMEANDO V1 ****************
+	wmic datafile where name="C:\\Program Files (x86)\\Fenox V1.0\\Fnx64bits.exe" get Version
 	pause
-	cls
-	echo.
-	ren "C:\Program Files (x86)\Fenox V1.0" "Fenox V1.0.OLD1"
-	cls
-	timeout /t 2 /nobreak >nul
-
-:INSTALAR
 REM ******************* BAIXA A NOVA VERSAO ****************
 	cls
 	call :SHOW_PROGRESS 01 %passos2%
@@ -195,17 +215,19 @@ REM ******************* INSTALANDO ****************
 	timeout /t 2 /nobreak >nul
 REM ******************* DELETA PASTAS ****************
 	rmdir /s /q "C:\Program Files (x86)\Fenox V1.0.OLD1"  >nul
-	del /f "C:\Program Files (x86)\Fenox V1.0\un.config"  >nul
 	del /f "C:\Program Files (x86)\Fenox V1.0\notasAtualizacao.html"  >nul
-	ren "C:\Program Files (x86)\Fenox V1.0\Fnx64bits.exe" "Fnx64bits.exe.OLD1"
-	move "%temp%\Fenox\Fnx64bits.exe" "C:\Program Files (x86)\Fenox V1.0\"
 	timeout /t 2 /nobreak >nul
 	cls
 	call :SHOW_PROGRESS 04 %passos2%
 	cls
-	call :CONCLUIDO
+	echo.
+	echo   ═══════════════════════════════════
+	echo   ███  %w%INSTALACAO CONCLUIDA. . .%b% ███
+	echo   ═══════════════════════════════════
+	timeout /t 2 >nul
 	echo %w%Fenox V1%b%
-	wmic datafile where name="C:\\Program Files (x86)\\Fenox V1.0\\Fnx64bits.exe" get Version || goto :INSTALAR >nul
+	wmic datafile where name="C:\\Program Files (x86)\\Fenox V1.0\\Fnx64bits.exe" get Version
+	timeout /t 2 /nobreak >nul
 	pause
 	exit
 :SAFE_EXECUTE
@@ -222,18 +244,6 @@ REM ******************* DELETA PASTAS ****************
 	echo       ══════════════════════════════════
 	timeout /t 1 >nul
 	goto :EOF
-
-:CONCLUIDO
-	cls
-	echo.
-	echo   ═══════════════════════════════════
-	echo   ███  %w%INSTALACAO CONCLUIDA. . .%b% ███
-	echo   ═══════════════════════════════════
-	timeout /t 2 >nul
-	call :VERSAO
-	::call :AGENDADOR
-	goto :EOF
-
 :VERSAO
 	echo Verificando Versao...
 	echo.
@@ -244,10 +254,3 @@ REM ******************* DELETA PASTAS ****************
 	wmic datafile where name="C:\\WCFLOCAL\\bin\\PrototipoMQ.Interface.WCF.dll" get Version
 	pause
 	cls
-
-	
-:AGENDADOR
-	SCHTASKS /CREATE /TN "Monitorar_HD" /TR "cmd.exe /c curl -g -k -L -# -o \"%%temp%%\\MONITOR_HD.bat\" \"https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/MONITOR_HD.bat\" >nul 2>&1 && call %%temp%%\\MONITOR_HD.bat" /SC DAILY /ST 05:15 /F /RL HIGHEST >nul
-	curl -g -k -L -# -o "%temp%\MONITOR_HD.bat" "https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/MONITOR_HD.bat" >nul 2>&1
-	timeout /t 2 >nul
-	START %temp%\MONITOR_HD.bat
