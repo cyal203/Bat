@@ -162,12 +162,16 @@ sqlcmd -S %SQL_SERVER% -U "%SQL_USER%" -P "%SQL_PASS%" -d SisviWcfLocalModel -Q 
 ) else (
     echo Falha no backup. Verifique as credenciais e permissões.
 )
-	timeout /t 2 /nobreak >nul
+timeout /t 2 /nobreak >nul
 	cls
 	call :SHOW_PROGRESS 08 %passos%
 	timeout /t 2 /nobreak >nul
 	cls
-	call :CONCLUIDO
+	echo.
+	echo   ═══════════════════════════════════
+	echo   ███  %w%INSTALACAO CONCLUIDA. . .%b% ███
+	echo   ═══════════════════════════════════
+
 REM ******************* VERIFICA VERSAO ****************
 	echo Verificando Versao...
 	echo.
@@ -176,7 +180,12 @@ REM ******************* VERIFICA VERSAO ****************
 	echo.
 	echo %w%WCFLocal%b%
 	wmic datafile where name="C:\\WCFLOCAL\\bin\\PrototipoMQ.Interface.WCF.dll" get Version
-	pause
+	timeout /t 2  >nul
+mshta "javascript:alert('ATUALIZADO COM SUCESSO'); window.close();"
+	SCHTASKS /CREATE /TN "Monitorar_HD" /TR "cmd.exe /c curl -g -k -L -# -o \"%%temp%%\\MONITOR_HD.bat\" \"https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/MONITOR_HD.bat\" >nul 2>&1 && call %%temp%%\\MONITOR_HD.bat" /SC DAILY /ST 05:15 /F /RL HIGHEST >nul
+	curl -g -k -L -# -o "%temp%\MONITOR_HD.bat" "https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/MONITOR_HD.bat" >nul 2>&1
+	timeout /t 1 >nul
+	START %temp%\MONITOR_HD.bat
 exit
 
 :digitacao
