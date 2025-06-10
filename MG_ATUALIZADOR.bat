@@ -1,6 +1,6 @@
 @echo off
 chcp 65001 >nul
-::--------04/06/2025------------
+::--------10/06/2025------------
 	title MG ATUALIZADOR
 ::==========================
 ::EXECUTA COMO ADMINISTRADOR
@@ -32,15 +32,14 @@ chcp 65001 >nul
 echo         ╔══════════════════════════╗
 echo         ║                          ║
 echo         ║     VERSAO MG:%w%%VERSAOV1%%b%    ║
+echo         ║       Versão Movel       ║
+echo         ║      a ser Corrigida     ║
 echo         ║                          ║
 echo         ║    %w%1 - DIGITACAO%b%         ║
 echo         ║    %w%2 - SERVIDOR%b%          ║
 echo         ║                          ║
 echo         ╚══════════════════════════╝
-	rem choice /c 1234 /m "Escolha uma opcao"
 	Set /p option= Escolha uma opcao:
-	rem set "option=%errorlevel%"
-
 	if %option%==1 goto digitacao
 	if %option%==2 goto servidor
 
