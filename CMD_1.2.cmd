@@ -2,7 +2,7 @@
 chcp 65001 >nul
 title Versão 1.6
 ::==========================
-::------27-05-2025----------
+::------11-06-2025----------
 ::==========================
 set "params=%*"
 cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
@@ -230,6 +230,7 @@ icacls "C:\Captura\Config" /grant Todos:(OI)(CI)F /T /C /Q >nul 2>&1
 icacls "C:\WCFLOCAL" /q /c /t /grant Todos:(OI)(CI)F >nul 2>&1
 icacls "C:\Program Files (x86)\FNX" /q /c /t /grant Todos:(OI)(CI)F >nul 2>&1
 icacls "C:\fnx" /q /c /t /grant Todos:(OI)(CI)F >nul 2>&1
+icacls "C:\Program Files (x86)\Fenox V1.0" /grant Todos:(OI)(CI)F /T /C /Q >nul 2>&1
 
 ::(continuação com SAFE_EXECUTE)
 call :SAFE_EXECUTE 03 %passos% "REG ADD "HKLM\SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection" /v "DisableRealtimeMonitoring" /t REG_DWORD /d 1 /f"
