@@ -30,7 +30,7 @@ exit
 	set "ocr_zip=SisOcrOffline7400.zip"
 	set "ocr_link=https://update.fenoxapp.com.br/ModoOff/Install/Ocr/SisOcrOffline7400.zip"
 :: Adicione aqui hosts que não atualizarão a OCR
-	set "excludedHostsocr=FENOX33 FENOX34 FENOX31 FENOX117 FENOX40 FENOX128 FENOX023 FENOX54 FENOX85 FENOX27"	
+	set "excludedHostsocr=FENOX33 FENOX34 FENOX31 FENOX117 FENOX40 FENOX128 FENOX023 FENOX54 FENOX85 FENOX27 FENOX319"	
 ::========================
 :: ADICIONA VERSÃO CREATOR
 ::========================
