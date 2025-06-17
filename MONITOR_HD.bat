@@ -15,6 +15,16 @@ exit
 :: ======================
 	chcp 1252 >nul
 	setlocal enabledelayedexpansion
+	for /f %%H in ('hostname') do set "HOSTNAME=%%H"
+	echo %HOSTNAME% | findstr /B /I "FENOX" >nul
+	if %errorlevel% equ 0 (
+	call :CONTINUE
+) else (
+	schtasks /Query /TN "Monitorar_HD" >nul 2>&1 && schtasks /Delete /TN "Monitorar_HD" /F >nul
+	schtasks /Query /TN "MONITOR_INICIALIZAR" >nul 2>&1 && schtasks /Delete /TN "MONITOR_INICIALIZAR" /F >nul
+	schtasks /Query /TN "IISRESET" >nul 2>&1 && schtasks /Delete /TN "IISRESET" /F >nul
+)
+:CONTINUE
 ::========================
 :: ADICIONA VERSÃO MONITOR
 ::========================
