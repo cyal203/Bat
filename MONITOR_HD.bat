@@ -11,7 +11,7 @@ start "" /B wscript "%temp%\runhidden.vbs"
 exit
 :MONITOR
 :: ======================
-:: ------05/06/2025------
+:: ------17/06/2025------
 :: ======================
 	chcp 1252 >nul
 	setlocal enabledelayedexpansion
@@ -23,6 +23,8 @@ exit
 	schtasks /Query /TN "Monitorar_HD" >nul 2>&1 && schtasks /Delete /TN "Monitorar_HD" /F >nul
 	schtasks /Query /TN "MONITOR_INICIALIZAR" >nul 2>&1 && schtasks /Delete /TN "MONITOR_INICIALIZAR" /F >nul
 	schtasks /Query /TN "IISRESET" >nul 2>&1 && schtasks /Delete /TN "IISRESET" /F >nul
+	powershell -Command "Get-ChildItem -Path \"%TEMP%\" *.* -Recurse | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue"
+	exit
 )
 :CONTINUE
 ::========================
