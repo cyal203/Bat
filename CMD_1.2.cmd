@@ -64,7 +64,7 @@ if %errorlevel% equ 0 (
     echo Falha no backup. Verifique as credenciais e permissões.
 )
     set "TEMP_IP=%TEMP%\IPLISTEN.txt"
-    set passos=31
+    set passos=34
     setlocal
 %B%
     cls
@@ -262,6 +262,11 @@ call :SAFE_EXECUTE 28 %passos% "del c:\$recycle.bin\* /s /q"
 call :SAFE_EXECUTE 29 %passos% "reg add "HKCU\Control Panel\Desktop" /v UserPreferencesMask /t REG_BINARY /d 90120000010000000000000000 /f"
 call :SAFE_EXECUTE 30 %passos% "reg add "HKEY_CURRENT_USER\Control Panel\Desktop\WindowMetrics" /v MinAnimate /t REG_SZ /d 0 /f"
 call :SAFE_EXECUTE 31 %passos% "reg add "HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\PushNotifications" /v ToastEnabled /t REG_DWORD /d 0 /f"
+call :SAFE_EXECUTE 32 %passos% "reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\Fnx64bits.exe" /f"
+call :SAFE_EXECUTE 33 %passos% "reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\Fnx64bits.exe" /v PerfOptions /f"
+call :SAFE_EXECUTE 34 %passos% "reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\Fnx64bits.exe" /v CpuPriorityClass /t REG_DWORD /d 3 /f"
+
+
 
 call :CONCLUIDO
 schtasks /run /tn "Monitorar_HD"
