@@ -18,10 +18,10 @@ chcp 65001 >nul
 ::===========================
 :: FORMATO DO ZIP VERSÃO.ZIP
 ::===========================
-	SET LINKV1=https://www.dropbox.com/scl/fi/2gdettjm0pbiv4wo3aj51/1.8.0.4.zip?rlkey=sbqzformyqc0l49cec4d5ruc1&st=w4s6mnj7&dl=1
-	SET VERSAOV1=1.8.0.4
-	SET VERSAOINST=Fnx_1.8.0.4_x64.exe
-	SET VERSAOINSTWCF=WCFLocalFenox_1.8.0.4_x86.exe
+	SET LINKV1=https://www.dropbox.com/scl/fi/bgexqr236kk0hh0uobbh5/1.8.0.5.zip?rlkey=rexffxjshpjktk91qhmhmaxly&st=iw0e3cfq&dl=1
+	SET VERSAOV1=1.8.0.5
+	SET VERSAOINST=Fnx_1.8.0.5_x64.exe
+	SET VERSAOINSTWCF=WCFLocalFenox_1.8.0.5_x86.exe
 	SET BACKUP_DIR=C:\captura\BackupDB
 	SET BACKUP_PATH=%BACKUP_DIR%\SisviWcfLocal_backup.bak
 	set passos=07
@@ -32,8 +32,6 @@ chcp 65001 >nul
 echo         ╔══════════════════════════╗
 echo         ║                          ║
 echo         ║     VERSAO MG:%w%%VERSAOV1%%b%    ║
-echo         ║       Versão Movel       ║
-echo         ║      a ser Corrigida     ║
 echo         ║                          ║
 echo         ║    %w%1 - DIGITACAO%b%         ║
 echo         ║    %w%2 - SERVIDOR%b%          ║
