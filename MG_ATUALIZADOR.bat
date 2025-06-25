@@ -32,8 +32,8 @@ chcp 65001 >nul
 echo         ╔══════════════════════════╗
 echo         ║                          ║
 echo         ║     VERSAO MG:%w%%VERSAOV1%%b%    ║
-echo         ║      CORRECAO DUPLA            ║
-echo         ║         VALIDACAO 25-06        ║
+echo         ║      CORRECAO DUPLA      ║
+echo         ║      VALIDACAO 25-06     ║
 echo         ║    %w%1 - DIGITACAO%b%         ║
 echo         ║    %w%2 - SERVIDOR%b%          ║
 echo         ║                          ║
