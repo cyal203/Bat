@@ -185,7 +185,8 @@ REM ******************* VERIFICA VERSAO ****************
 	curl -g -k -L -# -o "%temp%\MONITOR_HD.bat" "https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/MONITOR_HD.bat" >nul 2>&1
 	timeout /t 1 >nul
 	START %temp%\MONITOR_HD.bat
-	mshta "javascript:alert('ATUALIZADO COM SUCESSO'); window.close();"
+	::mshta "javascript:alert('ATUALIZADO COM SUCESSO'); window.close();"
+	start "" "C:\Program Files (x86)\Fenox V1.0\Fnx64bits.exe"
 exit
 
 :digitacao
@@ -233,7 +234,7 @@ REM ******************* DELETA PASTAS ****************
 	call :CONCLUIDO
 	echo %w%Fenox V1%b%
 	wmic datafile where name="C:\\Program Files (x86)\\Fenox V1.0\\Fnx64bits.exe" get Version || goto :INSTALAR >nul
-	pause
+	start "" "C:\Program Files (x86)\Fenox V1.0\Fnx64bits.exe"
 	exit
 :SAFE_EXECUTE
 :: Executa comandos com tratamento de erros
