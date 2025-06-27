@@ -35,6 +35,8 @@ set g=[92m
 	set "REGIAO=%REGIAO:,=%"
 	set "REGIAO=%REGIAO: =%"
 	call :removeAcentos "%REGIAO%" REGIAO
+:: Corrigir nome especial do Distrito Federal
+	if /i "%REGIAO%"=="FederalDistrict" set "REGIAO=DistritoFederal"
 
 echo Estado detectado:%g% %REGIAO% %b%
 echo Codigo do estado: %ESTADO_NUM%
@@ -135,8 +137,7 @@ set "str=!str:ô=o!"
 set "str=!str:õ=o!"
 set "str=!str:ú=u!"
 set "str=!str:ç=c!"
-:: Corrigir nome especial do Distrito Federal
-if /i "%REGIAO%"=="FederalDistrict" set "REGIAO=DistritoFederal"
+
 
 :: remove espaços finais
 set "str=!str: =!"
