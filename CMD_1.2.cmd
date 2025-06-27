@@ -10,8 +10,11 @@ if "%Admin%"=="ops" goto :eof
 mode con: cols=50 lines=18
 setlocal enabledelayedexpansion
 set "params=%*"
+::branco
 set w=[97m
+::ciano
 set b=[96m
+::green
 set g=[92m
 :: =============================================
 :: CREDENCIAIS SQL
