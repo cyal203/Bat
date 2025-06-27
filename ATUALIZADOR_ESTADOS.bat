@@ -31,8 +31,11 @@ if /i "%REGIAO%"=="MinasGerais" set ESTADO_NUM=2
 if /i "%REGIAO%"=="EspiritoSanto" set ESTADO_NUM=3
 :: adicione mais conforme desejar
 
+cls
+echo.
 echo Estado detectado: %REGIAO%
 echo Codigo do estado: %ESTADO_NUM%
+echo.
 pause
 :: Vai para a função
 if "%ESTADO_NUM%"=="1" goto :saopaulo
