@@ -1,53 +1,64 @@
 @echo off
 chcp 65001 >nul
-setlocal enabledelayedexpansion
+::--------27/06/2025------------
+	title ATUALIZADOR_ESTADO
+::==========================
+::EXECUTA COMO ADMINISTRADOR
+::==========================
+	set "params=%*"
+	cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
+	if "%Admin%"=="ops" goto :eof
+	mode con: cols=50 lines=15
+	setlocal enabledelayedexpansion
+set "params=%*"
+set w=[97m
+set b=[96m
+set g=[92m
 
 :: Verifica se curl está disponível
-curl --version >nul 2>&1 || (
+	curl --version >nul 2>&1 || (
     echo Erro: curl nao encontrado. Tente executar em um Windows 10+ ou adicione curl ao PATH.
     pause
     exit /b
 )
 
 :: Obtem localizacao via IP
-curl -s ipinfo.io > "%temp%\ipinfo.txt"
+	curl -s ipinfo.io > "%temp%\ipinfo.txt"
 
 :: Extrai o estado (region)
-for /f "tokens=1,* delims=:" %%A in ('findstr /i "region" "%temp%\ipinfo.txt"') do (
+	for /f "tokens=1,* delims=:" %%A in ('findstr /i "region" "%temp%\ipinfo.txt"') do (
     set "REGIAO=%%B"
 )
 
 :: Limpa espaços, aspas, vírgulas e acentos
-set "REGIAO=%REGIAO:"=%"
-set "REGIAO=%REGIAO:,=%"
-set "REGIAO=%REGIAO: =%"
-call :removeAcentos "%REGIAO%" REGIAO
+	set "REGIAO=%REGIAO:"=%"
+	set "REGIAO=%REGIAO:,=%"
+	set "REGIAO=%REGIAO: =%"
+	call :removeAcentos "%REGIAO%" REGIAO
 
-:: Mapeia estado para número
-set "ESTADO_NUM=0"
-
-if /i "%REGIAO%"=="SaoPaulo" set ESTADO_NUM=1
-if /i "%REGIAO%"=="MinasGerais" set ESTADO_NUM=2
-if /i "%REGIAO%"=="EspiritoSanto" set ESTADO_NUM=3
-:: adicione mais conforme desejar
-
-cls
-echo.
-echo Estado detectado: %REGIAO%
+echo Estado detectado:%g% %REGIAO% %b%
 echo Codigo do estado: %ESTADO_NUM%
-echo.
-pause
-:: Vai para a função
-if "%ESTADO_NUM%"=="1" goto :saopaulo
-if "%ESTADO_NUM%"=="2" goto :minasgerais
-if "%ESTADO_NUM%"=="3" goto :espiritosanto
+
+:: ESTADOS
+
+if /i "%REGIAO%"=="Bahia" set ESTADO_NUM=1 & goto :bahia
+if /i "%REGIAO%"=="DistritoFederal" set ESTADO_NUM=2 & goto :distritofederal
+if /i "%REGIAO%"=="EspiritoSanto" set ESTADO_NUM=3 & goto :espiritosanto
+if /i "%REGIAO%"=="Goias" set ESTADO_NUM=4 & goto :goias
+if /i "%REGIAO%"=="Maranhao" set ESTADO_NUM=5 & goto :maranhao
+if /i "%REGIAO%"=="MatoGrosso" set ESTADO_NUM=6 & goto :matogrosso
+if /i "%REGIAO%"=="MatoGrossodoSul" set ESTADO_NUM=7 & goto :matogrossodosul
+if /i "%REGIAO%"=="MinasGerais" set ESTADO_NUM=8 & goto :minasgerais
+if /i "%REGIAO%"=="Para" set ESTADO_NUM=9 & goto :para
+if /i "%REGIAO%"=="SaoPaulo" set ESTADO_NUM=10 & goto :saopaulo
+
 
 echo Estado nao reconhecido ou nao mapeado.
 goto :fim
 
 :: Funções por estado
 :saopaulo
-echo versão ainda não finalizada aguarde........
+echo Em processo de criação, Aguarde........
 pause
 Exit
 goto :fim
@@ -65,6 +76,41 @@ set "params=%*"
 cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
 curl -g -k -L -# -o "%temp%\ES_ATUALIZADOR.bat" "https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/ES_ATUALIZADOR.bat" >nul 2>&1 && %temp%\ES_ATUALIZADOR.bat
 Exit
+goto :fim
+
+:bahia
+echo Em processo de criação, Aguarde........
+pause
+goto :fim
+
+:distritofederal
+echo Em processo de criação, Aguarde........
+pause
+goto :fim
+
+:goias
+echo Em processo de criação, Aguarde........
+pause
+goto :fim
+
+:maranhao
+echo Em processo de criação, Aguarde........
+pause
+goto :fim
+
+:matogrosso
+echo Em processo de criação, Aguarde........
+pause
+goto :fim
+
+:matogrossodosul
+echo Em processo de criação, Aguarde........
+pause
+goto :fim
+
+:para
+echo Em processo de criação, Aguarde........
+pause
 goto :fim
 
 :fim
