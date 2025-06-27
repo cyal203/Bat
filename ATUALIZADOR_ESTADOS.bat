@@ -48,6 +48,7 @@ goto :fim
 :: Funções por estado
 :saopaulo
 echo versão ainda não finalizada aguarde........
+pause
 Exit
 goto :fim
 
