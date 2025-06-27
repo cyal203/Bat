@@ -1,6 +1,6 @@
 @echo off
 chcp 65001 >nul
-::--------03/06/2025------------
+::--------06/06/2025------------
 	title ES ATUALIZADOR
 ::==========================
 ::EXECUTA COMO ADMINISTRADOR
