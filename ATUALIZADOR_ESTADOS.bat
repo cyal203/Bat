@@ -43,7 +43,7 @@ echo Codigo do estado: %ESTADO_NUM%
 
 if /i "%REGIAO%"=="Bahia" set ESTADO_NUM=1 & goto :bahia
 if /i "%REGIAO%"=="DistritoFederal" set ESTADO_NUM=2 & goto :distritofederal
-if /i "%estado%"=="FederalDistrict" set ESTADO_NUM=2 & goto :distritofederal
+if /i "%REGIAO%"=="FederalDistrict" set ESTADO_NUM=2 & goto :distritofederal
 if /i "%REGIAO%"=="EspiritoSanto" set ESTADO_NUM=3 & goto :espiritosanto
 if /i "%REGIAO%"=="Goias" set ESTADO_NUM=4 & goto :goias
 if /i "%REGIAO%"=="Maranhao" set ESTADO_NUM=5 & goto :maranhao
