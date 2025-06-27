@@ -81,22 +81,22 @@ Exit
 goto :fim
 
 :bahia
-echo Em processo de criação, Aguarde........
+echo BA em processo de criação, Aguarde........
 pause
 goto :fim
 
 :distritofederal
-echo Em processo de criação, Aguarde........
+echo DF em processo de criação, Aguarde........
 pause
 goto :fim
 
 :goias
-echo Em processo de criação, Aguarde........
+echo GO em processo de criação, Aguarde........
 pause
 goto :fim
 
 :maranhao
-echo Em processo de criação, Aguarde........
+echo MA em processo de criação, Aguarde........
 pause
 goto :fim
 
@@ -106,12 +106,12 @@ pause
 goto :fim
 
 :matogrossodosul
-echo Em processo de criação, Aguarde........
+echo MS em processo de criação, Aguarde........
 pause
 goto :fim
 
 :para
-echo Em processo de criação, Aguarde........
+echo PA em processo de criação, Aguarde........
 pause
 goto :fim
 
