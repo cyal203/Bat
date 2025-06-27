@@ -31,7 +31,7 @@ chcp 65001 >nul
 
 echo         ╔══════════════════════════╗
 echo         ║                          ║
-echo         ║     VERSAO:%w%%VERSAOV1%%b%      ║
+echo         ║     VERSAO ES:%w%%VERSAOV1%%b%   ║
 echo         ║    %w%Correcao Movel 06/05%b%  ║
 echo         ║                          ║
 echo         ║    %w%1 - DIGITACAO%b%         ║
