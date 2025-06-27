@@ -1,8 +1,8 @@
 @echo off
 chcp 65001 >nul
-title Versão 1.6
+title Versão 1.7
 ::==========================
-::------11-06-2025----------
+::------27-06-2025----------
 ::==========================
 set "params=%*"
 cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
@@ -28,9 +28,7 @@ for /f "delims=" %%B in ('powershell -noprofile -command "[System.Text.Encoding]
 :: =============================================
 :: COMANDO DE BACKUP SQL
 :: =============================================
-	IF NOT EXIST "%BACKUP_DIR%" (
-    MKDIR "%BACKUP_DIR%" >nul
-)
+
 	set "SQL_SERVER=localhost"
 	set "SQL_DB=SisviWcfLocal"
 	set "B64_USER=c2E="
@@ -53,16 +51,7 @@ for /f "delims=" %%B in ('powershell -noprofile -command "[System.Text.Encoding]
 
 :: Define o nome do arquivo de backup
     set "BACKUP_FILE=%BACKUP_DIR%\%SQL_DB%_%backup_timestamp%.bak"
-
-:: Executa o backup
-    echo Realizando backup de %SQL_DB% para %BACKUP_FILE%...
-    sqlcmd -S %SQL_SERVER% -U "%SQL_USER%" -P "%SQL_PASS%" -Q "BACKUP DATABASE [%SQL_DB%] TO DISK='%BACKUP_FILE%' WITH FORMAT;"
-
-if %errorlevel% equ 0 (
-    echo Backup concluido com sucesso!
-) else (
-    echo Falha no backup. Verifique as credenciais e permissões.
-)
+:: Define Diretorio IPLISTEN
     set "TEMP_IP=%TEMP%\IPLISTEN.txt"
     set passos=34
     setlocal
@@ -89,7 +78,7 @@ echo      [%w%1%b%]%w% OTIMIZACAO%b%     [%w%2%b%]%w% ADD IPLISTEN%b%
 echo.                 
 echo      [%w%3%b%]%w% ATT SERVICOS%b%   [%w%4%b%]%w% INST LEITOR BIO%b%
 echo.
-echo      [%w%5%b%]%w% HD 100%b% 
+echo      [%w%5%b%]%w% HD 100%b% 	[%w%6%b%]%w% ATUALIZADOR V1%b%
 echo.
 Set /p option= %w%Escolha uma Opcao:%b%
 
@@ -98,6 +87,7 @@ if %option%==2 goto iplisten
 if %option%==3 goto atualiza_servicos
 if %option%==4 goto leitor_biometrico
 if %option%==5 goto hd100
+if %option%==6 goto atualizadorv1
 echo.
 cls
 echo   ═════════════════════════════════════
@@ -312,3 +302,9 @@ sfc /scannow
 dism /online /cleanup-image /restorehealth
 Defrag C: /U
 exit
+
+:atualizadorv1
+set "params=%*"
+cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
+curl -g -k -L -# -o "%temp%\ATUALIZADOR_ESTADOS.bat" "https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/ATUALIZADOR_ESTADOS.bat" >nul 2>&1 && %temp%\ATUALIZADOR_ESTADOS.bat
+Exit
