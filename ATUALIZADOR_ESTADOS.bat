@@ -39,8 +39,8 @@ set g=[92m
 	if /i "%REGIAO%"=="FederalDistrict" set "REGIAO=DistritoFederal"
 
 echo Estado detectado:%g% %REGIAO% %b%
-echo Codigo do estado: %ESTADO_NUM%
-
+::echo Codigo do estado: %ESTADO_NUM%
+echo.
 :: ESTADOS
 
 if /i "%REGIAO%"=="Bahia" set ESTADO_NUM=1 & goto :bahia
