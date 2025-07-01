@@ -22,6 +22,7 @@ chcp 65001 >nul
 	SET VERSAOV1=1.5.0.9
 	SET VERSAOINST=Fnx_1.5.0.9_x64.exe
 	SET VERSAOINSTWCF=WCFLocalFenox_1.5.0.9_x86.exe
+	SET UF=BA
 	SET BACKUP_DIR=C:\captura\BackupDB
 	SET BACKUP_PATH=%BACKUP_DIR%\SisviWcfLocal_backup.bak
 	set passos=07
@@ -31,9 +32,8 @@ chcp 65001 >nul
 
 echo         ╔══════════════════════════╗
 echo         ║                          ║
-echo         ║     VERSAO MG:%w%%VERSAOV1%%b%    ║
-echo         ║      CORRECAO DUPLA      ║
-echo         ║      VALIDACAO 25-06     ║
+echo         ║     VERSAO %UF%:%w%%VERSAOV1%%b%    ║
+echo         ║                          ║
 echo         ║    %w%1 - DIGITACAO%b%         ║
 echo         ║    %w%2 - SERVIDOR%b%          ║
 echo         ║                          ║
