@@ -1,7 +1,6 @@
 @echo off
 chcp 65001 >nul
 ::--------01/07/2025------------
-	title BA ATUALIZADOR
 ::==========================
 ::EXECUTA COMO ADMINISTRADOR
 ::==========================
@@ -27,9 +26,8 @@ chcp 65001 >nul
 	SET BACKUP_PATH=%BACKUP_DIR%\SisviWcfLocal_backup.bak
 	set passos=07
 	set passos2=06
+	title %UF% ATUALIZADOR
 	cls
-
-
 echo         ╔══════════════════════════╗
 echo         ║                          ║
 echo         ║     VERSAO %UF%:%w%%VERSAOV1%%b%    ║
