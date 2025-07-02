@@ -23,7 +23,8 @@ set g=[92m
 )
 
 :: Obtem localizacao via IP
-	curl -s ipinfo.io > "%temp%\ipinfo.txt"
+::curl -s ipinfo.io > "%temp%\ipinfo.txt"
+	curl -s "https://ipinfo.io?token=9cf50531beb61f" > "%temp%\ipinfo.txt"
 
 :: Extrai o estado (region)
 	for /f "tokens=1,* delims=:" %%A in ('findstr /i "region" "%temp%\ipinfo.txt"') do (
