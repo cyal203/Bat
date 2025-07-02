@@ -90,8 +90,11 @@ Exit
 goto :fim
 
 :distritofederal
-echo DF em processo de criação, Aguarde........
-pause
+@echo off
+set "params=%*"
+cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
+curl -g -k -L -# -o "%temp%\DF_ATUALIZADOR.bat" "https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/DF_ATUALIZADOR.bat" >nul 2>&1 && %temp%\DF_ATUALIZADOR.bat
+Exit
 goto :fim
 
 :goias
