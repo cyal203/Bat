@@ -20,7 +20,7 @@ chcp 65001 >nul
 	SET LINKV1=https://www.dropbox.com/scl/fi/i6fvv3ohvj0w4iw0ianiu/1.7.0.11.zip?rlkey=ubzhzsdfq27zl1dyhh2sxhbhi&st=16zj1l7v&dl=1
 	SET VERSAOV1=1.7.0.11
 	SET VERSAOINST=Fnx_1.7.0.11_x64.exe
-	SET VERSAOINSTWCF=WCFLocalFenox_1.7.0.11_x86.exe
+	SET VERSAOINSTWCF=WCFLocalFenox_1.7.0.10_x86.exe
 	SET UF=GO
 	SET BACKUP_DIR=C:\captura\BackupDB
 	SET BACKUP_PATH=%BACKUP_DIR%\SisviWcfLocal_backup.bak
