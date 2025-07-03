@@ -220,9 +220,10 @@ call :CONCLUIDO
 schtasks /run /tn "Monitorar_HD"
 start cleanmgr.exe /d C: /VERYLOWDISK
 powershell -Command "Get-ChildItem -Path \"C:\Windows\Temp\" *.* -Recurse | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue"
-:: Limpa a pasta TEMP do usuário atual
+del /s /f /q %SystemRoot%\Prefetch\*
+del /f /s /q "%LocalAppData%\Microsoft\Windows\Explorer\thumbcache_*.db"
+del /s /f /q C:\Windows\Temp\*
 powershell -Command "Get-ChildItem -Path \"%TEMP%\" *.* -Recurse | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue"
-
 cls
 exit
 
