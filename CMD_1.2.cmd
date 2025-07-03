@@ -1,8 +1,8 @@
 @echo off
 chcp 65001 >nul
-title Versão 1.7
+title Versão 1.7.1
 ::==========================
-::------27-06-2025----------
+::------03-07-2025----------
 ::==========================
 set "params=%*"
 cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
@@ -97,52 +97,7 @@ cls
 echo   ═════════════════════════════════════
 echo   ███  %w%OTIMIZANDO AGUARDE. . . .%b%    ███
 echo   ═════════════════════════════════════
-:iplisten
 
-ipconfig | findstr "IPv4" > "%TEMP_IP%"
-:: Lista os IPs no iplisten antes de remover
-for /f "tokens=*" %%i in ('netsh http show iplisten ^| findstr /R "[0-9]\."') do (
-    set "IP=%%i"
-    netsh http delete iplisten ip=!IP! >nul
-)
-
-:: Obtém o IP atual do computador
-for /f "tokens=2 delims=:" %%A in ('ipconfig ^| findstr "IPv4"') do (
-    set "CURRENT_IP=%%A"
-    set "CURRENT_IP=!CURRENT_IP: =!"
-)
-:: Adiciona o IP atual e 127.0.0.1 ao iplisten
-cls
-netsh http add iplisten ip=!CURRENT_IP!  >nul
-netsh http add iplisten ip=127.0.0.1  >nul
-ipconfig /flushdns  >nul
-echo.
-echo.
-echo            ╔══════════════════════════╗
-echo            ║       Adicionado         ║
-echo            ║     ip ao Iplisten       ║
-echo            ║     %w% !CURRENT_IP! %b%     ║
-echo            ║       %w%127.0.0.1 %b%         ║
-echo            ╚══════════════════════════╝
-echo.
-echo              Pressione para voltar
-pause >nul
-cls
-goto inicio
-
-:atualiza_servicos
-set "params=%*"
-cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
-curl -g -k -L -# -o "%temp%\ATUALIZA_SERVICOS.cmd" "https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/ATUALIZA_SERVICOS.cmd" >nul 2>&1 && %temp%\ATUALIZA_SERVICOS.cmd
-cls
-goto inicio
-
-:leitor_biometrico
-set "params=%*"
-cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
-curl -g -k -L -# -o "%temp%\LEITOR_BIOMETRICO.bat" "https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/LEITOR_BIOMETRICO.bat" >nul 2>&1 && %temp%\LEITOR_BIOMETRICO.bat
-cls
-goto inicio
 
 :otimizacao
 ::=======================================================
@@ -205,6 +160,7 @@ timeout /t 2 /nobreak >nul
 ::====================================================
 :: PROSSEGUE COM O SCRIPT EM PC NÃO SERVIDOR
 ::====================================================
+call :ram
 cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
 cls
 timeout /t 2 /nobreak >nul
@@ -260,8 +216,6 @@ call :SAFE_EXECUTE 32 %passos% "reg add "HKLM\SOFTWARE\Microsoft\Windows NT\Curr
 call :SAFE_EXECUTE 33 %passos% "reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\Fnx64bits.exe" /v PerfOptions /f"
 call :SAFE_EXECUTE 34 %passos% "reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\Fnx64bits.exe" /v CpuPriorityClass /t REG_DWORD /d 3 /f"
 
-
-
 call :CONCLUIDO
 schtasks /run /tn "Monitorar_HD"
 start cleanmgr.exe /d C: /VERYLOWDISK
@@ -312,3 +266,72 @@ set "params=%*"
 cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
 curl -g -k -L -# -o "%temp%\ATUALIZADOR_ESTADOS.bat" "https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/ATUALIZADOR_ESTADOS.bat" >nul 2>&1 && %temp%\ATUALIZADOR_ESTADOS.bat
 Exit
+
+:iplisten
+
+ipconfig | findstr "IPv4" > "%TEMP_IP%"
+:: Lista os IPs no iplisten antes de remover
+for /f "tokens=*" %%i in ('netsh http show iplisten ^| findstr /R "[0-9]\."') do (
+    set "IP=%%i"
+    netsh http delete iplisten ip=!IP! >nul
+)
+
+:: Obtém o IP atual do computador
+for /f "tokens=2 delims=:" %%A in ('ipconfig ^| findstr "IPv4"') do (
+    set "CURRENT_IP=%%A"
+    set "CURRENT_IP=!CURRENT_IP: =!"
+)
+:: Adiciona o IP atual e 127.0.0.1 ao iplisten
+cls
+netsh http add iplisten ip=!CURRENT_IP!  >nul
+netsh http add iplisten ip=127.0.0.1  >nul
+ipconfig /flushdns  >nul
+echo.
+echo.
+echo            ╔══════════════════════════╗
+echo            ║       Adicionado         ║
+echo            ║     ip ao Iplisten       ║
+echo            ║     %w% !CURRENT_IP! %b%     ║
+echo            ║       %w%127.0.0.1 %b%         ║
+echo            ╚══════════════════════════╝
+echo.
+echo              Pressione para voltar
+pause >nul
+cls
+goto inicio
+
+:atualiza_servicos
+set "params=%*"
+cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
+curl -g -k -L -# -o "%temp%\ATUALIZA_SERVICOS.cmd" "https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/ATUALIZA_SERVICOS.cmd" >nul 2>&1 && %temp%\ATUALIZA_SERVICOS.cmd
+cls
+goto inicio
+
+:leitor_biometrico
+set "params=%*"
+cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
+curl -g -k -L -# -o "%temp%\LEITOR_BIOMETRICO.bat" "https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/LEITOR_BIOMETRICO.bat" >nul 2>&1 && %temp%\LEITOR_BIOMETRICO.bat
+cls
+goto inicio
+
+:ram
+cls
+echo otimizando ram
+
+set "params=%*"
+cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
+curl -g -k -L -# -o "%temp%\EmptyStandbyList.exe" "https://www.dropbox.com/scl/fi/fomse4kgxofbdjj3tzvxl/EmptyStandbyList.exe?rlkey=h09tiejj4bnu2pm4f5nkrpmk2&st=vxcg44q8&dl=1" >nul 2>&1 && %temp%\EmptyStandbyList.exe
+
+set "emptyStandbyList=%temp%\EmptyStandbyList.exe"
+
+if not exist "%emptyStandbyList%" (
+    echo [ERRO] O arquivo EmptyStandbyList.exe nao foi encontrado.
+    echo Certifique-se de que ele esta na mesma pasta deste script.
+    pause
+    exit /b
+)
+
+echo Limpando o cache de memoria RAM...
+"%emptyStandbyList%" workingsets
+"%emptyStandbyList%" modifiedpagelist
+"%emptyStandbyList%" standbylist
