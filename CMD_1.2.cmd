@@ -162,6 +162,7 @@ timeout /t 2 /nobreak >nul
 :: PROSSEGUE COM O SCRIPT EM PC NÃO SERVIDOR
 ::====================================================
 call :ram
+:continue
 cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
 cls
 timeout /t 2 /nobreak >nul
@@ -337,6 +338,7 @@ echo Limpando o cache de memoria RAM...
 "%emptyStandbyList%" workingsets
 "%emptyStandbyList%" modifiedpagelist
 "%emptyStandbyList%" standbylist
+goto continue
 
 :atualizadormanual
 cls
