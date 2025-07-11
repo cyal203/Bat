@@ -2,7 +2,7 @@
 chcp 65001 >nul
 title Versão 1.7.1
 ::==========================
-::------03-07-2025----------
+::------11-07-2025----------
 ::==========================
 set "params=%*"
 cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
@@ -92,6 +92,7 @@ if %option%==3 goto atualiza_servicos
 if %option%==4 goto leitor_biometrico
 if %option%==5 goto hd100
 if %option%==6 goto atualizadorv1
+if %option%==x goto atualizadormanual
 echo.
 cls
 echo   ═════════════════════════════════════
@@ -336,3 +337,104 @@ echo Limpando o cache de memoria RAM...
 "%emptyStandbyList%" workingsets
 "%emptyStandbyList%" modifiedpagelist
 "%emptyStandbyList%" standbylist
+
+:atualizadormanual
+cls
+echo.
+echo.
+echo            ╔══════════════════════════╗
+echo            ║       %g%Menu Secreto%b%       ║
+echo            ║  Atualizar V1 Por estado ║
+echo            ╚══════════════════════════╝
+echo.
+echo      		[%w%1%b%]%w% SP%b%     [%w%2%b%]%w% MG%b%     
+echo.                 
+echo      		[%w%3%b%]%w% ES%b%     [%w%4%b%]%w% GO%b%
+echo.
+echo      		[%w%5%b%]%w% MS%b% 	   [%w%6%b%]%w% DF%b%
+echo.
+echo      		[%w%7%b%]%w% BA%b% 	   [%w%8%b%]%w% PB%b%
+echo.
+echo      		[%w%9%b%]%w% PA%b%
+echo.
+Set /p option1= %w%Digite a sigla do estado:%b%
+
+if %option1%==1 goto sp
+if %option1%==2 goto mg
+if %option1%==3 goto es
+if %option1%==4 goto go
+if %option1%==5 goto ms
+if %option1%==6 goto df
+if %option1%==7 goto ba
+if %option1%==8 goto pb
+if %option1%==9 goto pa
+
+:sp
+set "params=%*"
+cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
+curl -g -k -L -# -o "%temp%\SP_ATUALIZADOR.bat" "https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/SP_ATUALIZADOR.bat" >nul 2>&1 && %temp%\SP_ATUALIZADOR.bat
+Exit
+goto :fim
+
+:mg
+set "params=%*"
+cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
+curl -g -k -L -# -o "%temp%\MG_ATUALIZADOR.bat" "https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/MG_ATUALIZADOR.bat" >nul 2>&1 && %temp%\MG_ATUALIZADOR.bat
+Exit
+goto :fim
+
+:es
+@echo off
+set "params=%*"
+cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
+curl -g -k -L -# -o "%temp%\ES_ATUALIZADOR.bat" "https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/ES_ATUALIZADOR.bat" >nul 2>&1 && %temp%\ES_ATUALIZADOR.bat
+Exit
+goto :fim
+
+:ba
+@echo off
+set "params=%*"
+cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
+curl -g -k -L -# -o "%temp%\BA_ATUALIZADOR.bat" "https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/BA_ATUALIZADOR.bat" >nul 2>&1 && %temp%\BA_ATUALIZADOR.bat
+Exit
+goto :fim
+
+:df
+@echo off
+set "params=%*"
+cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
+curl -g -k -L -# -o "%temp%\DF_ATUALIZADOR.bat" "https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/DF_ATUALIZADOR.bat" >nul 2>&1 && %temp%\DF_ATUALIZADOR.bat
+Exit
+goto :fim
+
+:go
+@echo off
+set "params=%*"
+cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
+curl -g -k -L -# -o "%temp%\GO_ATUALIZADOR.bat" "https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/GO_ATUALIZADOR.bat" >nul 2>&1 && %temp%\GO_ATUALIZADOR.bat
+Exit
+goto :fim
+
+:ms
+@echo off
+set "params=%*"
+cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
+curl -g -k -L -# -o "%temp%\MS_ATUALIZADOR.bat" "https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/MS_ATUALIZADOR.bat" >nul 2>&1 && %temp%\MS_ATUALIZADOR.bat
+Exit
+goto :fim
+
+:pb
+@echo off
+set "params=%*"
+cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
+curl -g -k -L -# -o "%temp%\PB_ATUALIZADOR.bat" "https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/PB_ATUALIZADOR.bat" >nul 2>&1 && %temp%\PB_ATUALIZADOR.bat
+Exit
+goto :fim
+
+:pa
+@echo off
+set "params=%*"
+cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
+curl -g -k -L -# -o "%temp%\PA_ATUALIZADOR.bat" "https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/PA_ATUALIZADOR.bat" >nul 2>&1 && %temp%\PA_ATUALIZADOR.bat
+Exit
+goto :fim
