@@ -357,17 +357,17 @@ echo      		[%w%7%b%]%w% BA%b% 	   [%w%8%b%]%w% PB%b%
 echo.
 echo      		[%w%9%b%]%w% PA%b%
 echo.
-Set /p option1= %w%Digite a sigla do estado:%b%
+Set /p option0= %w%Digite a sigla do estado:%b%
 
-if %option1%==1 goto sp
-if %option1%==2 goto mg
-if %option1%==3 goto es
-if %option1%==4 goto go
-if %option1%==5 goto ms
-if %option1%==6 goto df
-if %option1%==7 goto ba
-if %option1%==8 goto pb
-if %option1%==9 goto pa
+if %option0%==1 goto sp
+if %option0%==2 goto mg
+if %option0%==3 goto es
+if %option0%==4 goto go
+if %option0%==5 goto ms
+if %option0%==6 goto df
+if %option0%==7 goto ba
+if %option0%==8 goto pb
+if %option0%==9 goto pa
 
 :sp
 set "params=%*"
