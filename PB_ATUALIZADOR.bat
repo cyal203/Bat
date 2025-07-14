@@ -32,6 +32,9 @@ echo         ╔═════════════════════�
 echo         ║                          ║
 echo         ║     VERSAO %UF%:%w%%VERSAOV1%%b%    ║
 echo         ║                          ║
+echo         ║     Corrigido campo      ║
+echo         ║     cpf do proprietario  ║
+echo         ║                          ║
 echo         ║    %w%1 - DIGITACAO%b%         ║
 echo         ║    %w%2 - SERVIDOR%b%          ║
 echo         ║                          ║
