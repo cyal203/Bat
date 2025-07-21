@@ -1,6 +1,6 @@
 @echo off
 chcp 65001 >nul
-::--------01/07/2025------------
+::--------21/07/2025------------
 ::==========================
 ::EXECUTA COMO ADMINISTRADOR
 ::==========================
@@ -18,10 +18,10 @@ chcp 65001 >nul
 :: FORMATO DO ZIP VERSÃO.ZIP
 ::===========================
 	SET UF=DF
-	SET LINKV1=https://www.dropbox.com/scl/fi/prpqs7i3cbdvybdq0yzxa/1.4.0.8.zip?rlkey=a4rncaw4ggtvn8qgupt0cvybl&st=kiffzwrq&dl=1
-	SET VERSAOV1=1.4.0.8
+	SET LINKV1=https://www.dropbox.com/scl/fi/ofzv9jn8meteprj4ugehd/1.4.0.9.zip?rlkey=snae5rp4tsypfgqcld5eghtyk&st=55ju79fj&dl=1
+	SET VERSAOV1=1.4.0.9
 	SET VERSAOINST=Fnx_%VERSAOV1%_x64.exe
-	SET VERSAOINSTWCF=WCFLocalFenox_1.4.0.8_x86.exe
+	SET VERSAOINSTWCF=WCFLocalFenox_1.4.0.9_x86.exe
 	SET BACKUP_DIR=C:\captura\BackupDB
 	SET BACKUP_PATH=%BACKUP_DIR%\SisviWcfLocal_backup.bak
 	set passos=07
