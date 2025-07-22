@@ -1,6 +1,6 @@
 @echo off
 chcp 65001 >nul
-::--------27/06/2025------------
+::--------22/07/2025------------
 	title SP ATUALIZADOR
 ::==========================
 ::EXECUTA COMO ADMINISTRADOR
