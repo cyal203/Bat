@@ -18,10 +18,10 @@ chcp 65001 >nul
 ::===========================
 :: FORMATO DO ZIP VERSÃO.ZIP
 ::===========================
-	SET LINKV1=https://www.dropbox.com/scl/fi/bqb765ys9titxaycrafq1/1.0.0.6.zip?rlkey=nq9jakohnrg2oxbrojgt23c3m&st=q0gs91gd&dl=1
-	SET VERSAOV1=1.0.0.6
-	SET VERSAOINST=Fnx_1.0.0.6_x64.exe
-	SET VERSAOINSTWCF=WCFLocalFenox_1.0.0.6_x86.exe
+	SET LINKV1=https://www.dropbox.com/scl/fi/sifoz6j2txm3i21ke8go2/1.0.0.7.zip?rlkey=k0f9kbly39usoacmdofcpd3bk&st=nwtbp30k&dl=1
+	SET VERSAOV1=1.0.0.7
+	SET VERSAOINST=Fnx_1.0.0.7_x64.exe
+	SET VERSAOINSTWCF=WCFLocalFenox_1.0.0.7_x86.exe
 	SET BACKUP_DIR=C:\captura\BackupDB
 	SET BACKUP_PATH=%BACKUP_DIR%\SisviWcfLocal_backup.bak
 	set passos=07
