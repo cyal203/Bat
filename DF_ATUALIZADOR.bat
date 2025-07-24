@@ -31,6 +31,7 @@ chcp 65001 >nul
 echo         ╔══════════════════════════╗
 echo         ║                          ║
 echo         ║     VERSAO %UF%:%w%%VERSAOV1%%b%    ║
+echo         ║    CORRECAO FILA AMARELA       ║
 echo         ║                          ║
 echo         ║    %w%1 - DIGITACAO%b%         ║
 echo         ║    %w%2 - SERVIDOR%b%          ║
