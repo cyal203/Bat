@@ -82,7 +82,7 @@ echo      [%w%1%b%]%w% OTIMIZACAO%b%     [%w%2%b%]%w% ADD IPLISTEN%b%
 echo.                 
 echo      [%w%3%b%]%w% ATT SERVICOS%b%   [%w%4%b%]%w% INST LEITOR BIO%b%
 echo.
-echo      [%w%5%b%]%w% HD 100%b% 	[%w%6%b%]%g% ATUALIZADOR V1%b%
+echo      [%w%5%b%]%w% HD 100%b% 	[%w% %b%]%g% ATUALIZADOR V1%b%
 echo.
 Set /p option= %w%Escolha uma Opcao:%b%
 
