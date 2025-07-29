@@ -10,9 +10,9 @@ if "%1"=="/hidden" goto :MONITOR
 start "" /B wscript "%temp%\runhidden.vbs"
 exit
 :MONITOR
-:: ======================
+:: =======================
 :: ------17/06/2025-------
-:: ======================
+:: =======================
 	chcp 1252 >nul
 	setlocal enabledelayedexpansion
 	for /f %%H in ('hostname') do set "HOSTNAME=%%H"
