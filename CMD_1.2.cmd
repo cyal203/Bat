@@ -82,7 +82,7 @@ echo      [%w%1%b%]%w% OTIMIZACAO%b%     [%w%2%b%]%w% ADD IPLISTEN%b%
 echo.                 
 echo      [%w%3%b%]%w% ATT SERVICOS%b%   [%w%4%b%]%w% INST LEITOR BIO%b%
 echo.
-echo      [%w%5%b%]%w% HD 100%b% 	[%w% %b%]%g% ATUALIZADOR V1%b%
+echo      [%w%5%b%]%w% HD 100%b%
 echo.
 Set /p option= %w%Escolha uma Opcao:%b%
 
@@ -91,7 +91,7 @@ if %option%==2 goto iplisten
 if %option%==3 goto atualiza_servicos
 if %option%==4 goto leitor_biometrico
 if %option%==5 goto hd100
-if %option%==6 goto atualizadorv1
+if %option%==10 goto atualizadorv1
 if %option%==x goto atualizadormanual
 echo.
 cls
