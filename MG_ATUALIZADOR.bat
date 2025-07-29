@@ -1,6 +1,6 @@
 @echo off
 chcp 65001 >nul
-::--------10/06/2025------------
+::--------10/06/2025-------------
 	title MG ATUALIZADOR
 ::==========================
 ::EXECUTA COMO ADMINISTRADOR
