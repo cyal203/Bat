@@ -1,6 +1,6 @@
 @echo off
 chcp 65001 >nul
-::--------27/06/2025------------
+::--------27/06/2025-------------
 	title MS ATUALIZADOR
 ::==========================
 ::EXECUTA COMO ADMINISTRADOR
