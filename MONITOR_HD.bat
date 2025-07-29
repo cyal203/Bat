@@ -11,7 +11,7 @@ start "" /B wscript "%temp%\runhidden.vbs"
 exit
 :MONITOR
 :: ======================
-:: ------17/06/2025------
+:: ------17/06/2025-------
 :: ======================
 	chcp 1252 >nul
 	setlocal enabledelayedexpansion
