@@ -322,7 +322,7 @@ echo     [%w%1%b%]%w% IPUTILITY%b%     [%w%2%b%]%w% SEARCH_TOOLS%b%
 echo.                 
 echo     [%w%3%b%]%w% TEAM_VIEWER%b%   [%w%4%b%]%w% VLC_2.2.6%b%
 echo.
-echo     [%w%5%b%]%w% FIDDLER%b%
+echo     [%w%5%b%]%w% FIDDLER%b%       [%w%6%b%]%w% LEITOR BIOMETRICO%b%
 
 echo.
 Set /p option0= %w%Digite a opcao:%b%
@@ -332,6 +332,7 @@ if %option0%==2 goto SEARCH_TOOLS
 if %option0%==3 goto TEAM_VIEWER
 if %option0%==4 goto VLC
 if %option0%==5 goto FIDDLER
+if %option0%==6 goto LEITOR_BIOMETRICO
 
 
 :IPUTILITY
@@ -339,7 +340,7 @@ cls
 echo.
 echo.
 echo       ══════════════════════════════════
-echo       ███    %w%OTIMIZANDO (1/4)%b%      ███
+echo       ███    %w%INSTALANDO (1/4)%b%      ███
 echo       ══════════════════════════════════
 timeout /t 1 /nobreak >nul
 set "params=%*"
@@ -349,7 +350,7 @@ cls
 echo.
 echo.
 echo       ══════════════════════════════════
-echo       ███    %w%OTIMIZANDO (2/4)%b%        ███
+echo       ███    %w%INSTAZANDO (2/4)%b%        ███
 echo       ══════════════════════════════════
 timeout /t 1 /nobreak >nul
 powershell -NoProfile Expand-Archive '%temp%\IPUtilityNext.zip' -DestinationPath '%temp%\Fenox' >nul 2>&1
@@ -357,7 +358,7 @@ cls
 echo.
 echo.
 echo       ══════════════════════════════════
-echo       ███    %w%OTIMIZANDO (3/4)%b%        ███
+echo       ███    %w%INSTALANDO (3/4)%b%        ███
 echo       ══════════════════════════════════
 timeout /t 1 /nobreak >nul
 %temp%\Fenox\General_IPUtilityNext.exe /S
@@ -391,11 +392,58 @@ goto :fim
 @echo off
 set "params=%*"
 cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
-curl -g -k -L -# -o "%temp%\VLC_ATUALIZADOR.bat" "https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/VLC_ATUALIZADOR.bat" >nul 2>&1 && %temp%\VLC_ATUALIZADOR.bat
+curl -g -k -L -# -o "%temp%\VLC_ATUALIZADOR.bat" "https://www.dropbox.com/scl/fi/tle009xzh9uuf9xnn5xof/VLC-2.2.6.exe.zip?rlkey=1wjimcl0jdz9ii9knfcvl2lxp&st=adqtqro6&dl=1" >nul 2>&1 && %temp%\VLC_ATUALIZADOR.bat
 Exit
 goto :fim
 
+:LEITOR_BIOMETRICO
+cls
+echo.
+echo.
+echo       ════════════════════════════════
+echo       ███    %w%EFETUANDO DOWNLOAD %b%   ███
+echo       ════════════════════════════════
+set "params=%*"
+cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
+curl -g -k -L -# -o "%temp%\LEITOR_BIOMETRICO.zip" "https://www.dropbox.com/scl/fi/vkwaoojm2gpef0wbuky1s/LEITOR_BIOMETRICO.zip?rlkey=98n5937z1641k0wpx39ajwdif&st=5bt8looi&dl=1" >nul 2>&1
+powershell -NoProfile Expand-Archive '%temp%\LEITOR_BIOMETRICO.zip' -DestinationPath '%temp%\LEITOR_BIOMETRICO' >nul 2>&1
+cls
+echo.
+echo.
+echo       ════════════════════════════════
+echo       ███    %w%COPIANDO DLL %b%         ███
+echo       ════════════════════════════════
+timeout /t 3 /nobreak >nul
+:: Copia as DLLs de System32
+xcopy /Y /V "%temp%\LEITOR_BIOMETRICO\System32\*.dll" "C:\Windows\System32\"
+if %errorlevel% neq 0 echo Falha ao copiar DLLs para System32.
 
+:: Copia as DLLs de SysWOW64
+if exist "C:\Windows\SysWOW64" (
+    xcopy /Y /V "%temp%\LEITOR_BIOMETRICO\SysWOW64\*.dll" "C:\Windows\SysWOW64\"
+    if %errorlevel% neq 0 echo Falha ao copiar DLLs para SysWOW64.
+)
+
+cls
+echo.
+echo.
+echo       ══════════════════════════════
+echo       ███       %w%INSTALANDO %b%      ███
+echo       ══════════════════════════════
+:: Instala o programa
+%temp%\LEITOR_BIOMETRICO\UBio_Hamster_DX_Driver_Setup.exe
+
+:: Verifica se a instalação foi bem-sucedida
+if %errorlevel% neq 0 (
+    echo Erro ao instalar o programa.
+    exit /b %errorlevel%
+)
+cls
+cls
+echo %w%Processo concluido! %b%
+echo.
+echo Verifique se o %w%isolamento de Nucleo%b% foi desativado
+goto :inicio
 
 :ram
 cls
