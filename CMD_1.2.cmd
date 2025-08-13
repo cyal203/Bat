@@ -1,8 +1,8 @@
 @echo off
 chcp 65001 >nul
-title Versão 1.7.1
+title Versão 1.7.2
 ::==========================
-::------11-07-2025----------
+::------13-08-2025----------
 ::==========================
 set "params=%*"
 cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
@@ -80,7 +80,7 @@ echo              SELECIONE UMA OPCAO:
 echo.   
 echo      [%w%1%b%]%w% OTIMIZACAO%b%     [%w%2%b%]%w% ADD IPLISTEN%b%     
 echo.                 
-echo      [%w%3%b%]%w% ATT SERVICOS%b%   [%w%4%b%]%w% INST LEITOR BIO%b%
+echo      [%w%3%b%]%w% ATT SERVICOS%b%   [%w%4%b%]%w% PROGRAMAS UTEIS%b%
 echo.
 echo      [%w%5%b%]%w% HD 100%b%
 echo.
@@ -89,7 +89,7 @@ Set /p option= %w%Escolha uma Opcao:%b%
 if %option%==1 goto otimizacao
 if %option%==2 goto iplisten
 if %option%==3 goto atualiza_servicos
-if %option%==4 goto leitor_biometrico
+if %option%==4 goto programas_uteis
 if %option%==5 goto hd100
 if %option%==10 goto atualizadorv1
 if %option%==x goto atualizadormanual
@@ -310,12 +310,92 @@ curl -g -k -L -# -o "%temp%\ATUALIZA_SERVICOS.cmd" "https://raw.githubuserconten
 cls
 goto inicio
 
-:leitor_biometrico
+:programas_uteis
+cls
+echo.
+echo.
+echo          ╔══════════════════╗
+echo          ║ %g%PROGRAMAS UTEIS%b%  ║
+echo          ╚══════════════════╝
+echo.
+echo     [%w%1%b%]%w% IPUTILITY%b%     [%w%2%b%]%w% SEARCH_TOOLS%b%   
+echo.                 
+echo     [%w%3%b%]%w% TEAM_VIEWER%b%   [%w%4%b%]%w% VLC_2.2.6%b%
+echo.
+echo     [%w%5%b%]%w% FIDDLER%b%
+
+echo.
+Set /p option0= %w%Digite a opcao:%b%
+
+if %option0%==1 goto IPUTILITY
+if %option0%==2 goto SEARCH_TOOLS
+if %option0%==3 goto TEAM_VIEWER
+if %option0%==4 goto VLC
+if %option0%==5 goto FIDDLER
+
+
+:IPUTILITY
+cls
+echo.
+echo.
+echo       ══════════════════════════════════
+echo       ███    %w%OTIMIZANDO (1/4)%b%      ███
+echo       ══════════════════════════════════
+timeout /t 1 /nobreak >nul
 set "params=%*"
 cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
-curl -g -k -L -# -o "%temp%\LEITOR_BIOMETRICO.bat" "https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/LEITOR_BIOMETRICO.bat" >nul 2>&1 && %temp%\LEITOR_BIOMETRICO.bat
+curl -g -k -L -# -o "%temp%\IPUtilityNext.zip" "https://www.dropbox.com/scl/fi/wpq5qpy7yksxtwi1hv32b/General_IPUtilityNext.zip?rlkey=thm7blxtas6vjfxpmhye5nc53&st=f9eubz3o&dl=1" >nul 2>&1
+cls
+echo.
+echo.
+echo       ══════════════════════════════════
+echo       ███    %w%OTIMIZANDO (2/4)%b%        ███
+echo       ══════════════════════════════════
+timeout /t 1 /nobreak >nul
+powershell -NoProfile Expand-Archive '%temp%\IPUtilityNext.zip' -DestinationPath '%temp%\Fenox' >nul 2>&1
+cls
+echo.
+echo.
+echo       ══════════════════════════════════
+echo       ███    %w%OTIMIZANDO (3/4)%b%        ███
+echo       ══════════════════════════════════
+timeout /t 1 /nobreak >nul
+%temp%\Fenox\General_IPUtilityNext.exe /S
+start "" "C:\Program Files (x86)\IP Utility\IP Utility.exe"
+cls
+echo.
+echo.
+echo       ══════════════════════════════════
+echo       ███    %w%OTIMIZANDO (4/4)%b%        ███
+echo       ══════════════════════════════════
+timeout /t 1 /nobreak >nul
 cls
 goto inicio
+
+:FIDDLER
+set "params=%*"
+cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
+curl -g -k -L -# -o "%temp%\FIDDLER_ATUALIZADOR.bat" "https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/FIDDLER_ATUALIZADOR.bat" >nul 2>&1 && %temp%\FIDDLER_ATUALIZADOR.bat
+Exit
+goto :fim
+
+:TEAM_VIEWER
+@echo off
+set "params=%*"
+cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
+curl -g -k -L -# -o "%temp%\TEAM_VIEWER_ATUALIZADOR.bat" "https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/TEAM_VIEWER_ATUALIZADOR.bat" >nul 2>&1 && %temp%\TEAM_VIEWER_ATUALIZADOR.bat
+Exit
+goto :fim
+
+:VLC
+@echo off
+set "params=%*"
+cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
+curl -g -k -L -# -o "%temp%\VLC_ATUALIZADOR.bat" "https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/VLC_ATUALIZADOR.bat" >nul 2>&1 && %temp%\VLC_ATUALIZADOR.bat
+Exit
+goto :fim
+
+
 
 :ram
 cls
