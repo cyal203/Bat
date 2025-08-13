@@ -7,7 +7,7 @@ title Versão 1.7.2
 set "params=%*"
 cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
 if "%Admin%"=="ops" goto :eof
-mode con: cols=50 lines=18
+mode con: cols=50 lines=20
 setlocal enabledelayedexpansion
 set "params=%*"
 ::branco
@@ -84,7 +84,8 @@ echo      [%w%3%b%]%w% ATT SERVICOS%b%   [%w%4%b%]%w% PROGRAMAS UTEIS%b%
 echo.
 echo      [%w%5%b%]%w% HD 100%b%
 echo.
-Set /p option= %w%Escolha uma Opcao:%b%
+echo.
+Set /p option= %w%     Escolha uma Opcao:%b%
 
 if %option%==1 goto otimizacao
 if %option%==2 goto iplisten
@@ -314,18 +315,20 @@ goto inicio
 cls
 echo.
 echo.
-echo          ╔══════════════════╗
-echo          ║ %g%PROGRAMAS UTEIS%b%  ║
-echo          ╚══════════════════╝
+echo            ╔══════════════════╗
+echo            ║ %g%PROGRAMAS UTEIS%b%  ║
+echo            ╚══════════════════╝
 echo.
 echo     [%w%1%b%]%w% IPUTILITY%b%     [%w%2%b%]%w% SEARCH_TOOLS%b%   
 echo.                 
 echo     [%w%3%b%]%w% TEAM_VIEWER%b%   [%w%4%b%]%w% VLC_2.2.6%b%
 echo.
 echo     [%w%5%b%]%w% FIDDLER%b%       [%w%6%b%]%w% LEITOR BIOMETRICO%b%
-
 echo.
-Set /p option0= %w%Digite a opcao:%b%
+echo     [%w%7%b%]%w% CERTIFICADOS%b%
+echo.
+echo.
+Set /p option0= %w%    Escolha uma opcao:%b%
 
 if %option0%==1 goto IPUTILITY
 if %option0%==2 goto SEARCH_TOOLS
@@ -333,6 +336,7 @@ if %option0%==3 goto TEAM_VIEWER
 if %option0%==4 goto VLC
 if %option0%==5 goto FIDDLER
 if %option0%==6 goto LEITOR_BIOMETRICO
+if %option0%==7 goto CERTIFICADOS
 
 
 :IPUTILITY
@@ -350,7 +354,7 @@ cls
 echo.
 echo.
 echo       ══════════════════════════════════
-echo       ███    %w%INSTAZANDO (2/4)%b%        ███
+echo       ███    %w%INSTALANDO (2/4)%b%        ███
 echo       ══════════════════════════════════
 timeout /t 1 /nobreak >nul
 powershell -NoProfile Expand-Archive '%temp%\IPUtilityNext.zip' -DestinationPath '%temp%\Fenox' >nul 2>&1
@@ -367,34 +371,152 @@ cls
 echo.
 echo.
 echo       ══════════════════════════════════
-echo       ███    %w%OTIMIZANDO (4/4)%b%        ███
+echo       ███    %w%INSTALANDO (4/4)%b%        ███
+echo       ══════════════════════════════════
+timeout /t 1 /nobreak >nul
+cls
+goto inicio
+
+:SEARCH_TOOLS
+cls
+echo.
+echo.
+echo       ══════════════════════════════════
+echo       ███    %w%INSTALANDO (1/4)%b%        ███
+echo       ══════════════════════════════════
+timeout /t 1 /nobreak >nul
+set "params=%*"
+cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
+curl -g -k -L -# -o "%temp%\SearchTools.zip" "https://www.dropbox.com/scl/fi/gbrnllnz889mel362t8oj/SearchTools.zip?rlkey=v7ef76jrgdjmkkijolifd3yxa&st=fhrmi59a&dl=1" >nul 2>&1
+cls
+echo.
+echo.
+echo       ══════════════════════════════════
+echo       ███    %w%INSTALANDO (2/4)%b%        ███
+echo       ══════════════════════════════════
+timeout /t 1 /nobreak >nul
+powershell -NoProfile Expand-Archive '%temp%\SearchTools.zip' -DestinationPath '%temp%\Fenox' >nul 2>&1
+cls
+echo.
+echo.
+echo       ══════════════════════════════════
+echo       ███    %w%INSTALANDO (3/4)%b%        ███
+echo       ══════════════════════════════════
+timeout /t 1 /nobreak >nul
+%temp%\Fenox\SearchTools.exe /S
+start "" "C:\Program Files\NVClient_V5\SearchTools V2.exe"
+cls
+echo.
+echo.
+echo       ══════════════════════════════════
+echo       ███    %w%INSTALANDO (4/4)%b%        ███
 echo       ══════════════════════════════════
 timeout /t 1 /nobreak >nul
 cls
 goto inicio
 
 :FIDDLER
+cls
+echo.
+echo.
+echo       ══════════════════════════════════
+echo       ███    %w%DOWNLOAD (1/4)%b%          ███
+echo       ══════════════════════════════════
+timeout /t 1 /nobreak >nul
 set "params=%*"
 cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
-curl -g -k -L -# -o "%temp%\FIDDLER_ATUALIZADOR.bat" "https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/FIDDLER_ATUALIZADOR.bat" >nul 2>&1 && %temp%\FIDDLER_ATUALIZADOR.bat
-Exit
-goto :fim
+curl -g -k -L -# -o "%temp%\FiddlerSetup.zip" "https://www.dropbox.com/scl/fi/hmt32gfgkaks8jm68fqkn/FiddlerSetup.zip?rlkey=l79nvjgugp02vxs07npbpr2hs&st=0zajwgzc&dl=1" >nul 2>&1
+cls
+echo.
+echo.
+echo       ══════════════════════════════════
+echo       ███    %w%EXTRAINDO (2/4)%b%         ███
+echo       ══════════════════════════════════
+timeout /t 1 /nobreak >nul
+powershell -NoProfile Expand-Archive '%temp%\FiddlerSetup.zip' -DestinationPath '%temp%\Fenox' >nul 2>&1
+cls
+echo.
+echo.
+echo       ══════════════════════════════════
+echo       ███    %w%INICIANDO (3/4)%b%         ███
+echo       ══════════════════════════════════
+timeout /t 1 /nobreak >nul
+echo.
+echo Ajustar para Keep: 100 sessions
+%temp%\Fenox\"FiddlerSetup.exe"
+start "" "C:\Users\Fenox\AppData\Local\Programs\Fiddler\Fiddler.exe"
+
+cls
+goto inicio
 
 :TEAM_VIEWER
-@echo off
+cls
+echo.
+echo.
+echo       ══════════════════════════════════
+echo       ███    %w%DOWNLOAD (1/4)%b%          ███
+echo       ══════════════════════════════════
+timeout /t 1 /nobreak >nul
 set "params=%*"
 cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
-curl -g -k -L -# -o "%temp%\TEAM_VIEWER_ATUALIZADOR.bat" "https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/TEAM_VIEWER_ATUALIZADOR.bat" >nul 2>&1 && %temp%\TEAM_VIEWER_ATUALIZADOR.bat
-Exit
-goto :fim
+curl -g -k -L -# -o "%temp%\TeamViewer_Setup_x64.zip" "https://www.dropbox.com/scl/fi/niirt87a7gdcsndeczcia/TeamViewer_Setup_x64.zip?rlkey=89doikznjy5fglkvcxwygvwbz&st=ub1gfw84&dl=1" >nul 2>&1
+cls
+echo.
+echo.
+echo       ══════════════════════════════════
+echo       ███    %w%EXTRAINDO (2/4)%b%         ███
+echo       ══════════════════════════════════
+timeout /t 1 /nobreak >nul
+powershell -NoProfile Expand-Archive '%temp%\TeamViewer_Setup_x64.zip' -DestinationPath '%temp%\Fenox' >nul 2>&1
+cls
+echo.
+echo.
+echo       ══════════════════════════════════
+echo       ███    %w%INICIANDO (3/4)%b%         ███
+echo       ══════════════════════════════════
+timeout /t 1 /nobreak >nul
+%temp%\Fenox\"TeamViewer_Setup_x64.exe"
+cls
+goto inicio
+
 
 :VLC
-@echo off
+cls
+echo.
+echo.
+echo       ══════════════════════════════════
+echo       ███    %w%INSTALANDO (1/4)%b%      ███
+echo       ══════════════════════════════════
+timeout /t 1 /nobreak >nul
 set "params=%*"
 cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
-curl -g -k -L -# -o "%temp%\VLC_ATUALIZADOR.bat" "https://www.dropbox.com/scl/fi/tle009xzh9uuf9xnn5xof/VLC-2.2.6.exe.zip?rlkey=1wjimcl0jdz9ii9knfcvl2lxp&st=adqtqro6&dl=1" >nul 2>&1 && %temp%\VLC_ATUALIZADOR.bat
-Exit
-goto :fim
+curl -g -k -L -# -o "%temp%\VLC-2.2.6.exe.zip" "https://www.dropbox.com/scl/fi/tle009xzh9uuf9xnn5xof/VLC-2.2.6.exe.zip?rlkey=1wjimcl0jdz9ii9knfcvl2lxp&st=adqtqro6&dl=1" >nul 2>&1
+cls
+echo.
+echo.
+echo       ══════════════════════════════════
+echo       ███    %w%INSTALANDO (2/4)%b%        ███
+echo       ══════════════════════════════════
+timeout /t 1 /nobreak >nul
+powershell -NoProfile Expand-Archive '%temp%\VLC-2.2.6.exe.zip' -DestinationPath '%temp%\Fenox' >nul 2>&1
+cls
+echo.
+echo.
+echo       ══════════════════════════════════
+echo       ███    %w%INSTALANDO (3/4)%b%        ███
+echo       ══════════════════════════════════
+timeout /t 1 /nobreak >nul
+%temp%\Fenox\"VLC 2.2.6.exe" /S
+start "" "C:\Program Files (x86)\VideoLAN\VLC\vlc.exe"
+cls
+echo.
+echo.
+echo       ══════════════════════════════════
+echo       ███    %w%INSTALANDO (4/4)%b%        ███
+echo       ══════════════════════════════════
+timeout /t 1 /nobreak >nul
+cls
+goto inicio
 
 :LEITOR_BIOMETRICO
 cls
@@ -444,6 +566,45 @@ echo %w%Processo concluido! %b%
 echo.
 echo Verifique se o %w%isolamento de Nucleo%b% foi desativado
 goto :inicio
+
+:CERTIFICADOS
+
+
+cls
+echo.
+echo.
+echo       ══════════════════════════════════
+echo       ███    %w%DOWNLOAD (1/3)%b%          ███
+echo       ══════════════════════════════════
+timeout /t 1 /nobreak >nul
+set "params=%*"
+cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
+curl -g -k -L -# -o "%temp%\CERTIFICADOS.zip" "https://www.dropbox.com/scl/fi/rd1uuwaz43zb5kfpmeozo/CERTIFICADOS.zip?rlkey=db4p3wv7q0mzqs20rzc6whtr5&st=4m2nu4tf&dl=1" >nul 2>&1
+cls
+echo.
+echo.
+echo       ══════════════════════════════════
+echo       ███    %w%INICIANDO (2/3)%b%        ███
+echo       ══════════════════════════════════
+timeout /t 1 /nobreak >nul
+powershell -NoProfile Expand-Archive '%temp%\CERTIFICADOS.zip' -DestinationPath '%temp%\Fenox' >nul 2>&1
+cls
+echo.
+echo.
+echo       ══════════════════════════════════
+echo       ███    %w%INSTALANDO (3/3)%b%        ███
+echo       ══════════════════════════════════
+timeout /t 1 /nobreak >nul
+%temp%\Fenox\"SafeSignIC30124-x64-win-tu-admin.exe" /s /v/qb
+timeout /t 5 /nobreak >nul
+%temp%\Fenox\"GDsetupStarsignCUTx64.exe" /s
+timeout /t 5 /nobreak >nul
+%temp%\Fenox\"ePass2003-Setup_v1.1.16.330_32_64_Windows.exe" /s /v/qb
+timeout /t 5 /nobreak >nul
+%temp%\Fenox\"certisign10.6-x64-10.6 (1).exe" /s /v/qb
+timeout /t 5 /nobreak >nul
+cls
+goto inicio
 
 :ram
 cls
