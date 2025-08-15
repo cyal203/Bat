@@ -1,6 +1,6 @@
 @echo off
 chcp 65001 >nul
-::--------10/06/2025-------------
+::--------15/08/2025-------------
 	title MG ATUALIZADOR
 ::==========================
 ::EXECUTA COMO ADMINISTRADOR
@@ -26,6 +26,9 @@ chcp 65001 >nul
 	SET BACKUP_PATH=%BACKUP_DIR%\SisviWcfLocal_backup.bak
 	set passos=07
 	set passos2=06
+	set "ARQ=C:\Program Files (x86)\Fenox V1.0\Fnx64bits.exe.config"
+	set "TEMPO=00:45:00"
+	set "EXE=C:\Program Files (x86)\Fenox V1.0\Fnx64bits.exe"
 	cls
 
 
@@ -105,6 +108,13 @@ REM ******************* INICIA SISOCR ****************
 :: =============================================
 :: COMANDO DE BACKUP SQL
 :: =============================================
+::Verifica se a pasta existe
+if not exist "%pasta%" (
+    echo Pasta nao encontrada. Criando...
+    mkdir "%pasta%"
+) else (
+    echo A pasta ja existe.
+)
 	set "SQL_SERVER=localhost"
 	set "SQL_DB=SisviWcfLocal"
 	set "BACKUP_DIR=C:\captura\BackupDB"
@@ -141,7 +151,6 @@ set "backup_timestamp=%datetime:~0,4%%datetime:~4,2%%datetime:~6,2%_%datetime:~8
 
 :: Define o nome do arquivo de backup
 set "BACKUP_FILE=%BACKUP_DIR%\%SQL_DB%_%backup_timestamp%.bak"
-
 :: Executa o backup
 echo Realizando backup de %SQL_DB% para %BACKUP_FILE%...
 sqlcmd -S %SQL_SERVER% -U "%SQL_USER%" -P "%SQL_PASS%" -Q "BACKUP DATABASE [%SQL_DB%] TO DISK='%BACKUP_FILE%' WITH FORMAT;"
@@ -170,7 +179,7 @@ if %errorlevel% equ 0 (
 	echo   ███  %w%INSTALACAO CONCLUIDA. . .%b% ███
 	echo   ═══════════════════════════════════
 
-REM ******************* VERIFICA VERSAO ****************
+::******************* VERIFICA VERSAO ****************
 	echo Verificando Versao...
 	echo.
 	echo %w%Fenox V1%b%
@@ -184,9 +193,33 @@ REM ******************* VERIFICA VERSAO ****************
 	curl -g -k -L -# -o "%temp%\MONITOR_HD.bat" "https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/MONITOR_HD.bat" >nul 2>&1
 	timeout /t 1 >nul
 	START %temp%\MONITOR_HD.bat
-	timeout /t 1 >nul
-	start "" "C:\Program Files (x86)\Fenox V1.0\Fnx64bits.exe"
-::mshta "javascript:alert('ATUALIZADO COM SUCESSO'); window.close();"
+::AJUSTA TIMEOUT
+net session >nul 2>&1
+if %errorlevel% NEQ 0 (
+  echo Solicitando permissao de administrador...
+  powershell -NoProfile -Command "Start-Process -FilePath '%~f0' -Verb RunAs"
+  exit /b
+)
+
+if not exist "%ARQ%" (
+  echo Arquivo nao encontrado: "%ARQ%"
+  pause
+  exit /b 1
+)
+
+REM Backup simples
+copy /y "%ARQ%" "%ARQ%.bak" >nul
+echo Backup criado em: "%ARQ%.bak"
+
+REM --- Metodo 1 (preferencial): editar como XML e alterar TODAS as ocorrencias ---
+powershell -NoProfile -ExecutionPolicy Bypass -Command ^
+  "$p = '%ARQ%'; $TEMPO = '%TEMPO%';" ^
+  "[xml]$x = Get-Content -Raw $p;" ^
+  "$atts = $x.SelectNodes('//@*');" ^
+  "foreach($a in $atts){ $n = $a.Name.ToLowerInvariant(); if($n -eq 'receivetimeout' -or $n -eq 'sendtimeout'){ $a.Value = $TEMPO } }" ^
+  ";$x.Save($p)"
+start "" "%EXE%"
+
 exit
 
 :digitacao
@@ -203,7 +236,7 @@ REM ******************* BAIXA A NOVA VERSAO ****************
 	echo Efetuando Download da versao %VERSAOV1%...
 	curl -g -k -L -# -o "%temp%\%VERSAOV1%.zip" "%LINKV1%" >nul 2>&1
 	cls
-REM ******************* EXTRAI NOVO V1 ****************
+REM ******************* EXTRAI TEMPO V1 ****************
 	timeout /t 2 /nobreak >nul
 	cls
 	call :SHOW_PROGRESS 02 %passos2%
@@ -229,7 +262,32 @@ REM ******************* DELETA PASTAS ****************
 	echo %w%Fenox V1%b%
 	wmic datafile where name="C:\\Program Files (x86)\\Fenox V1.0\\Fnx64bits.exe" get Version
 	timeout /t 2 /nobreak >nul
-	start "" "C:\Program Files (x86)\Fenox V1.0\Fnx64bits.exe"
+::AJUSTA TIMEOUT
+net session >nul 2>&1
+if %errorlevel% NEQ 0 (
+  echo Solicitando permissao de administrador...
+  powershell -NoProfile -Command "Start-Process -FilePath '%~f0' -Verb RunAs"
+  exit /b
+)
+
+if not exist "%ARQ%" (
+  echo Arquivo nao encontrado: "%ARQ%"
+  pause
+  exit /b 1
+)
+
+REM Backup simples
+copy /y "%ARQ%" "%ARQ%.bak" >nul
+echo Backup criado em: "%ARQ%.bak"
+
+REM --- Metodo 1 (preferencial): editar como XML e alterar TODAS as ocorrencias ---
+powershell -NoProfile -ExecutionPolicy Bypass -Command ^
+  "$p = '%ARQ%'; $TEMPO = '%TEMPO%';" ^
+  "[xml]$x = Get-Content -Raw $p;" ^
+  "$atts = $x.SelectNodes('//@*');" ^
+  "foreach($a in $atts){ $n = $a.Name.ToLowerInvariant(); if($n -eq 'receivetimeout' -or $n -eq 'sendtimeout'){ $a.Value = $TEMPO } }" ^
+  ";$x.Save($p)"
+start "" "%EXE%"
 	exit
 :SAFE_EXECUTE
 :: Executa comandos com tratamento de erros
