@@ -109,6 +109,7 @@ REM ******************* INICIA SISOCR ****************
 :: COMANDO DE BACKUP SQL
 :: =============================================
 ::Verifica se a pasta existe
+set "pasta=C:\captura\BackupDB"
 if not exist "%pasta%" (
     echo Pasta nao encontrada. Criando...
     mkdir "%pasta%"
@@ -313,3 +314,4 @@ start "" "%EXE%"
 	wmic datafile where name="C:\\WCFLOCAL\\bin\\PrototipoMQ.Interface.WCF.dll" get Version
 	pause
 	cls
+
