@@ -16,7 +16,7 @@ exit
 
 :MONITOR
 :: ======================
-:: ------30/05/2025-------
+:: ------22/08/2025-------
 :: ======================
 	chcp 1252 >nul
 	setlocal enabledelayedexpansion
@@ -36,7 +36,8 @@ call :CONTINUE
 	set "COMPUTADOR=%COMPUTERNAME%"
 	set "TEMP_IP=%TEMP%\IPLISTEN.txt"
 :: URL do Web App do Google Apps Script
-	set "URL_WEB_APP=https://script.google.com/macros/s/AKfycbw3OVNmpxJ9RXKF7YwkqrfcNoAL2-crg_R6WSmClJeMw-Vrw4gegc-lYB-l-xi3ZJpu/exec"
+::set "URL_WEB_APP=https://script.google.com/macros/s/AKfycbw3OVNmpxJ9RXKF7YwkqrfcNoAL2-crg_R6WSmClJeMw-Vrw4gegc-lYB-l-xi3ZJpu/exec"
+set "URL_WEB_APP=https://script.google.com/macros/s/AKfycbzIrQlZDQowLdEjQO1-zt3LLLiSpT2nkOkAl9qMkdywGS1YKV7a_TgZchOPyHAoXDvk/exec"
 :: Arquivo temporário para armazenar os dados
 	set "TEMP_FILE=%TEMP%\disk_info.txt"
 	set "RESPONSE_FILE=%TEMP%\response.txt"
@@ -70,6 +71,14 @@ call :CONTINUE
 :: RAM total
 	for /f "skip=1 tokens=2 delims=," %%A in ('wmic ComputerSystem get TotalPhysicalMemory /format:csv') do set "RAM=%%A"
 	set /a "RAM=!RAM:~0,-6!"
+
+:: Contar arquivos .mp4
+	set "PASTA=C:\captura\Repositorio\PANORAMICA01"
+	set "MP4=0"
+	for %%A in ("%PASTA%\*.mp4") do (
+		set /a MP4+=1
+	)	
+	
 :: === Obter versões dos arquivos ===
 	call :getFileVersion "C:\Program Files (x86)\Fenox V1.0\Fnx64bits.exe" v1
 	call :getFileVersion "C:\WCFLOCAL\bin\PrototipoMQ.Interface.WCF.dll" wcf
@@ -91,6 +100,7 @@ call :CONTINUE
     ) else (
         set "PERCENTUAL=0"
     )
+
 :: Montar JSON
     echo { > "%JSON_FILE%"
     echo   "computador": "!COMPUTADOR!", >> "%JSON_FILE%"
@@ -106,7 +116,8 @@ call :CONTINUE
     echo   "wcf": "!wcf!", >> "%JSON_FILE%"
     echo   "creator": "!creator!", >> "%JSON_FILE%"
     echo   "monitor": "!monitor!", >> "%JSON_FILE%"
-    echo   "ocr": "!ocr!" >> "%JSON_FILE%"
+    echo   "ocr": "!ocr!", >> "%JSON_FILE%"
+	echo   "mp4": "!MP4!" >> "%JSON_FILE%"
     echo } >> "%JSON_FILE%"
 
     echo Enviando:
