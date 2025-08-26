@@ -11,7 +11,7 @@ start "" /B wscript "%temp%\runhidden.vbs"
 exit
 :MONITOR
 :: =======================
-:: ------17/06/2025-------
+:: ------26/08/2025-------
 :: =======================
 	chcp 1252 >nul
 	setlocal enabledelayedexpansion
@@ -186,12 +186,16 @@ exit
 :: RAM total
 	for /f "skip=1 tokens=2 delims=," %%A in ('wmic ComputerSystem get TotalPhysicalMemory /format:csv') do set "RAM=%%A"
 	set /a "RAM=!RAM:~0,-6!"
-:: Contar arquivos .mp4
-	set "PASTA=C:\captura\Repositorio\PANORAMICA01"
+::CONTA MP4
+	set "RAIZ=C:\captura\Repositorio"
 	set "MP4=0"
-	for %%A in ("%PASTA%\*.mp4") do (
-		set /a MP4+=1
-	)	
+	for /r "%RAIZ%" %%A in (*.mp4) do (
+    set "ARQ=%%~nxA"
+    echo !ARQ! | findstr /i "mptemp.mp4" >nul
+    if errorlevel 1 (
+        set /a MP4+=1
+    )
+)	
 :: === Obter versões dos arquivos ===
 	call :getFileVersion "C:\Program Files (x86)\Fenox V1.0\Fnx64bits.exe" v1
 	call :getFileVersion "C:\WCFLOCAL\bin\PrototipoMQ.Interface.WCF.dll" wcf
@@ -375,3 +379,4 @@ if %errorlevel% equ 0 (
 	sc start SisMonitorOffline >nul 2>&1
 	sc start MMFnx >nul 2>&1
 	goto :eof
+
