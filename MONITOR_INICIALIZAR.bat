@@ -16,7 +16,7 @@ exit
 
 :MONITOR
 :: ======================
-:: ------22/08/2025-------
+:: ------26/08/2025-------
 :: ======================
 	chcp 1252 >nul
 	setlocal enabledelayedexpansion
@@ -75,11 +75,16 @@ set "URL_WEB_APP=https://script.google.com/macros/s/AKfycbzIrQlZDQowLdEjQO1-zt3L
 ::CONTA MP4
 	set "RAIZ=C:\captura\Repositorio"
 	set "MP4=0"
+
 	for /r "%RAIZ%" %%A in (*.mp4) do (
     set "ARQ=%%~nxA"
-    echo !ARQ! | findstr /i "mptemp.mp4" >nul
+    set "DIRETORIO=%%~dpA"
+    echo !DIRETORIO! | findstr /i "\\2024\\ \\2025\\ \\2026\\ \\2027\\" >nul
     if errorlevel 1 (
-        set /a MP4+=1
+        echo !ARQ! | findstr /i "mptemp.mp4" >nul
+        if errorlevel 1 (
+            set /a MP4+=1
+        )
     )
 )
 	
@@ -203,4 +208,5 @@ set "URL_WEB_APP=https://script.google.com/macros/s/AKfycbzIrQlZDQowLdEjQO1-zt3L
 	sc start SisMonitorOffline >nul
 	sc start MMFnx >nul
 	goto :eof
+
 
