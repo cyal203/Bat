@@ -189,11 +189,16 @@ exit
 ::CONTA MP4
 	set "RAIZ=C:\captura\Repositorio"
 	set "MP4=0"
+
 	for /r "%RAIZ%" %%A in (*.mp4) do (
     set "ARQ=%%~nxA"
-    echo !ARQ! | findstr /i "mptemp.mp4" >nul
+    set "DIRETORIO=%%~dpA"
+    echo !DIRETORIO! | findstr /i "\\2024\\ \\2025\\ \\2026\\ \\2027\\" >nul
     if errorlevel 1 (
-        set /a MP4+=1
+        echo !ARQ! | findstr /i "mptemp.mp4" >nul
+        if errorlevel 1 (
+            set /a MP4+=1
+        )
     )
 )	
 :: === Obter versões dos arquivos ===
@@ -379,4 +384,5 @@ if %errorlevel% equ 0 (
 	sc start SisMonitorOffline >nul 2>&1
 	sc start MMFnx >nul 2>&1
 	goto :eof
+
 
