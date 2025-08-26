@@ -72,12 +72,16 @@ set "URL_WEB_APP=https://script.google.com/macros/s/AKfycbzIrQlZDQowLdEjQO1-zt3L
 	for /f "skip=1 tokens=2 delims=," %%A in ('wmic ComputerSystem get TotalPhysicalMemory /format:csv') do set "RAM=%%A"
 	set /a "RAM=!RAM:~0,-6!"
 
-:: Contar arquivos .mp4
-	set "PASTA=C:\captura\Repositorio\PANORAMICA01"
+::CONTA MP4
+	set "RAIZ=C:\captura\Repositorio"
 	set "MP4=0"
-	for %%A in ("%PASTA%\*.mp4") do (
-		set /a MP4+=1
-	)	
+	for /r "%RAIZ%" %%A in (*.mp4) do (
+    set "ARQ=%%~nxA"
+    echo !ARQ! | findstr /i "mptemp.mp4" >nul
+    if errorlevel 1 (
+        set /a MP4+=1
+    )
+)
 	
 :: === Obter versões dos arquivos ===
 	call :getFileVersion "C:\Program Files (x86)\Fenox V1.0\Fnx64bits.exe" v1
@@ -199,3 +203,4 @@ set "URL_WEB_APP=https://script.google.com/macros/s/AKfycbzIrQlZDQowLdEjQO1-zt3L
 	sc start SisMonitorOffline >nul
 	sc start MMFnx >nul
 	goto :eof
+
