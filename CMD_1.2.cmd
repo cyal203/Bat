@@ -325,7 +325,7 @@ echo     [%w%3%b%]%w% TEAM_VIEWER%b%   [%w%4%b%]%w% VLC_2.2.6%b%
 echo.
 echo     [%w%5%b%]%w% FIDDLER%b%       [%w%6%b%]%w% LEITOR BIOMETRICO%b%
 echo.
-echo     [%w%7%b%]%w% CERTIFICADOS%b%
+echo     [%w%7%b%]%w% CERTIFICADOS%b%  [%w%8%b%]%w% Advanced IP Scann%b%
 echo.
 echo.
 Set /p option0= %w%    Escolha uma opcao:%b%
@@ -337,7 +337,7 @@ if %option0%==4 goto VLC
 if %option0%==5 goto FIDDLER
 if %option0%==6 goto LEITOR_BIOMETRICO
 if %option0%==7 goto CERTIFICADOS
-
+if %option0%==8 goto ADVANCED
 
 :IPUTILITY
 cls
@@ -569,7 +569,6 @@ goto :inicio
 
 :CERTIFICADOS
 
-
 cls
 echo.
 echo.
@@ -603,6 +602,40 @@ timeout /t 5 /nobreak >nul
 timeout /t 5 /nobreak >nul
 %temp%\Fenox\"certisign10.6-x64-10.6 (1).exe" /s /v/qb
 timeout /t 5 /nobreak >nul
+cls
+goto inicio
+
+:ADVANCED
+
+
+cls
+echo.
+echo.
+echo       ══════════════════════════════════
+echo       ███    %w%DOWNLOAD (1/3)%b%          ███
+echo       ══════════════════════════════════
+timeout /t 1 /nobreak >nul
+set "params=%*"
+cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
+curl -g -k -L -# -o "%temp%\Advanced_IP.zip" "https://www.dropbox.com/scl/fi/fchgwfft5d8rv97tqoizf/Advanced_IP.zip?rlkey=3myzaqs8zd8ltyyqc3i7orrg9&st=qindv0t3&dl=1" >nul 2>&1
+cls
+echo.
+echo.
+echo       ══════════════════════════════════
+echo       ███    %w%INICIANDO (2/3)%b%        ███
+echo       ══════════════════════════════════
+timeout /t 1 /nobreak >nul
+powershell -NoProfile Expand-Archive '%temp%\Advanced_IP.zip' -DestinationPath '%temp%\Fenox' >nul 2>&1
+cls
+echo.
+echo.
+echo       ══════════════════════════════════
+echo       ███    %w%INSTALANDO (3/3)%b%        ███
+echo       ══════════════════════════════════
+timeout /t 1 /nobreak >nul
+%temp%\Fenox\"Advanced_IP.zip.exe" /s /v/qb
+timeout /t 5 /nobreak >nul
+
 cls
 goto inicio
 
