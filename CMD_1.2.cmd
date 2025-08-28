@@ -325,7 +325,7 @@ echo     [%w%3%b%]%w% TEAM_VIEWER%b%   [%w%4%b%]%w% VLC_2.2.6%b%
 echo.
 echo     [%w%5%b%]%w% FIDDLER%b%       [%w%6%b%]%w% LEITOR BIOMETRICO%b%
 echo.
-echo     [%w%7%b%]%w% CERTIFICADOS%b%  [%w%8%b%]%w% Advanced IP Scann%b%
+echo     [%w%7%b%]%w% CERTIFICADOS%b%  [%w%8%b%]%w% ADVANCED IP SCANN%b%
 echo.
 echo.
 Set /p option0= %w%    Escolha uma opcao:%b%
