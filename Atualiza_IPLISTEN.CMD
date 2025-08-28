@@ -1,6 +1,6 @@
 @echo off
 setlocal
-
+::28082025
 rem Remove todos os IPs do iplisten
 for /f "tokens=2 delims=:" %%I in ('netsh http show iplisten ^| findstr /R "IP"') do (
     set "ipToDelete=%%I"
