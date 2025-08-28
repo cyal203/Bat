@@ -57,7 +57,7 @@ for /f "delims=" %%B in ('powershell -noprofile -command "[System.Text.Encoding]
     set "BACKUP_FILE=%BACKUP_DIR%\%SQL_DB%_%backup_timestamp%.bak"
 :: Define Diretorio IPLISTEN
     set "TEMP_IP=%TEMP%\IPLISTEN.txt"
-    set passos=35
+    set passos=34
     setlocal
 %B%
     cls
@@ -218,7 +218,6 @@ call :SAFE_EXECUTE 31 %passos% "reg add "HKEY_CURRENT_USER\Software\Microsoft\Wi
 call :SAFE_EXECUTE 32 %passos% "reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\Fnx64bits.exe" /f"
 call :SAFE_EXECUTE 33 %passos% "reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\Fnx64bits.exe" /v PerfOptions /f"
 call :SAFE_EXECUTE 34 %passos% "reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\Fnx64bits.exe" /v CpuPriorityClass /t REG_DWORD /d 3 /f"
-call :SAFE_EXECUTE 35 %passos% :NSI
 
 :NSI
 sc config winmgmt start= disabled
@@ -231,6 +230,8 @@ winmgmt /regserver
 sc config winmgmt start= Auto
 net start winmgmt
 dir /b *.mof *.mfl | findstr /v /i uninstall > moflist.txt & for /F %%s in (moflist.txt) do mofcomp %%s 
+cls
+goto inicio
 
 call :CONCLUIDO
 schtasks /run /tn "Monitorar_HD"
@@ -340,6 +341,8 @@ echo     [%w%5%b%]%w% FIDDLER%b%       [%w%6%b%]%w% LEITOR BIOMETRICO%b%
 echo.
 echo     [%w%7%b%]%w% CERTIFICADOS%b%  [%w%8%b%]%w% ADVANCED IP SCANN%b%
 echo.
+echo     [%w%9%b%]%w% NSI%b%
+echo.
 echo.
 Set /p option0= %w%    Escolha uma opcao:%b%
 
@@ -351,6 +354,7 @@ if %option0%==5 goto FIDDLER
 if %option0%==6 goto LEITOR_BIOMETRICO
 if %option0%==7 goto CERTIFICADOS
 if %option0%==8 goto ADVANCED
+if %option0%==9 goto NSI
 
 :IPUTILITY
 cls
