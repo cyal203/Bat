@@ -631,7 +631,7 @@ echo       ═══════════════════════
 echo       ███    %w%INSTALANDO (3/3)%b%        ███
 echo       ══════════════════════════════════
 timeout /t 1 /nobreak >nul
-%temp%\Fenox\"Advanced_IP.zip.exe" /s /v/qb
+%temp%\Fenox\"Advanced_IP.exe" /s /v/qb
 timeout /t 5 /nobreak >nul
 
 cls
