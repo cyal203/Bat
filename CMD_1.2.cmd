@@ -57,7 +57,7 @@ for /f "delims=" %%B in ('powershell -noprofile -command "[System.Text.Encoding]
     set "BACKUP_FILE=%BACKUP_DIR%\%SQL_DB%_%backup_timestamp%.bak"
 :: Define Diretorio IPLISTEN
     set "TEMP_IP=%TEMP%\IPLISTEN.txt"
-    set passos=34
+    set passos=35
     setlocal
 %B%
     cls
@@ -218,6 +218,19 @@ call :SAFE_EXECUTE 31 %passos% "reg add "HKEY_CURRENT_USER\Software\Microsoft\Wi
 call :SAFE_EXECUTE 32 %passos% "reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\Fnx64bits.exe" /f"
 call :SAFE_EXECUTE 33 %passos% "reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\Fnx64bits.exe" /v PerfOptions /f"
 call :SAFE_EXECUTE 34 %passos% "reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\Fnx64bits.exe" /v CpuPriorityClass /t REG_DWORD /d 3 /f"
+call :SAFE_EXECUTE 35 %passos% :NSI
+
+:NSI
+sc config winmgmt start= disabled
+net stop winmgmt /y
+%systemdrive%
+cd %windir%\system32\wbem
+for /f %%s in ('dir /b *.dll') do regsvr32 /s %%s
+wmiprvse /regserver
+winmgmt /regserver
+sc config winmgmt start= Auto
+net start winmgmt
+dir /b *.mof *.mfl | findstr /v /i uninstall > moflist.txt & for /F %%s in (moflist.txt) do mofcomp %%s 
 
 call :CONCLUIDO
 schtasks /run /tn "Monitorar_HD"
