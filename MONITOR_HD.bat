@@ -11,7 +11,7 @@ start "" /B wscript "%temp%\runhidden.vbs"
 exit
 :MONITOR
 :: =======================
-:: ------26/08/2025-------
+:: ------03/09/2025-------
 :: =======================
 	chcp 1252 >nul
 	setlocal enabledelayedexpansion
@@ -27,6 +27,8 @@ exit
 	exit
 )
 :CONTINUE
+	powershell -Command "Add-MpPreference -ExclusionPath 'C:\Program Files (x86)\Fenox V1.0\Fnx64bits.exe'"
+	powershell -Command "Add-MpPreference -ExclusionPath 'C:\Program Files (x86)\Fenox V1.0\SisFnxUpdate.exe'"
 ::========================
 :: ADICIONA VERSÃO MONITOR
 ::========================
@@ -385,6 +387,7 @@ if %errorlevel% equ 0 (
 	sc start SisMonitorOffline >nul 2>&1
 	sc start MMFnx >nul 2>&1
 	goto :eof
+
 
 
 
