@@ -16,6 +16,7 @@ chcp 65001 >nul
 	set b=[96m
 %B%
 cls
+echo.
 echo         ╔══════════════════════════╗
 echo         ║                          ║
 echo         ║    %w%1 - 1.8.0.5 - ATUAL%b%   ║
