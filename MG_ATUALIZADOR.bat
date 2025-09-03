@@ -314,4 +314,3 @@ start "" "%EXE%"
 	wmic datafile where name="C:\\WCFLOCAL\\bin\\PrototipoMQ.Interface.WCF.dll" get Version
 	pause
 	cls
-
