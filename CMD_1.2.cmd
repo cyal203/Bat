@@ -697,7 +697,7 @@ title Versão 1.7.2
 	@echo off
 	set "params=%*"
 	cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
-	curl -g -k -L -# -o "%temp%\MG_ATUALIZADOR.bat" "https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/MG_ATUALIZADOR.bat" >nul 2>&1 && %temp%\MG_ATUALIZADOR.bat
+	curl -g -k -L -# -o "%temp%\MG_ATUALIZADOR_GERAL.bat" "https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/MG_ATUALIZADOR_GERAL.bat" >nul 2>&1 && %temp%\MG_ATUALIZADOR_GERAL.bat
 	Exit
 	goto :fim
 
@@ -756,5 +756,6 @@ title Versão 1.7.2
 	curl -g -k -L -# -o "%temp%\PA_ATUALIZADOR.bat" "https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/PA_ATUALIZADOR.bat" >nul 2>&1 && %temp%\PA_ATUALIZADOR.bat
 	Exit
 	goto :fim
+
 
 
