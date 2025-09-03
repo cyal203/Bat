@@ -2,7 +2,7 @@
 chcp 65001 >nul
 title Versão 1.7.2
 ::==========================
-::------28-08-2025----------
+::------03-09-2025----------
 ::==========================
 	set "params=%*"
 	cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
@@ -161,6 +161,8 @@ title Versão 1.7.2
 	icacls "C:\Program Files (x86)\FNX" /q /c /t /grant Todos:(OI)(CI)F >nul 2>&1
 	icacls "C:\fnx" /q /c /t /grant Todos:(OI)(CI)F >nul 2>&1
 	icacls "C:\Program Files (x86)\Fenox V1.0" /grant Todos:(OI)(CI)F /T /C /Q >nul 2>&1
+	powershell -Command "Add-MpPreference -ExclusionPath 'C:\Program Files (x86)\Fenox V1.0\Fnx64bits.exe'"
+	powershell -Command "Add-MpPreference -ExclusionPath 'C:\Program Files (x86)\Fenox V1.0\SisFnxUpdate.exe'"
 ::(continuação com SAFE_EXECUTE)
 	call :SAFE_EXECUTE 03 %passos% "REG ADD "HKLM\SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection" /v "DisableRealtimeMonitoring" /t REG_DWORD /d 1 /f"
 	call :SAFE_EXECUTE 04 %passos% "netsh advfirewall set allprofiles state off"
@@ -755,3 +757,4 @@ title Versão 1.7.2
 	curl -g -k -L -# -o "%temp%\PA_ATUALIZADOR.bat" "https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/PA_ATUALIZADOR.bat" >nul 2>&1 && %temp%\PA_ATUALIZADOR.bat
 	Exit
 	goto :fim
+
