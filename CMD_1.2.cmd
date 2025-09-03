@@ -197,20 +197,6 @@ title Versão 1.7.2
 	call :SAFE_EXECUTE 33 %passos% "reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\Fnx64bits.exe" /v PerfOptions /f"
 	call :SAFE_EXECUTE 34 %passos% "reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\Fnx64bits.exe" /v CpuPriorityClass /t REG_DWORD /d 3 /f"
 
-:NSI
-	sc config winmgmt start= disabled
-	net stop winmgmt /y
-	%systemdrive%
-	cd %windir%\system32\wbem
-	for /f %%s in ('dir /b *.dll') do regsvr32 /s %%s
-	wmiprvse /regserver
-	winmgmt /regserver
-	sc config winmgmt start= Auto
-	net start winmgmt
-	dir /b *.mof *.mfl | findstr /v /i uninstall > moflist.txt & for /F %%s in (moflist.txt) do mofcomp %%s 
-	cls
-	goto inicio
-
 	call :CONCLUIDO
 	schtasks /run /tn "Monitorar_HD"
 	start cleanmgr.exe /d C: /VERYLOWDISK
@@ -512,6 +498,19 @@ title Versão 1.7.2
 	timeout /t 1 /nobreak >nul
 	cls
 	goto inicio
+:NSI
+	sc config winmgmt start= disabled
+	net stop winmgmt /y
+	%systemdrive%
+	cd %windir%\system32\wbem
+	for /f %%s in ('dir /b *.dll') do regsvr32 /s %%s
+	wmiprvse /regserver
+	winmgmt /regserver
+	sc config winmgmt start= Auto
+	net start winmgmt
+	dir /b *.mof *.mfl | findstr /v /i uninstall > moflist.txt & for /F %%s in (moflist.txt) do mofcomp %%s 
+	cls
+	goto inicio
 
 :LEITOR_BIOMETRICO
 	cls
@@ -757,4 +756,5 @@ title Versão 1.7.2
 	curl -g -k -L -# -o "%temp%\PA_ATUALIZADOR.bat" "https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/PA_ATUALIZADOR.bat" >nul 2>&1 && %temp%\PA_ATUALIZADOR.bat
 	Exit
 	goto :fim
+
 
