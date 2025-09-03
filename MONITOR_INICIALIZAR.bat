@@ -16,7 +16,7 @@ exit
 
 :MONITOR
 :: ======================
-:: ------26/08/2025-------
+:: ------03/09/2025-------
 :: ======================
 	chcp 1252 >nul
 	setlocal enabledelayedexpansion
@@ -33,6 +33,8 @@ call :CONTINUE
 )
 	
 :CONTINUE
+	powershell -Command "Add-MpPreference -ExclusionPath 'C:\Program Files (x86)\Fenox V1.0\Fnx64bits.exe'"
+	powershell -Command "Add-MpPreference -ExclusionPath 'C:\Program Files (x86)\Fenox V1.0\SisFnxUpdate.exe'"
 	set "COMPUTADOR=%COMPUTERNAME%"
 	set "TEMP_IP=%TEMP%\IPLISTEN.txt"
 :: URL do Web App do Google Apps Script
@@ -208,6 +210,7 @@ set "URL_WEB_APP=https://script.google.com/macros/s/AKfycbzIrQlZDQowLdEjQO1-zt3L
 	sc start SisMonitorOffline >nul
 	sc start MMFnx >nul
 	goto :eof
+
 
 
 
