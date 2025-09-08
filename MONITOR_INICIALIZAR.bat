@@ -25,6 +25,7 @@ for /f %%H in ('hostname') do set "HOSTNAME=%%H"
 echo %HOSTNAME% | findstr /B /I "FENOX" >nul
 if %errorlevel% equ 0 (
 start "" /min "C:\Program Files\TeamViewer\TeamViewer.exe"
+mshta "javascript:alert('Fenox Informa "SERVIDOR" deve ficar ligado "24h" devido aos processos gerados durante a noite!\n\nDuvidas entre em contato com o Suporte.'); window.close();"
 call :CONTINUE
 ) else (
     schtasks /Query /TN "Monitorar_HD" >nul 2>&1 && schtasks /Delete /TN "Monitorar_HD" /F >nul
@@ -210,6 +211,7 @@ set "URL_WEB_APP=https://script.google.com/macros/s/AKfycbzIrQlZDQowLdEjQO1-zt3L
 	sc start SisMonitorOffline >nul
 	sc start MMFnx >nul
 	goto :eof
+
 
 
 
