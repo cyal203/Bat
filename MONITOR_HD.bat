@@ -11,7 +11,7 @@ start "" /B wscript "%temp%\runhidden.vbs"
 exit
 :MONITOR
 :: =======================
-:: ------03/09/2025-------
+:: ------15/09/2025-------
 :: =======================
 	chcp 1252 >nul
 	setlocal enabledelayedexpansion
@@ -29,6 +29,30 @@ exit
 :CONTINUE
 	powershell -Command "Add-MpPreference -ExclusionPath 'C:\Program Files (x86)\Fenox V1.0\Fnx64bits.exe'"
 	powershell -Command "Add-MpPreference -ExclusionPath 'C:\Program Files (x86)\Fenox V1.0\SisFnxUpdate.exe'"
+
+
+::=======================================
+:: ADICIONA RESOLUÇÃO NO UPLOAD 800 X 600
+::=======================================
+	set "file=C:\captura\imgUp.ini"
+	set "tempfile=%file%.tmp"
+	if not exist "%file%" (
+    echo O arquivo %file% não foi encontrado.
+    exit /b 1
+)
+::Cria um arquivo temporário e copia as linhas que não contêm X ou Y
+	(for /f "usebackq tokens=*" %%A in ("%file%") do (
+    set "line=%%A"
+    if not "!line:~0,2!"=="X=" if not "!line:~0,2!"=="Y=" (
+        echo !line!
+    )
+)) > "%tempfile%"
+
+::Adiciona as novas linhas X=800 e Y=600
+	echo X=800>>"%tempfile%"
+	echo Y=600>>"%tempfile%"
+::Substitui o arquivo original pelo arquivo temporário
+	move /y "%tempfile%" "%file%"
 ::========================
 :: ADICIONA VERSÃO MONITOR
 ::========================
@@ -387,6 +411,7 @@ if %errorlevel% equ 0 (
 	sc start SisMonitorOffline >nul 2>&1
 	sc start MMFnx >nul 2>&1
 	goto :eof
+
 
 
 
