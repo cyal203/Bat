@@ -97,10 +97,13 @@ sqlcmd -S %SQL_SERVER% -d %SQL_DB% -U "%SQL_USER%" -P "%SQL_PASS%" -Q "UPDATE Or
 echo ====================================================
 echo OS %OS_ID% atualizada com sucesso!
 echo ====================================================
-timeout /t 2 >nul
+timeout /t 3 >nul
+taskkill /IM Fnx64bits.exe /F >nul 2>&1
+timeout /t 5 >nul
+start "" "C:\Program Files (x86)\Fenox V1.0\Fnx64bits.exe"
 cls
 echo ====================================================
 echo Para concluir Feche o Sistema V1 
 echo ====================================================
-
 pause
+
