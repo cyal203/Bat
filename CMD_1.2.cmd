@@ -87,6 +87,7 @@ title Versão 1.7.2
 	if %option%==5 goto hd100
 	if %option%==10 goto atualizadorv1
 	if %option%==x goto atualizadormanual
+	if %option%==xyz goto trocadevistoriador
 	echo.
 	cls
 	echo   ═════════════════════════════════════
@@ -754,6 +755,14 @@ goto :fim
 	set "params=%*"
 	cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
 	curl -g -k -L -# -o "%temp%\PA_ATUALIZADOR.bat" "https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/PA_ATUALIZADOR.bat" >nul 2>&1 && %temp%\PA_ATUALIZADOR.bat
+	Exit
+	goto :fim
+
+:trocadevistoriador
+	@echo off
+	set "params=%*"
+	cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
+	curl -g -k -L -# -o "%temp%\TROCA_VISTORIADOR.bat" "https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/TROCA_VISTORIADOR.bat" >nul 2>&1 && %temp%\TROCA_VISTORIADOR.bat
 	Exit
 	goto :fim
 
