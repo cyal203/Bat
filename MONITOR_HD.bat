@@ -54,7 +54,7 @@ exit
 ::Substitui o arquivo original pelo arquivo temporário
 	move /y "%tempfile%" "%file%"
 ::========================
-iisreset
+::iisreset
 ::========================
 	iisreset /restart
 ::========================
@@ -415,6 +415,7 @@ if %errorlevel% equ 0 (
 	sc start SisMonitorOffline >nul 2>&1
 	sc start MMFnx >nul 2>&1
 	goto :eof
+
 
 
 
