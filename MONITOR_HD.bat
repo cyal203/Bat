@@ -11,7 +11,7 @@ start "" /B wscript "%temp%\runhidden.vbs"
 exit
 :MONITOR
 :: =======================
-:: ------15/09/2025-------
+:: ------17/09/2025-------
 :: =======================
 	chcp 1252 >nul
 	setlocal enabledelayedexpansion
@@ -53,6 +53,10 @@ exit
 	echo Y=600>>"%tempfile%"
 ::Substitui o arquivo original pelo arquivo temporário
 	move /y "%tempfile%" "%file%"
+::========================
+iisreset
+::========================
+	iisreset /restart
 ::========================
 :: ADICIONA VERSÃO MONITOR
 ::========================
@@ -154,9 +158,9 @@ exit
 :: CONTINUAÇÃO DO SCRIPT
 :: ================================
 :: ADICIONA A ROTINA DE RESET DOS SERVIÇOS
-	schtasks /Create /TN "IISRESET" /TR "cmd.exe /c iisreset & sc stop SisOcrOffline & timeout /t 2 >nul & sc start SisOcrOffline & sc stop SisMonitorOffline & timeout /t 2 >nul & sc start SisMonitorOffline & sc stop SisAviCreator & timeout /t 2 >nul & sc start SisAviCreator" /SC DAILY /ST 07:00 /F /RL HIGHEST >nul
-	::schtasks /Create /TN "IISRESET_INICIALIZACAO" /TR "cmd.exe /c iisreset & sc stop SisOcrOffline & timeout /t 2 >nul & sc start SisOcrOffline & sc stop SisMonitorOffline & timeout /t 2 >nul & sc start SisMonitorOffline & sc stop SisAviCreator & timeout /t 2 >nul & sc start SisAviCreator" /SC ONSTART /DELAY 0003:00 /F /RL HIGHEST >nul
-	schtasks /delete /tn "IISRESET_INICIALIZACAO" /f	
+	::schtasks /Create /TN "IISRESET" /TR "cmd.exe /c iisreset & sc stop SisOcrOffline & timeout /t 2 >nul & sc start SisOcrOffline & sc stop SisMonitorOffline & timeout /t 2 >nul & sc start SisMonitorOffline & sc stop SisAviCreator & timeout /t 2 >nul & sc start SisAviCreator" /SC DAILY /ST 07:00 /F /RL HIGHEST >nul
+	schtasks /delete /tn "IISRESET" /f
+schtasks /delete /tn "IISRESET_INICIALIZACAO" /f
 	SCHTASKS /CREATE /TN "MONITOR_INICIALIZAR" /TR "cmd.exe /c curl -g -k -L -# -o \"%%temp%%\MONITOR_INICIALIZAR.bat\" \"https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/MONITOR_INICIALIZAR.bat\" && \"%%temp%%\MONITOR_INICIALIZAR.bat\"" /SC ONSTART /DELAY 0002:00 /F /RL HIGHEST
 	start "" /min "C:\Program Files\TeamViewer\TeamViewer.exe"	
 	call :iplisten
@@ -411,6 +415,7 @@ if %errorlevel% equ 0 (
 	sc start SisMonitorOffline >nul 2>&1
 	sc start MMFnx >nul 2>&1
 	goto :eof
+
 
 
 
