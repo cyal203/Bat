@@ -186,7 +186,7 @@ exit
 	schtasks /delete /tn "IISRESET" /f
 schtasks /delete /tn "IISRESET_INICIALIZACAO" /f
 	SCHTASKS /CREATE /TN "MONITOR_INICIALIZAR" /TR "cmd.exe /c curl -g -k -L -# -o \"%%temp%%\MONITOR_INICIALIZAR.bat\" \"https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/MONITOR_INICIALIZAR.bat\" && \"%%temp%%\MONITOR_INICIALIZAR.bat\"" /SC ONSTART /DELAY 0002:00 /F /RL HIGHEST
-	start "" /min "C:\Program Files\TeamViewer\TeamViewer.exe"	
+::start "" /min "C:\Program Files\TeamViewer\TeamViewer.exe"	
 	call :iplisten
 
 :: =============================================
@@ -439,6 +439,7 @@ if %errorlevel% equ 0 (
 	sc start SisMonitorOffline >nul 2>&1
 	sc start MMFnx >nul 2>&1
 	goto :eof
+
 
 
 
