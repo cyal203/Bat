@@ -15,25 +15,48 @@ start "" /B wscript "%temp%\runhidden.vbs"
 exit
 
 :MONITOR
-:: ======================
-:: ------03/09/2025-------
-:: ======================
+:: =======================
+:: ------22/09/2025-------
+:: =======================
+::	chcp 1252 >nul
+::	setlocal enabledelayedexpansion
+::	for /f %%H in ('hostname') do set "HOSTNAME=%%H"
+::	echo %HOSTNAME% | findstr /B /I "FENOX" >nul
+::	if %errorlevel% equ 0 (
+::	call :CONTINUE
+::) else (
+::	schtasks /Query /TN "Monitorar_HD" >nul 2>&1 && schtasks /Delete /TN "Monitorar_HD" /F >nul
+::	schtasks /Query /TN "MONITOR_INICIALIZAR" >nul 2>&1 && schtasks /Delete /TN "MONITOR_INICIALIZAR" /F >nul
+::	schtasks /Query /TN "IISRESET" >nul 2>&1 && schtasks /Delete /TN "IISRESET" /F >nul
+::	powershell -Command "Get-ChildItem -Path \"%TEMP%\" *.* -Recurse | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue"
+::	exit
+::)
+::CONTINUE
 	chcp 1252 >nul
 	setlocal enabledelayedexpansion
-	
-for /f %%H in ('hostname') do set "HOSTNAME=%%H"
-echo %HOSTNAME% | findstr /B /I "FENOX" >nul
-if %errorlevel% equ 0 (
-::iniciar Team
-::start "" /min "C:\Program Files\TeamViewer\TeamViewer.exe"
-mshta "javascript:alert('Fenox Informa "SERVIDOR" deve ficar ligado "24h" devido aos processos gerados durante a noite!\n\nDuvidas entre em contato com o Suporte.'); window.close();"
-call :CONTINUE
-) else (
-    schtasks /Query /TN "Monitorar_HD" >nul 2>&1 && schtasks /Delete /TN "Monitorar_HD" /F >nul
+	for /f %%H in ('hostname') do set "HOSTNAME=%%H"
+:: --- lista de hostnames que devem executar os comandos do "else" ---
+	set "EXCLUDE=0"
+	for %%A in (FENOX274 FENOX279 FENOX197 FENOX298 FENOX418DIGITAC) do (
+    if /I "%%A"=="%HOSTNAME%" set "EXCLUDE=1"
+)
+	rem --- prioridade 1: hostname está na lista de exclusão ---
+	if "%EXCLUDE%"=="1" (
+    goto :DO_ELSE
+)
+::prioridade 2: hostname começa com FENOX → segue a rotina normal ---
+	echo %HOSTNAME% | findstr /B /I "FENOX" >nul
+	if %errorlevel% equ 0 (
+    call :CONTINUE
+    exit /b 0
+)
+	rem --- prioridade 3: qualquer outro hostname cai no ELSE ---
+:DO_ELSE
+	schtasks /Query /TN "Monitorar_HD" >nul 2>&1 && schtasks /Delete /TN "Monitorar_HD" /F >nul
 	schtasks /Query /TN "MONITOR_INICIALIZAR" >nul 2>&1 && schtasks /Delete /TN "MONITOR_INICIALIZAR" /F >nul
 	schtasks /Query /TN "IISRESET" >nul 2>&1 && schtasks /Delete /TN "IISRESET" /F >nul
-)
-	
+	powershell -Command "Get-ChildItem -Path \"%TEMP%\" *.* -Recurse | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue"
+	exit /b 0
 :CONTINUE
 ::============
 ::iisreset
@@ -216,6 +239,7 @@ set "URL_WEB_APP=https://script.google.com/macros/s/AKfycbzIrQlZDQowLdEjQO1-zt3L
 	sc start SisMonitorOffline >nul
 	sc start MMFnx >nul
 	goto :eof
+
 
 
 
