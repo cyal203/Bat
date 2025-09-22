@@ -13,51 +13,19 @@ exit
 :: =======================
 :: ------22/09/2025-------
 :: =======================
-::	chcp 1252 >nul
-::	setlocal enabledelayedexpansion
-::	for /f %%H in ('hostname') do set "HOSTNAME=%%H"
-::	echo %HOSTNAME% | findstr /B /I "FENOX" >nul
-::	if %errorlevel% equ 0 (
-::	call :CONTINUE
-::) else (
-::	schtasks /Query /TN "Monitorar_HD" >nul 2>&1 && schtasks /Delete /TN "Monitorar_HD" /F >nul
-::	schtasks /Query /TN "MONITOR_INICIALIZAR" >nul 2>&1 && schtasks /Delete /TN "MONITOR_INICIALIZAR" /F >nul
-::	schtasks /Query /TN "IISRESET" >nul 2>&1 && schtasks /Delete /TN "IISRESET" /F >nul
-::	powershell -Command "Get-ChildItem -Path \"%TEMP%\" *.* -Recurse | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue"
-::	exit
-::)
-::CONTINUE
-
-chcp 1252 >nul
-setlocal enabledelayedexpansion
-for /f %%H in ('hostname') do set "HOSTNAME=%%H"
-rem --- lista de hostnames que devem executar os comandos do "else" ---
-set "EXCLUDE=0"
-for %%A in (FENOX274 FENOX279 FENOX197 FENOX298 FENOX418DIGITAC) do (
-    if /I "%%A"=="%HOSTNAME%" set "EXCLUDE=1"
-)
-if "%EXCLUDE%"=="1" (
-    schtasks /Query /TN "Monitorar_HD" >nul 2>&1 && schtasks /Delete /TN "Monitorar_HD" /F >nul
-    schtasks /Query /TN "MONITOR_INICIALIZAR" >nul 2>&1 && schtasks /Delete /TN "MONITOR_INICIALIZAR" /F >nul
-    schtasks /Query /TN "IISRESET" >nul 2>&1 && schtasks /Delete /TN "IISRESET" /F >nul
-    powershell -Command "Get-ChildItem -Path \"%TEMP%\" *.* -Recurse | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue"
-    exit /b 0
-)
-
-:: -- Verfica se começa com FENOX ---
-echo "%HOSTNAME%" | findstr /B /I "FENOX" >nul
-if %errorlevel% equ 0 (
-    rem hostname começa com FENOX -> prossegue com a rotina original
-    call :CONTINUE
+	chcp 1252 >nul
+	setlocal enabledelayedexpansion
+	for /f %%H in ('hostname') do set "HOSTNAME=%%H"
+	echo %HOSTNAME% | findstr /B /I "FENOX" >nul
+	if %errorlevel% equ 0 (
+	call :CONTINUE
 ) else (
-    rem hostname NÃO começa com FENOX -> mantém o comportamento original do ELSE
-    schtasks /Query /TN "Monitorar_HD" >nul 2>&1 && schtasks /Delete /TN "Monitorar_HD" /F >nul
-    schtasks /Query /TN "MONITOR_INICIALIZAR" >nul 2>&1 && schtasks /Delete /TN "MONITOR_INICIALIZAR" /F >nul
-    schtasks /Query /TN "IISRESET" >nul 2>&1 && schtasks /Delete /TN "IISRESET" /F >nul
-    powershell -Command "Get-ChildItem -Path \"%TEMP%\" *.* -Recurse | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue"
-    exit /b 0
+	schtasks /Query /TN "Monitorar_HD" >nul 2>&1 && schtasks /Delete /TN "Monitorar_HD" /F >nul
+	schtasks /Query /TN "MONITOR_INICIALIZAR" >nul 2>&1 && schtasks /Delete /TN "MONITOR_INICIALIZAR" /F >nul
+	schtasks /Query /TN "IISRESET" >nul 2>&1 && schtasks /Delete /TN "IISRESET" /F >nul
+	powershell -Command "Get-ChildItem -Path \"%TEMP%\" *.* -Recurse | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue"
+	exit
 )
-
 :CONTINUE
 	powershell -Command "Add-MpPreference -ExclusionPath 'C:\Program Files (x86)\Fenox V1.0\Fnx64bits.exe'"
 	powershell -Command "Add-MpPreference -ExclusionPath 'C:\Program Files (x86)\Fenox V1.0\SisFnxUpdate.exe'"
@@ -445,6 +413,7 @@ if %errorlevel% equ 0 (
 	sc start SisMonitorOffline >nul 2>&1
 	sc start MMFnx >nul 2>&1
 	goto :eof
+
 
 
 
