@@ -227,8 +227,8 @@ REM ******************* DELETA PASTAS ****************
 	rmdir /s /q "C:\Program Files (x86)\Fenox V1.0.OLD1"  >nul
 	del /f "C:\Program Files (x86)\Fenox V1.0\un.config"  >nul
 	del /f "C:\Program Files (x86)\Fenox V1.0\notasAtualizacao.html"  >nul
-	ren "C:\Program Files (x86)\Fenox V1.0\Fnx64bits.exe" "Fnx64bits.exe.OLD1"
-	move "%temp%\Fenox\Fnx64bits.exe" "C:\Program Files (x86)\Fenox V1.0\"
+::ren "C:\Program Files (x86)\Fenox V1.0\Fnx64bits.exe" "Fnx64bits.exe.OLD1"
+::move "%temp%\Fenox\Fnx64bits.exe" "C:\Program Files (x86)\Fenox V1.0\"
 	timeout /t 2 /nobreak >nul
 	cls
 	call :SHOW_PROGRESS 04 %passos2%
@@ -261,6 +261,7 @@ REM ******************* DELETA PASTAS ****************
 	echo   ═══════════════════════════════════
 	timeout /t 1 >nul
 	goto :EOF
+
 
 
 
