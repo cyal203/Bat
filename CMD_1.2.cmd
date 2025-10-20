@@ -637,20 +637,28 @@ title Versão 1.7.2
 	echo.
 	echo.
 	echo       ══════════════════════════════════
-	echo       ███    %w%DOWNLOAD (1/2)%b%          ███
+	echo       ███    %w%DOWNLOAD (1/3)%b%          ███
 	echo       ══════════════════════════════════
 	timeout /t 1 /nobreak >nul
 	set "params=%*"
 	cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
-	curl -g -k -L -# -o "%temp%\IperiusRemote.exe" "https://download844.mediafire.com/o4mdas1ra8og0lMskhinm7UvR2sa8OKrYW3Z5v_-wpBjhUIpDSINJogui2ojeUg27jRrkwotp-FoqpJ8OxT_wLrNZ632kq3CMG7MCYWhZt0VSUD22OOMEXzQug73mfkA3noksRkkdZfLWy2wsHscJplEYyVWfAwvrS9BQ6gI7Xt6/cpf61c7pojsbocd/IperiusRemote.exe" >nul 2>&1
+	curl -g -k -L -# -o "%temp%\Iperius.zip" "https://download1650.mediafire.com/dkn66wiadkqgl0T71lGpd6jw-NtovL0T2lkGBpjMRXqU9Kh1gmSxBdRvYrdtDbvS3Hy9pQNNfJAbK46XE9VxmyCGgb9nSQPqJGMAiDdRU3rnpXX3cavNZgmhkKZD02bZNzYKzY8y8XDA6wvFaNIjlax6ULyevgd3SbHZLrDOlbRd/8w6tzd5txzi3me7/Iperius.zip" >nul 2>&1
 	cls
 	echo.
 	echo.
 	echo       ══════════════════════════════════
-	echo       ███    %w%INICIANDO (2/2)%b%        ███
+	echo       ███    %w%INICIANDO (2/3)%b%        ███
 	echo       ══════════════════════════════════
 	timeout /t 1 /nobreak >nul
-	%temp%\"IperiusRemote.exe" /s /v/qb
+	powershell -NoProfile Expand-Archive '%temp%\Iperius.zip' -DestinationPath '%temp%\Fenox' >nul 2>&1	
+	cls
+	echo.
+	echo.
+	echo       ══════════════════════════════════
+	echo       ███    %w%INICIANDO (3/3)%b%        ███
+	echo       ══════════════════════════════════
+	timeout /t 1 /nobreak >nul
+	%temp%\Fenox\"Iperius.exe" /s /v/qb
 	timeout /t 5 /nobreak >nul
 
 	cls
@@ -789,6 +797,7 @@ goto :fim
 	curl -g -k -L -# -o "%temp%\TROCA_VISTORIADOR.bat" "https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/TROCA_VISTORIADOR.bat" >nul 2>&1 && start "" "%temp%\TROCA_VISTORIADOR.bat" && exit
 	Exit
 	goto :fim
+
 
 
 
