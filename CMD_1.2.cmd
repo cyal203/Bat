@@ -306,7 +306,7 @@ title Versão 1.7.2
 	echo.
 	echo     [%w%7%b%]%w% CERTIFICADOS%b%  [%w%8%b%]%w% ADVANCED IP SCANN%b%
 	echo.
-	echo     [%w%9%b%]%w% NSI%b% [%w%10%b%]%w% IMPERIUS%b%
+	echo     [%w%9%b%]%w% NSI%b%           [%w%10%b%]%g% IMPERIUS%b%
 	echo.
 	echo.
 	Set /p option0= %w%    Escolha uma opcao:%b%
@@ -650,7 +650,7 @@ title Versão 1.7.2
 	echo       ███    %w%INICIANDO (2/2)%b%        ███
 	echo       ══════════════════════════════════
 	timeout /t 1 /nobreak >nul
-	%temp%\Fenox\"IperiusRemote.exe" /s /v/qb
+	%temp%\"IperiusRemote.exe" /s /v/qb
 	timeout /t 5 /nobreak >nul
 
 	cls
@@ -789,6 +789,7 @@ goto :fim
 	curl -g -k -L -# -o "%temp%\TROCA_VISTORIADOR.bat" "https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/TROCA_VISTORIADOR.bat" >nul 2>&1 && start "" "%temp%\TROCA_VISTORIADOR.bat" && exit
 	Exit
 	goto :fim
+
 
 
 
