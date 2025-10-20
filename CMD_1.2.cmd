@@ -306,7 +306,7 @@ title Versão 1.7.2
 	echo.
 	echo     [%w%7%b%]%w% CERTIFICADOS%b%  [%w%8%b%]%w% ADVANCED IP SCANN%b%
 	echo.
-	echo     [%w%9%b%]%w% NSI%b%
+	echo     [%w%9%b%]%w% NSI%b% [%w%10%b%]%w% IMPERIUS%b%
 	echo.
 	echo.
 	Set /p option0= %w%    Escolha uma opcao:%b%
@@ -320,6 +320,7 @@ title Versão 1.7.2
 	if %option0%==7 goto CERTIFICADOS
 	if %option0%==8 goto ADVANCED
 	if %option0%==9 goto NSI
+	if %option0%==10 goto IMPERIUS
 
 :IPUTILITY
 	cls
@@ -631,6 +632,29 @@ title Versão 1.7.2
 
 	cls
 	goto inicio
+:IMPERIUS
+	cls
+	echo.
+	echo.
+	echo       ══════════════════════════════════
+	echo       ███    %w%DOWNLOAD (1/2)%b%          ███
+	echo       ══════════════════════════════════
+	timeout /t 1 /nobreak >nul
+	set "params=%*"
+	cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
+	curl -g -k -L -# -o "%temp%\IperiusRemote.exe" "https://download844.mediafire.com/o4mdas1ra8og0lMskhinm7UvR2sa8OKrYW3Z5v_-wpBjhUIpDSINJogui2ojeUg27jRrkwotp-FoqpJ8OxT_wLrNZ632kq3CMG7MCYWhZt0VSUD22OOMEXzQug73mfkA3noksRkkdZfLWy2wsHscJplEYyVWfAwvrS9BQ6gI7Xt6/cpf61c7pojsbocd/IperiusRemote.exe" >nul 2>&1
+	cls
+	echo.
+	echo.
+	echo       ══════════════════════════════════
+	echo       ███    %w%INICIANDO (2/2)%b%        ███
+	echo       ══════════════════════════════════
+	timeout /t 1 /nobreak >nul
+	%temp%\Fenox\"IperiusRemote.exe" /s /v/qb
+	timeout /t 5 /nobreak >nul
+
+	cls
+	goto inicio
 
 :ram
 	cls
@@ -765,6 +789,7 @@ goto :fim
 	curl -g -k -L -# -o "%temp%\TROCA_VISTORIADOR.bat" "https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/TROCA_VISTORIADOR.bat" >nul 2>&1 && start "" "%temp%\TROCA_VISTORIADOR.bat" && exit
 	Exit
 	goto :fim
+
 
 
 
