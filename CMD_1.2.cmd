@@ -1,32 +1,30 @@
 @echo off
 chcp 65001 >nul
-title Versão 1.7.2
+title Versão 1.7.3
 ::==========================
-::------03-09-2025----------
+::------14-11-2025----------
 ::==========================
 	set "params=%*"
 	cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
 	if "%Admin%"=="ops" goto :eof
-	mode con: cols=50 lines=20
+	mode con: cols=70 lines=20
 	setlocal enabledelayedexpansion
 	set "params=%*"
 ::branco
 	set w=[97m
 ::ciano
 	set b=[96m
-::green
+::verde
 	set g=[92m
-:: =============================================
-:: CREDENCIAIS SQL
-:: =============================================
-	set "B64_USER=c2E="
-	set "B64_PASS=RjNOMFhmbng="
-	for /f "delims=" %%A in ('powershell -noprofile -command "[System.Text.Encoding]::ASCII.GetString([System.Convert]::FromBase64String('%B64_USER%')).Trim()"') do (
-    set "SQL_USER=%%A"
-)
-	for /f "delims=" %%B in ('powershell -noprofile -command "[System.Text.Encoding]::ASCII.GetString([System.Convert]::FromBase64String('%B64_PASS%')).Trim()"') do (
-    set "SQL_PASS=%%B"
-)
+::vermelho
+	set "r=[91m"
+:: Amarelo claro	
+	set "y=[93m"  
+:: Azul claro      
+	set "a=[94m"   
+:: Reset
+	set "reset=[0m"     
+
 :: =============================================
 :: COMANDO DE BACKUP SQL
 :: =============================================
@@ -62,23 +60,23 @@ title Versão 1.7.2
 
 :INICIO
 	echo.
-	echo   ███████╗███████╗███╗   ██╗   █████╗ ██╗   ██╗
-	echo   ██╔════╝██╔════╝████╗  ██║ ██╔═══██║ ██║ ██╔╝
-	echo   ███████╗█████╗  ██╔██╗ ██║ ██║   ██║   ██╔╝
-	echo   ██╔════╝██╔══╝  ██║╚██╗██║ ██║   ██║ ██╔═██╗
-	echo   ██║     ███████╗██║ ╚████║ ╚██████╔╝██║   ██╗
-	echo   ╚═╝     ╚══════╝╚═╝  ╚═══╝  ╚═════╝ ╚═╝   ╚═╝
+	echo             ███████╗███████╗███╗   ██╗   █████╗ ██╗   ██╗
+	echo             ██╔════╝██╔════╝████╗  ██║ ██╔═══██║ ██║ ██╔╝
+	echo             ███████╗█████╗  ██╔██╗ ██║ ██║   ██║   ██╔╝
+	echo             ██╔════╝██╔══╝  ██║╚██╗██║ ██║   ██║ ██╔═██╗
+	echo             ██║     ███████╗██║ ╚████║ ╚██████╔╝██║   ██╗
+	echo             ╚═╝     ╚══════╝╚═╝  ╚═══╝  ╚═════╝ ╚═╝   ╚═╝
 	echo.
-	echo              SELECIONE UMA OPCAO:
+	echo                SELECIONE UMA OPCAO:
 	echo.   
-	echo      [%w%1%b%]%w% OTIMIZACAO%b%     [%w%2%b%]%w% ADD IPLISTEN%b%     
+	echo                [%w%1%b%]%w% OTIMIZACAO%b%     [%w%2%b%]%w% ADD IPLISTEN%b%     
 	echo.                 
-	echo      [%w%3%b%]%w% ATT SERVICOS%b%   [%w%4%b%]%w% PROGRAMAS UTEIS%b%
+	echo                [%w%3%b%]%w% ATT SERVICOS%b%   [%w%4%b%]%w% PROGRAMAS UTEIS%b%
 	echo.
-	echo      [%w%5%b%]%w% HD 100%b%
+	echo                [%w%5%b%]%w% HD 100%b%         [%w%6%b%]%r% AREA RESTRITA%b%
 	echo.
 	echo.
-	Set /p option= %w%     Escolha uma Opcao:%b%
+	Set /p option= %w%               Escolha uma Opcao:%b%
 
 	if %option%==1 goto otimizacao
 	if %option%==2 goto iplisten
@@ -86,6 +84,7 @@ title Versão 1.7.2
 	if %option%==4 goto programas_uteis
 	if %option%==5 goto hd100
 	if %option%==10 goto atualizadorv1
+	if %option%==6 goto arearestrita
 	if %option%==x goto atualizadormanual
 	if %option%==xyz goto trocadevistoriador
 	echo.
@@ -114,10 +113,7 @@ title Versão 1.7.2
     echo Backup concluído com sucesso: %BACKUP_FILE%
 ) else (
     echo Falha no backup. Código de erro: %errorlevel%
-    echo Verifique:
-    echo 1. Serviço SQL Server está rodando
-    echo 2. Credenciais estão corretas
-    echo 3. Espaço suficiente em disco
+
 )
 	cls
 :: Captura a saída do ipconfig e salva no arquivo temporário
@@ -294,22 +290,22 @@ title Versão 1.7.2
 	cls
 	echo.
 	echo.
-	echo            ╔══════════════════╗
-	echo            ║ %g%PROGRAMAS UTEIS%b%  ║
-	echo            ╚══════════════════╝
+	echo                      ╔══════════════════╗
+	echo                      ║ %g%PROGRAMAS UTEIS%b%  ║
+	echo                      ╚══════════════════╝
 	echo.
-	echo     [%w%1%b%]%w% IPUTILITY%b%     [%w%2%b%]%w% SEARCH_TOOLS%b%   
+	echo              [%w%1%b%]%w% IPUTILITY%b%     [%w%2%b%]%w% SEARCH_TOOLS%b%   
 	echo.                 
-	echo     [%w%3%b%]%w% TEAM_VIEWER%b%   [%w%4%b%]%w% VLC_2.2.6%b%
+	echo              [%w%3%b%]%w% TEAM_VIEWER%b%   [%w%4%b%]%w% VLC_2.2.6%b%
 	echo.
-	echo     [%w%5%b%]%w% FIDDLER%b%       [%w%6%b%]%w% LEITOR BIOMETRICO%b%
+	echo              [%w%5%b%]%w% FIDDLER%b%       [%w%6%b%]%w% LEITOR BIOMETRICO%b%
 	echo.
-	echo     [%w%7%b%]%w% CERTIFICADOS%b%  [%w%8%b%]%w% ADVANCED IP SCANN%b%
+	echo              [%w%7%b%]%w% CERTIFICADOS%b%  [%w%8%b%]%w% ADVANCED IP SCANN%b%
 	echo.
-	echo     [%w%9%b%]%w% NSI%b%           [%w%10%b%]%g% IMPERIUS%b%
+	echo              [%w%9%b%]%w% NSI%b%
 	echo.
 	echo.
-	Set /p option0= %w%    Escolha uma opcao:%b%
+	Set /p option0= %w%             Escolha uma opcao:%b%
 
 	if %option0%==1 goto IPUTILITY
 	if %option0%==2 goto SEARCH_TOOLS
@@ -632,37 +628,6 @@ title Versão 1.7.2
 
 	cls
 	goto inicio
-:IMPERIUS
-	cls
-	echo.
-	echo.
-	echo       ══════════════════════════════════
-	echo       ███    %w%DOWNLOAD (1/3)%b%          ███
-	echo       ══════════════════════════════════
-	timeout /t 1 /nobreak >nul
-	set "params=%*"
-	cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
-	curl -g -k -L -# -o "%temp%\Iperius.zip" "https://www.dropbox.com/scl/fi/u4ss7o9g5p0o0t1hj19i7/Iperius.zip?rlkey=2ce6fzmoy1rywdjdl9dbhd52h&st=w0fmb4fh&dl=1" >nul 2>&1
-	cls
-	echo.
-	echo.
-	echo       ══════════════════════════════════
-	echo       ███    %w%INICIANDO (2/3)%b%        ███
-	echo       ══════════════════════════════════
-	timeout /t 1 /nobreak >nul
-	powershell -NoProfile Expand-Archive '%temp%\Iperius.zip' -DestinationPath '%temp%\Fenox' >nul 2>&1	
-	cls
-	echo.
-	echo.
-	echo       ══════════════════════════════════
-	echo       ███    %w%INICIANDO (3/3)%b%        ███
-	echo       ══════════════════════════════════
-	timeout /t 1 /nobreak >nul
-	%temp%\Fenox\"Iperius.exe" /s /v/qb
-	timeout /t 5 /nobreak >nul
-
-	cls
-	goto inicio
 
 :ram
 	cls
@@ -687,26 +652,79 @@ title Versão 1.7.2
 	"%emptyStandbyList%" standbylist
 	goto continue
 
+
+:arearestrita
+title Area Restrita
+color 0A
+
+set "senha_codificada=MjM4Njc1"
+
+cls
+	echo.
+	echo.
+	echo                     ╔══════════════════╗
+	echo                     ║ %g%  AREA RESTRITA %g% ║
+	echo                     ╚══════════════════╝
+	echo.
+echo.
+
+
+for /f "delims=" %%i in ('powershell -Command "$senha = Read-Host -AsSecureString 'Digite a senha'; $BSTR = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($senha); $senha_plain = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR); $senha_codificada = [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($senha_plain)); Write-Output $senha_codificada"') do set "senha_digitada_codificada=%%i"
+
+if "!senha_digitada_codificada!"=="%senha_codificada%" (
+    echo.
+    echo [OK] Acesso permitido!
+    timeout /t 1 /nobreak >nul
+    goto :ACESSO_PERMITIDO
+) else (
+    echo.
+    echo [ERRO] Senha incorreta!
+    timeout /t 2 /nobreak >nul
+    exit
+)
+
+:ACESSO_PERMITIDO
+cls
+	echo.
+	echo.
+	echo                        ╔══════════════════╗
+	echo                        ║ %g%  AREA RESTRITA %g% ║
+	echo                        ╚══════════════════╝
+	echo.%b%
+	echo                   [%w%1%b%]%w% ATUALIZAR V1 POR ESTADO %b%
+	echo. 
+	echo                   [%w%2%b%]%w% TROCA DE VISTORIADOR%b%                
+	echo.	
+	echo                   [%w%3%b%]%w% CONSULTA APTA MG%b%   
+	echo.
+	echo.
+	Set /p option0= %w%                Escolha uma opcao:%b%
+
+	if %option0%==1 goto atualizadormanual
+	if %option0%==2 goto trocadevistoriador
+	if %option0%==3 goto consultaapta
+
+
 :atualizadormanual
 	cls
 	echo.
 	echo.
-	echo            ╔══════════════════════════╗
-	echo            ║       %g%Menu Secreto%b%       ║
-	echo            ║  Atualizar V1 Por estado ║
-	echo            ╚══════════════════════════╝
+	echo                        ╔══════════════════════════╗
+	echo                        ║       %g%Menu Secreto%b%       ║
+	echo                        ║  Atualizar V1 Por estado ║
+	echo                        ╚══════════════════════════╝
 	echo.
-	echo      		[%w%1%b%]%w% SP%b%     [%w%2%b%]%w% MG%b%     
+	echo                		[%w%1%b%]%w% SP%b%     [%w%2%b%]%w% MG%b%     
 	echo.                 
-	echo      		[%w%3%b%]%w% ES%b%     [%w%4%b%]%w% GO%b%
+	echo                		[%w%3%b%]%w% ES%b%     [%w%4%b%]%w% GO%b%
 	echo.
-	echo      		[%w%5%b%]%w% MS%b% 	   [%w%6%b%]%w% DF%b%
+	echo                		[%w%5%b%]%w% MS%b% 	   [%w%6%b%]%w% DF%b%
 	echo.
-	echo      		[%w%7%b%]%w% BA%b% 	   [%w%8%b%]%w% PB%b%
+	echo                		[%w%7%b%]%w% BA%b% 	   [%w%8%b%]%w% PB%b%
 	echo.
-	echo      		[%w%9%b%]%w% PA%b%
+	echo      	            	[%w%9%b%]%w% PA%b%
 	echo.
-	Set /p option0= %w%Digite a sigla do estado:%b%
+	Set /p option0= %w%Digite o estado:%b%
 
 	if %option0%==1 goto sp
 	if %option0%==2 goto mg
@@ -798,16 +816,132 @@ goto :fim
 	Exit
 	goto :fim
 
+:consultaapta
+
+for /f "delims=" %%A in ('powershell -noprofile -command "[System.Text.Encoding]::ASCII.GetString([System.Convert]::FromBase64String('%B64_USER%')).Trim()"') do (
+    set "SQL_USER=%%A"
+)
+for /f "delims=" %%B in ('powershell -noprofile -command "[System.Text.Encoding]::ASCII.GetString([System.Convert]::FromBase64String('%B64_PASS%')).Trim()"') do (
+    set "SQL_PASS=%%B"
+)
+
+	timeout /t 5 >nul
+	cls
+	echo.
+	echo.
+	echo            ═══════════════════════════════════
+	echo            ███        %w%CONSULTA APTA. . .%b%   ███
+	echo            ═══════════════════════════════════
+echo.
 
 
+set /p PLACA=       %W%Digite a placa:%W% 
+	timeout /t 5 >nul
+	cls
+	echo.
+	echo.
+	echo        %b%    ═══════════════════════════════════
+	echo            ███     %w%BUSCANDO %PLACA%. . .%b%   ███
+	echo            ═══════════════════════════════════
+echo.
+
+:: Consulta as OSs da placa
+sqlcmd -S %SQL_SERVER% -d %SQL_DB% -U "%SQL_USER%" -P "%SQL_PASS%" -W -Q "SELECT IdentificadorOrdemServico, DataHora, StatusOrdemServico FROM OrdemServico WHERE Placa='%PLACA%' ORDER BY DataCadastro DESC"
+
+echo.
+set /p OS_ID=%w%Digite o Id da OS:%b% 
+	timeout /t 5 >nul
+	cls
+	echo.
+	echo.
+	echo            ═══════════════════════════════════
+	echo            ███      %w%VERIFICANDO. . %b%        ███
+	echo            ═══════════════════════════════════
+echo.
+
+:: Consulta os dados da vistoria apta
+sqlcmd -S %SQL_SERVER% -d %SQL_DB% -U "%SQL_USER%" -P "%SQL_PASS%" -W -Q "SELECT IdOrdemServico, CodigoMotivoVistoria, DataCadastro FROM DadosVistoriaApta WHERE IdOrdemServico='%OS_ID%'"
+	timeout /t 5 >nul
+	cls
+	echo.
+	echo.
+	echo            ═══════════════════════════════════
+	echo            ███      %w%VERIFICANDO. . %b%        ███
+	echo            ═══════════════════════════════════
 
 
+set "TEMP_FILE=%temp%\codigo_motivo.txt"
+sqlcmd -S %SQL_SERVER% -d %SQL_DB% -U "%SQL_USER%" -P "%SQL_PASS%" -h -1 -W -Q "SET NOCOUNT ON; SELECT CAST(CodigoMotivoVistoria AS VARCHAR) FROM DadosVistoriaApta WHERE IdOrdemServico='%OS_ID%'" > "%TEMP_FILE%"
 
+set "CODIGO_MOTIVO="
+set "LINHA_COUNT=0"
+for /f "usebackq delims=" %%a in ("%TEMP_FILE%") do (
+    set /a LINHA_COUNT+=1
+    if !LINHA_COUNT! equ 1 (
+        set "CODIGO_MOTIVO=%%a"
+    )
+)
 
+	del "%TEMP_FILE%"
 
+:: Remove espaços em branco
+	if defined CODIGO_MOTIVO (
+    set "CODIGO_MOTIVO=!CODIGO_MOTIVO: =!"
+)
 
+	echo CodigoMotivoVistoria encontrado: [%CODIGO_MOTIVO%]
 
+if "%CODIGO_MOTIVO%"=="11" (
+    echo.
+    echo CodigoMotivoVistoria = 11 encontrado!
+    echo Atualizando para 2...
+    echo.
+    
+:: Atualiza o código do motivo da vistoria para 2
+    sqlcmd -S %SQL_SERVER% -d %SQL_DB% -U "%SQL_USER%" -P "%SQL_PASS%" -Q "UPDATE DadosVistoriaApta SET CodigoMotivoVistoria = 2 WHERE IdOrdemServico='%OS_ID%' AND CodigoMotivoVistoria = 11"
+    
+    if !errorlevel! equ 0 (
+	cls
+	echo.
+	echo.
+	echo            ═══════════════════════════════════
+	echo                     ATUALIZANDO STATUS. . .        
+	echo            ═══════════════════════════════════
+        
+        echo.
+        echo Verificando atualizacao...
+        sqlcmd -S %SQL_SERVER% -d %SQL_DB% -U "%SQL_USER%" -P "%SQL_PASS%" -W -Q "SELECT IdOrdemServico, CodigoMotivoVistoria, DataCadastro FROM DadosVistoriaApta WHERE IdOrdemServico='%OS_ID%'"
+        
+    ) else (
+	timeout /t 5 >nul
+	cls
+	echo.
+	echo.
+	echo            ═══════════════════════════════════
+	echo            ███        %w%ERRO !errorlevel! . . .%b%        ███
+	echo            ═══════════════════════════════════
+    )
+) else (
+    timeout /t 5 >nul
+	cls
+	echo.
+    echo ====================================================
+    echo Nenhuma acao necessaria.
+    if "%CODIGO_MOTIVO%"=="" (
+        echo Nenhum registro encontrado para OS %OS_ID%
+    ) else (
+        echo CodigoMotivoVistoria = %CODIGO_MOTIVO% (diferente de 11)
+    )
+    echo ====================================================
+)
 
-
-
-
+	echo.
+	timeout /t 5 >nul
+	cls
+	echo.
+	echo.
+	echo            ════════════════════════════════════════════════
+	echo            ███ %w%OPERACAO CONLUIDA, ATUALIZE O V1 . . .%b%   ███
+	echo            ════════════════════════════════════════════════
+	echo.
+	pause
