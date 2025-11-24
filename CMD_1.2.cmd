@@ -85,8 +85,8 @@ title Versão 1.7.3
 	if %option%==5 goto hd100
 	if %option%==10 goto atualizadorv1
 	if %option%==6 goto arearestrita
-	if %option%==x goto atualizadormanual
-	if %option%==xyz goto trocadevistoriador
+	::if %option%==x goto atualizadormanual
+	::if %option%==xyz goto trocadevistoriador
 	echo.
 	cls
 	echo   ═════════════════════════════════════
@@ -945,3 +945,4 @@ if "%CODIGO_MOTIVO%"=="11" (
 	echo            ════════════════════════════════════════════════
 	echo.
 	pause
+
