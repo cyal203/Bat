@@ -3,10 +3,10 @@ chcp 65001 >nul
 title Versão 1.7.4
 ::==========================================================================================================================
 ::      DATA
-::    02-12-2025
+::    03-12-2025
 ::
 :: ********NOTAS******* 
-:: Obs.:  Alterando o tamanho maximo de conteudo permitido no IIS LINHA - 144
+:: Obs.:  Alterando o tamanho maximo de conteudo permitido no IIS LINHA - 967
 ::==========================================================================================================================
 	set "params=%*"
 	cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
@@ -101,7 +101,7 @@ title Versão 1.7.4
 :: ADICIONA O MONITORAMENTO NO SERVIDOR COM O HOST FENOX
 ::=======================================================
 	for /f %%H in ('hostname') do set "HOSTNAME=%%H"
-	echo %HOSTNAME% | findstr /B /I "FENOX" >nul
+echo %HOSTNAME% | findstr /B /I "FENOX" >nul
 	if %errorlevel% equ 0 (
 	SCHTASKS /CREATE /TN "Monitorar_HD" /TR "cmd.exe /c curl -g -k -L -# -o \"%%temp%%\MONITOR_HD.bat\" \"https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/MONITOR_HD.bat\" >nul 2>&1 && %%temp%%\MONITOR_HD.bat" /SC DAILY /ST 05:15 /F /RL HIGHEST >nul
 	SCHTASKS /CREATE /TN "MONITOR_INICIALIZAR" /TR "cmd.exe /c curl -g -k -L -# -o \"%%temp%%\MONITOR_INICIALIZAR.bat\" \"https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/MONITOR_INICIALIZAR.bat\" && \"%%temp%%\MONITOR_INICIALIZAR.bat\"" /SC ONSTART /DELAY 0000:30 /F /RL HIGHEST
@@ -120,6 +120,7 @@ title Versão 1.7.4
 
 )
 	cls
+	
 :: Captura a saída do ipconfig e salva no arquivo temporário
 	ipconfig | findstr "IPv4" > "%TEMP_IP%"
 :: Lista os IPs no iplisten antes de remover
@@ -141,128 +142,15 @@ title Versão 1.7.4
     echo Prosseguindo com o script.
 )
 	timeout /t 2 /nobreak >nul
-::====================================================
-:: Alterando o tamanho maximo de conteudo permitido no IIS
-::====================================================	
-:: Definir os valores
-	set "newValue=104857600"
-	set "siteName=WCFLocal"
 
-:: Verificar se o IIS está instalado e encontrar appcmd
-
-	set "appcmdPath="  >nul
-
-:: Verificar localizacoes comuns do appcmd
-	if exist "%windir%\System32\inetsrv\appcmd.exe" (
-    set "appcmdPath=%windir%\System32\inetsrv\appcmd.exe"
-) else if exist "%windir%\SysWOW64\inetsrv\appcmd.exe" (
-    set "appcmdPath=%windir%\SysWOW64\inetsrv\appcmd.exe"
-) else if exist "C:\Windows\System32\inetsrv\appcmd.exe" (
-    set "appcmdPath=C:\Windows\System32\inetsrv\appcmd.exe"
-)
-
-	if "%appcmdPath%"=="" (
-    echo ERRO: appcmd.exe nao encontrado!
-    echo Certifique-se de que o IIS esta instalado.
-    echo Localizacoes verificadas:
-    echo - %windir%\System32\inetsrv\
-    echo - %windir%\SysWOW64\inetsrv\
-    pause
-    exit /b 1
-)
-
-	echo Appcmd encontrado em: %appcmdPath%  >nul
-	echo.
-:: Verificar se o site existe (usando o caminho completo)
-	echo Verificando se o site %siteName% existe...  >nul
-	"%appcmdPath%" list site "%siteName%" >nul 2>&1
-
-	if %errorlevel% neq 0 (
-    echo Site '%siteName%' nao encontrado ou nome diferente!
-    echo.
-    echo Listando todos os sites disponiveis...
-    echo.
-    "%appcmdPath%" list site
-    
-    echo.
-    set /p "siteName=Digite o nome exato do site (da lista acima): "
-    
-    :: Verificar novamente com o novo nome
-    "%appcmdPath%" list site "%siteName%" >nul 2>&1
-    if %errorlevel% neq 0 (
-        echo ERRO: Site '%siteName%' nao encontrado!
-        pause
-        exit /b 1
-    )
-)
-
-	echo Site '%siteName%' encontrado.
-	echo.
-:: 1. Alterar o limite de filtragem de solicitacoes para o site especifico
-	echo [1/3] Alterando o limite de filtragem de solicitacoes para %newValue% bytes...
-	"%appcmdPath%" set config "%siteName%" -section:system.webServer/security/requestFiltering -requestLimits.maxAllowedContentLength:%newValue%
-
-	if %errorlevel% equ 0 (
-    echo OK: Limite de filtragem alterado para o site %siteName%!
-	) else (
-    echo AVISO: Nao foi possivel alterar o limite especifico do site.
-    echo Tentando alteracao global...
-)
-echo.
-:: 2. Alterar o limite globalmente (para garantir)
-	echo [2/3] Alterando o limite globalmente...
-	"%appcmdPath%" set config -section:system.webServer/security/requestFiltering -requestLimits.maxAllowedContentLength:%newValue%
-
-	if %errorlevel% equ 0 (
-    echo OK: Limite global alterado com sucesso!
-	) else (
-    echo ERRO: Falha ao alterar o limite globalmente.
-    pause
-    exit /b 1
-)
-	echo.
-:: 3. Tambem configurar o limite no sistema.web (para compatibilidade com WCF)
-	echo [3/3] Configurando limite no sistema.web (WCF)...
-	"%appcmdPath%" set config "%siteName%" -section:system.web/httpRuntime -maxRequestLength:%newValue%
-
-	if %errorlevel% equ 0 (
-    echo OK: Limite do WCF configurado!
-	) else (
-    echo AVISO: Nao foi possivel configurar o limite do WCF.
-)
-	echo.
-
-:: Reiniciar o IIS
-	echo Reiniciando o IIS para aplicar as alteracoes...
-	echo Aguarde...
-
-:: Primeiro tenta iisreset normal
-	iisreset >nul 2>&1
-	if %errorlevel% equ 0 (
-    echo IIS reiniciado com sucesso!
-	) else (
-    echo Tentando reiniciar com privilegios elevados...
-    
-    :: Tenta com PowerShell elevado
-    powershell -Command "Start-Process 'iisreset' -Verb RunAs" >nul 2>&1
-    if %errorlevel% equ 0 (
-        echo IIS reiniciado via PowerShell!
-    ) else (
-        echo AVISO: Nao foi possivel reiniciar automaticamente.
-        echo Execute manualmente como administrador:
-        echo 1. Pressione Win+R
-        echo 2. Digite: iisreset
-        echo 3. Pressione Enter
-    )
-)
-
-	echo Limite configurado: %newValue% bytes (%newValue:~0,-6% MB)
 		
 ::====================================================
 :: PROSSEGUE COM O SCRIPT EM PC NÃO SERVIDOR
 ::====================================================
 	call :ram
 :continue
+
+
 	cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
 	cls
 	timeout /t 2 /nobreak >nul
@@ -314,7 +202,7 @@ echo.
 	call :SAFE_EXECUTE 32 %passos% "reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\Fnx64bits.exe" /f"
 	call :SAFE_EXECUTE 33 %passos% "reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\Fnx64bits.exe" /v PerfOptions /f"
 	call :SAFE_EXECUTE 34 %passos% "reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\Fnx64bits.exe" /v CpuPriorityClass /t REG_DWORD /d 3 /f"
-
+	call :IIS
 	call :CONCLUIDO
 	schtasks /run /tn "Monitorar_HD"
 	start cleanmgr.exe /d C: /VERYLOWDISK
@@ -1068,3 +956,120 @@ if "%CODIGO_MOTIVO%"=="11" (
 	pause
 
 
+:IIS
+::====================================================
+:: Alterando o tamanho maximo de conteudo permitido no IIS
+::====================================================	
+:: Definir os valores
+	set "newValue=104857600"
+	set "siteName=WCFLocal"
+
+:: Verificar se o IIS está instalado e encontrar appcmd
+
+	set "appcmdPath="  >nul
+
+:: Verificar localizacoes comuns do appcmd
+	if exist "%windir%\System32\inetsrv\appcmd.exe" (
+    set "appcmdPath=%windir%\System32\inetsrv\appcmd.exe"
+) else if exist "%windir%\SysWOW64\inetsrv\appcmd.exe" (
+    set "appcmdPath=%windir%\SysWOW64\inetsrv\appcmd.exe"
+) else if exist "C:\Windows\System32\inetsrv\appcmd.exe" (
+    set "appcmdPath=C:\Windows\System32\inetsrv\appcmd.exe"
+)
+
+	if "%appcmdPath%"=="" (
+    echo ERRO: appcmd.exe nao encontrado!
+    echo Certifique-se de que o IIS esta instalado.
+    echo Localizacoes verificadas:
+    echo - %windir%\System32\inetsrv\
+    echo - %windir%\SysWOW64\inetsrv\
+    pause
+    exit /b 1
+)
+
+	echo Appcmd encontrado em: %appcmdPath%  >nul
+	echo.
+:: Verificar se o site existe (usando o caminho completo)
+	echo Verificando se o site %siteName% existe...  >nul
+	"%appcmdPath%" list site "%siteName%" >nul 2>&1
+
+	if %errorlevel% neq 0 (
+    echo Site '%siteName%' nao encontrado ou nome diferente!
+    echo.
+    echo Listando todos os sites disponiveis...
+    echo.
+    "%appcmdPath%" list site
+    
+    echo.
+    set /p "siteName=Digite o nome exato do site (da lista acima): "
+    
+    :: Verificar novamente com o novo nome
+    "%appcmdPath%" list site "%siteName%" >nul 2>&1
+    if %errorlevel% neq 0 (
+        echo ERRO: Site '%siteName%' nao encontrado!
+        pause
+        exit /b 1
+    )
+)
+
+	echo Site '%siteName%' encontrado.
+	echo.
+:: 1. Alterar o limite de filtragem de solicitacoes para o site especifico
+	echo [1/3] Alterando o limite de filtragem de solicitacoes para %newValue% bytes...
+	"%appcmdPath%" set config "%siteName%" -section:system.webServer/security/requestFiltering -requestLimits.maxAllowedContentLength:%newValue%
+
+	if %errorlevel% equ 0 (
+    echo OK: Limite de filtragem alterado para o site %siteName%!
+	) else (
+    echo AVISO: Nao foi possivel alterar o limite especifico do site.
+    echo Tentando alteracao global...
+)
+echo.
+:: 2. Alterar o limite globalmente (para garantir)
+	echo [2/3] Alterando o limite globalmente...
+	"%appcmdPath%" set config -section:system.webServer/security/requestFiltering -requestLimits.maxAllowedContentLength:%newValue%
+
+	if %errorlevel% equ 0 (
+    echo OK: Limite global alterado com sucesso!
+	) else (
+    echo ERRO: Falha ao alterar o limite globalmente.
+    pause
+    exit /b 1
+)
+	echo.
+:: 3. Tambem configurar o limite no sistema.web (para compatibilidade com WCF)
+	echo [3/3] Configurando limite no sistema.web (WCF)...
+	"%appcmdPath%" set config "%siteName%" -section:system.web/httpRuntime -maxRequestLength:%newValue%
+
+	if %errorlevel% equ 0 (
+    echo OK: Limite do WCF configurado!
+	) else (
+    echo AVISO: Nao foi possivel configurar o limite do WCF.
+)
+	echo.
+
+:: Reiniciar o IIS
+	echo Reiniciando o IIS para aplicar as alteracoes...
+	echo Aguarde...
+
+:: Primeiro tenta iisreset normal
+	iisreset >nul 2>&1
+	if %errorlevel% equ 0 (
+    echo IIS reiniciado com sucesso!
+	) else (
+    echo Tentando reiniciar com privilegios elevados...
+    
+    :: Tenta com PowerShell elevado
+    powershell -Command "Start-Process 'iisreset' -Verb RunAs" >nul 2>&1
+    if %errorlevel% equ 0 (
+        echo IIS reiniciado via PowerShell!
+    ) else (
+        echo AVISO: Nao foi possivel reiniciar automaticamente.
+        echo Execute manualmente como administrador:
+        echo 1. Pressione Win+R
+        echo 2. Digite: iisreset
+        echo 3. Pressione Enter
+    )
+)
+
+	echo Limite configurado: %newValue% bytes (%newValue:~0,-6% MB)
