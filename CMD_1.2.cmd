@@ -954,8 +954,7 @@ if "%CODIGO_MOTIVO%"=="11" (
 	echo            ════════════════════════════════════════════════
 	echo.
 	pause
-
-
+goto :eof
 :IIS
 ::====================================================
 :: Alterando o tamanho maximo de conteudo permitido no IIS
@@ -1073,3 +1072,5 @@ echo.
 )
 
 	echo Limite configurado: %newValue% bytes (%newValue:~0,-6% MB)
+goto :eof
+
