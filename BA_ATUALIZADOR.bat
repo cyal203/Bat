@@ -17,10 +17,10 @@ chcp 65001 >nul
 ::===========================
 :: FORMATO DO ZIP VERSÃO.ZIP
 ::===========================
-	SET LINKV1=https://www.dropbox.com/scl/fi/yolkarcwden3g73wappkm/1.5.0.9.zip?rlkey=0i9i9m6s4a2lrd7fiueordv31&st=wyy7rkeh&dl=1
-	SET VERSAOV1=1.5.0.9
-	SET VERSAOINST=Fnx_1.5.0.9_x64.exe
-	SET VERSAOINSTWCF=WCFLocalFenox_1.5.0.9_x86.exe
+	SET LINKV1=https://www.dropbox.com/scl/fi/lmpfj6vid9wceryz37hch/1.5.0.10.zip?rlkey=sk6pa8wevymmv22jkzdvbgupk&st=yo8g22vl&dl=1
+	SET VERSAOV1=1.5.0.10
+	SET VERSAOINST=Fnx_1.5.0.10_x64.exe
+	SET VERSAOINSTWCF=WCFLocalFenox_1.5.0.10_x86.exe
 	SET UF=BA
 	SET BACKUP_DIR=C:\captura\BackupDB
 	SET BACKUP_PATH=%BACKUP_DIR%\SisviWcfLocal_backup.bak
@@ -253,3 +253,4 @@ REM ******************* DELETA PASTAS ****************
 	wmic datafile where name="C:\\WCFLOCAL\\bin\\PrototipoMQ.Interface.WCF.dll" get Version
 	pause
 	cls
+
