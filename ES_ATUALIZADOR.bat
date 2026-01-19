@@ -34,7 +34,7 @@ chcp 65001 >nul
 echo         ╔══════════════════════════╗
 echo         ║                          ║
 echo         ║     VERSAO ES:%w%%VERSAOV1%%b%   ║
-echo         ║  %w%Validacao foto da foto%b%  ║
+echo         ║  %w%Correcao de acessos   %b%  ║
 echo         ║                          ║
 echo         ║    %w%1 - DIGITACAO%b%         ║
 echo         ║    %w%2 - SERVIDOR%b%          ║
@@ -261,6 +261,7 @@ REM ******************* DELETA PASTAS ****************
 	echo   ═══════════════════════════════════
 	timeout /t 1 >nul
 	goto :EOF
+
 
 
 
