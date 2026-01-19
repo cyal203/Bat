@@ -1,7 +1,7 @@
 @echo off
 chcp 65001 >nul
 ::-------------------------------
-::---------06/10/2025------------
+::---------19/01/2026------------
 ::-------------------------------
 	title ES ATUALIZADOR
 ::==========================
@@ -20,10 +20,10 @@ chcp 65001 >nul
 ::===========================
 :: FORMATO DO ZIP VERSÃO.ZIP
 ::===========================
-	SET LINKV1=https://www.dropbox.com/scl/fi/8u7ixo7gbwc5vfxf2rv1m/1.3.0.19.zip?rlkey=4z8ucgaccu83hda1x45pwu67v&st=d8fsc745&dl=1
-	SET VERSAOV1=1.3.0.19
-	SET VERSAOINST=Fnx_1.3.0.19_x64.exe
-	SET VERSAOINSTWCF=WCFLocalFenox_1.3.0.19_x86.exe
+	SET LINKV1=https://www.dropbox.com/scl/fi/jhbmkl25470eljvemtgpg/1.3.0.20.zip?rlkey=dv8ygofg5sj5r9zvg7ibrwakj&st=rhtc5n6b&dl=1
+	SET VERSAOV1=1.3.0.20
+	SET VERSAOINST=Fnx_1.3.0.20_x64.exe
+	SET VERSAOINSTWCF=WCFLocalFenox_1.3.0.20_x86.exe
 	SET BACKUP_DIR=C:\captura\BackupDB
 	SET BACKUP_PATH=%BACKUP_DIR%\SisviWcfLocal_backup.bak
 	set passos=07
@@ -261,6 +261,7 @@ REM ******************* DELETA PASTAS ****************
 	echo   ═══════════════════════════════════
 	timeout /t 1 >nul
 	goto :EOF
+
 
 
 
