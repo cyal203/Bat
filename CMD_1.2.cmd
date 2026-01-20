@@ -11,7 +11,7 @@ title Versão 1.7.4
 	set "params=%*"
 	cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
 	if "%Admin%"=="ops" goto :eof
-	mode con: cols=70 lines=20
+	mode con: cols=60 lines=22
 	setlocal enabledelayedexpansion
 	set "params=%*"
 ::branco
@@ -27,7 +27,9 @@ title Versão 1.7.4
 :: Azul claro      
 	set "a=[94m"   
 :: Reset
-	set "reset=[0m"     
+	set "reset=[0m"
+:: Azul
+	set "d=[38;5;39m" 
 
 :: =============================================
 :: COMANDO DE BACKUP SQL
@@ -64,23 +66,24 @@ title Versão 1.7.4
 
 :INICIO
 	echo.
-	echo             ███████╗███████╗███╗   ██╗   █████╗ ██╗   ██╗
-	echo             ██╔════╝██╔════╝████╗  ██║ ██╔═══██║ ██║ ██╔╝
-	echo             ███████╗█████╗  ██╔██╗ ██║ ██║   ██║   ██╔╝
-	echo             ██╔════╝██╔══╝  ██║╚██╗██║ ██║   ██║ ██╔═██╗
-	echo             ██║     ███████╗██║ ╚████║ ╚██████╔╝██║   ██╗
-	echo             ╚═╝     ╚══════╝╚═╝  ╚═══╝  ╚═════╝ ╚═╝   ╚═╝
+	echo %d%        ███████╗███████╗███╗   ██╗   █████╗ ██╗   ██╗
+	echo %d%        ██╔════╝██╔════╝████╗  ██║ ██╔═══██║ ██║ ██╔╝
+	echo %d%        ███████╗█████╗  ██╔██╗ ██║ ██║   ██║   ██╔╝
+	echo %d%        ██╔════╝██╔══╝  ██║╚██╗██║ ██║   ██║ ██╔═██╗
+	echo %d%        ██║     ███████╗██║ ╚████║ ╚██████╔╝██║   ██╗
+	echo %d%        ╚═╝     ╚══════╝╚═╝  ╚═══╝  ╚═════╝ ╚═╝   ╚═╝
 	echo.
-	echo                SELECIONE UMA OPCAO:
+	echo %b%        ════════════════════════════════════════════
 	echo.   
-	echo                [%w%1%b%]%w% OTIMIZACAO%b%     [%w%2%b%]%w% ADD IPLISTEN%b%     
+	echo             [%w%1%b%]%w% OTIMIZACAO%b%     [%w%2%b%]%w% ADD IPLISTEN%b%     
 	echo.                 
-	echo                [%w%3%b%]%w% ATT SERVICOS%b%   [%w%4%b%]%w% PROGRAMAS UTEIS%b%
+	echo             [%w%3%b%]%w% ATT SERVICOS%b%   [%w%4%b%]%w% PROGRAMAS UTEIS%b%
 	echo.
-	echo                [%w%5%b%]%w% HD 100%b%         [%w%6%b%]%r% AREA RESTRITA%b%
+	echo             [%w%5%b%]%w% HD 100%b%         [%w%6%b%]%r% AREA RESTRITA%b%
 	echo.
+	echo %b%        ════════════════════════════════════════════
 	echo.
-	Set /p option= %w%               Escolha uma Opcao:%b%
+	Set /p option= %w%            Escolha uma Opcao:%b%
 
 	if %option%==1 goto otimizacao
 	if %option%==2 goto iplisten
@@ -1073,4 +1076,5 @@ echo.
 
 	echo Limite configurado: %newValue% bytes (%newValue:~0,-6% MB)
 goto :eof
+
 
