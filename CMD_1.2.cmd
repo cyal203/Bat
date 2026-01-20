@@ -3,7 +3,7 @@ chcp 65001 >nul
 title Versão 1.7.4
 ::==========================================================================================================================
 ::      DATA
-::    03-12-2025
+::    20-01-2026
 ::
 :: ********NOTAS******* 
 :: Obs.:  Alterando o tamanho maximo de conteudo permitido no IIS LINHA - 967
@@ -1076,5 +1076,6 @@ echo.
 
 	echo Limite configurado: %newValue% bytes (%newValue:~0,-6% MB)
 goto :eof
+
 
 
