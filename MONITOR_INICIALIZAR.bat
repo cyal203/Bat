@@ -37,7 +37,7 @@ exit
 	for /f %%H in ('hostname') do set "HOSTNAME=%%H"
 :: --- lista de hostnames que devem executar os comandos do "else" ---
 	set "EXCLUDE=0"
-	for %%A in (FENOX274 FENOX279 FENOX197 FENOX298 FENOX418DIGITAC) do (
+	for %%A in (FENOX274 FENOX279 FENOX197 FENOX298 FENOX418DIGITAC FENOX559DIG) do (
     if /I "%%A"=="%HOSTNAME%" set "EXCLUDE=1"
 )
 	rem --- prioridade 1: hostname está na lista de exclusão ---
@@ -239,6 +239,7 @@ set "URL_WEB_APP=https://script.google.com/macros/s/AKfycbzIrQlZDQowLdEjQO1-zt3L
 	sc start SisMonitorOffline >nul
 	sc start MMFnx >nul
 	goto :eof
+
 
 
 
