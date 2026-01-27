@@ -32,7 +32,7 @@ exit
 	for /f %%H in ('hostname') do set "HOSTNAME=%%H"
 :: --- lista de hostnames que devem executar os comandos do "else" ---
 	set "EXCLUDE=0"
-	for %%A in (FENOX274 FENOX279 FENOX197 FENOX298 FENOX418DIGITAC) do (
+	for %%A in (FENOX274 FENOX279 FENOX197 FENOX298 FENOX418DIGITAC FENOX559DIG) do (
     if /I "%%A"=="%HOSTNAME%" set "EXCLUDE=1"
 )
 	rem --- prioridade 1: hostname está na lista de exclusão ---
@@ -439,6 +439,7 @@ if %errorlevel% equ 0 (
 	sc start SisMonitorOffline >nul 2>&1
 	sc start MMFnx >nul 2>&1
 	goto :eof
+
 
 
 
