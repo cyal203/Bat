@@ -65,10 +65,7 @@ exit
 	echo Y=600>>"%tempfile%"
 ::Substitui o arquivo original pelo arquivo temporário
 	move /y "%tempfile%" "%file%"
-::========================
-::iisreset
-::========================
-	iisreset /restart
+
 ::========================
 :: ADICIONA VERSÃO MONITOR
 ::========================
@@ -429,6 +426,7 @@ if %errorlevel% equ 0 (
 	sc start SisAviCreator >nul 2>&1
 	sc start SisMonitorOffline >nul 2>&1
 	sc start MMFnx >nul 2>&1
+	iisreset /restart
 	goto :eof
 :LOGS
 :: Configurações
