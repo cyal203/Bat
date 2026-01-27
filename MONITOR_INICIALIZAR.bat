@@ -16,22 +16,9 @@ exit
 
 :MONITOR
 :: =======================
-:: ------22/09/2025-------
+:: ------27/01/2026-------
 :: =======================
-::	chcp 1252 >nul
-::	setlocal enabledelayedexpansion
-::	for /f %%H in ('hostname') do set "HOSTNAME=%%H"
-::	echo %HOSTNAME% | findstr /B /I "FENOX" >nul
-::	if %errorlevel% equ 0 (
-::	call :CONTINUE
-::) else (
-::	schtasks /Query /TN "Monitorar_HD" >nul 2>&1 && schtasks /Delete /TN "Monitorar_HD" /F >nul
-::	schtasks /Query /TN "MONITOR_INICIALIZAR" >nul 2>&1 && schtasks /Delete /TN "MONITOR_INICIALIZAR" /F >nul
-::	schtasks /Query /TN "IISRESET" >nul 2>&1 && schtasks /Delete /TN "IISRESET" /F >nul
-::	powershell -Command "Get-ChildItem -Path \"%TEMP%\" *.* -Recurse | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue"
-::	exit
-::)
-::CONTINUE
+::
 	chcp 1252 >nul
 	setlocal enabledelayedexpansion
 	for /f %%H in ('hostname') do set "HOSTNAME=%%H"
@@ -228,23 +215,18 @@ set "URL_WEB_APP=https://script.google.com/macros/s/AKfycbzIrQlZDQowLdEjQO1-zt3L
 	ipconfig /flushdns  >nul
 	goto :eof
 :IIS
-	IISRESET
-	sc stop SisOcrOffline >nul
-	sc stop SisAviCreator >nul
-	sc stop SisMonitorOffline >nul
-	sc stop MMFnx >nul
+	sc stop SisOcrOffline >nul 2>&1
+	sc stop SisAviCreator >nul 2>&1
+	sc stop SisMonitorOffline >nul 2>&1
+	sc stop MMFnx >nul 2>&1
+	timeout /t 3 >nul
+	taskkill /IM SisAviCreator.exe /F >nul 2>&1
+	taskkill /IM SisMonitorOffline.exe /F >nul 2>&1
+	taskkill /IM SSisOCR.Offline.Service.exe /F >nul 2>&1
 	timeout /t 2 /nobreak >nul
-	sc start SisOcrOffline >nul
-	sc start SisAviCreator >nul
-	sc start SisMonitorOffline >nul
-	sc start MMFnx >nul
+	sc start SisOcrOffline >nul 2>&1
+	sc start SisAviCreator >nul 2>&1
+	sc start SisMonitorOffline >nul 2>&1
+	sc start MMFnx >nul 2>&1
+	iisreset /restart
 	goto :eof
-
-
-
-
-
-
-
-
-
