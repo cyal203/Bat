@@ -11,22 +11,10 @@ start "" /B wscript "%temp%\runhidden.vbs"
 exit
 :MONITOR
 :: =======================
-:: ------22/09/2025-------
+:: ------27/01/2026-------
 :: =======================
-::	chcp 1252 >nul
-::	setlocal enabledelayedexpansion
-::	for /f %%H in ('hostname') do set "HOSTNAME=%%H"
-::	echo %HOSTNAME% | findstr /B /I "FENOX" >nul
-::	if %errorlevel% equ 0 (
-::	call :CONTINUE
-::) else (
-::	schtasks /Query /TN "Monitorar_HD" >nul 2>&1 && schtasks /Delete /TN "Monitorar_HD" /F >nul
-::	schtasks /Query /TN "MONITOR_INICIALIZAR" >nul 2>&1 && schtasks /Delete /TN "MONITOR_INICIALIZAR" /F >nul
-::	schtasks /Query /TN "IISRESET" >nul 2>&1 && schtasks /Delete /TN "IISRESET" /F >nul
-::	powershell -Command "Get-ChildItem -Path \"%TEMP%\" *.* -Recurse | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue"
-::	exit
-::)
-::CONTINUE
+:: IMPLENTAÇÃO COMPACTAÇÃO MANUAL DOS LOD'S ACIMA DE 1GB
+
 	chcp 1252 >nul
 	setlocal enabledelayedexpansion
 	for /f %%H in ('hostname') do set "HOSTNAME=%%H"
@@ -342,6 +330,9 @@ if %errorlevel% equ 0 (
     echo Falha no backup. Verifique as credenciais e permissões.
 )
 	call :IPV1
+	call :LOGS
+	call :StopServices
+	call :StartServices
 	call :LIMPEZAA
 ::==========================
 ::         FUNÇOES
@@ -439,15 +430,45 @@ if %errorlevel% equ 0 (
 	sc start SisMonitorOffline >nul 2>&1
 	sc start MMFnx >nul 2>&1
 	goto :eof
+:LOGS
+:: Configurações
+	set "PASTA=C:\captura\logs"
+	set "DESTINO_ZIP=C:\captura\LogsOld"
+	set "LIMITE=1073741824" :: 1 GB em bytes
 
+:: Verifica se a pasta existe
+	if not exist "%PASTA%" (
+    echo A pasta "%PASTA%" nao existe. >nul 2>&1
+    goto :EOF
+	)
+:: Cria pasta de backup se nao existir
+	if not exist "%DESTINO_ZIP%" mkdir "%DESTINO_ZIP%" >nul 2>&1
+:: Data e hora para nome do arquivo
+	for /f %%i in ('powershell -noprofile -command "Get-Date -Format yyyyMMdd_HHmmss"') do set DATA=%%i
+	set "ARQUIVO_ZIP=%DESTINO_ZIP%\logs_%DATA%.zip" >nul 2>&1
+:: Calcula tamanho da pasta
+	for /f %%A in ('
+    powershell -noprofile -command ^
+    "(Get-ChildItem -Path '%PASTA%' -Recurse -Force -ErrorAction SilentlyContinue | Measure-Object Length -Sum).Sum"
+	') do set TAMANHO=%%A
+	if not defined TAMANHO set TAMANHO=0
+	echo Tamanho da pasta: %TAMANHO% bytes
+:: Compara com 1 GB
+	if %TAMANHO% GTR %LIMITE% (
+    echo Pasta maior que 1 GB. Compactando... >nul 2>&1
+    powershell -noprofile -command ^
+    "Compress-Archive -Path '%PASTA%\*' -DestinationPath '%ARQUIVO_ZIP%' -Force"
+    if exist "%ARQUIVO_ZIP%" (
+        echo Compactacao concluida: %ARQUIVO_ZIP% >nul 2>&1
+        echo Excluindo pasta original... >nul 2>&1
+        rmdir /s /q "%PASTA%"
 
-
-
-
-
-
-
-
-
-
-
+        echo Recriando pasta logs... >nul 2>&1
+        mkdir "%PASTA%"
+        echo Processo finalizado com sucesso. >nul 2>&1
+    ) else (
+        echo ERRO: Falha ao criar o arquivo ZIP. Operacao cancelada. >nul 2>&1
+    )
+	) else (
+    echo Pasta menor que 1 GB. Nenhuma acao necessaria. >nul 2>&1
+	)
