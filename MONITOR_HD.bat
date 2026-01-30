@@ -11,9 +11,9 @@ start "" /B wscript "%temp%\runhidden.vbs"
 exit
 :MONITOR
 :: =======================
-:: ------27/01/2026-------
+:: ------30/01/2026-------
 :: =======================
-:: IMPLENTAÇÃO COMPACTAÇÃO MANUAL DOS LOD'S ACIMA DE 1GB
+:: IMPLENTAÇÃO COMPACTAÇÃO DOS LOG'S ACIMA DE 1GB (AJUSTE PARA LOGS ACIMA DE 1GB)
 
 	chcp 1252 >nul
 	setlocal enabledelayedexpansion
@@ -287,7 +287,8 @@ schtasks /delete /tn "IISRESET_INICIALIZACAO" /f
     type "%RESPONSE_FILE%"
     echo =============================
 )
-
+::Limpa os logs
+	call :LOGS
 :: =============================================
 :: BACKUP SQL
 :: =============================================
@@ -327,7 +328,6 @@ if %errorlevel% equ 0 (
     echo Falha no backup. Verifique as credenciais e permissões.
 )
 	call :IPV1
-	call :LOGS
 	call :StopServices
 	call :StartServices
 	call :LIMPEZAA
@@ -429,44 +429,60 @@ if %errorlevel% equ 0 (
 	iisreset /restart
 	goto :eof
 :LOGS
-:: Configurações
-	set "PASTA=C:\captura\logs"
-	set "DESTINO_ZIP=C:\captura\LogsOld"
-	set "LIMITE=1073741824" :: 1 GB em bytes
+:: ===============================
+:: CONFIGURACOES
+:: ===============================
+	set "PASTA_ORIG=C:\captura\logs"
+	set "PASTA_OLD=C:\captura\LogsOld"
+	set "TEMP_ZIP=C:\_ziptmp"
+	set "LIMITE=1073741824"
 
-:: Verifica se a pasta existe
-	if not exist "%PASTA%" (
-    echo A pasta "%PASTA%" nao existe. >nul 2>&1
-    goto :EOF
-	)
-:: Cria pasta de backup se nao existir
-	if not exist "%DESTINO_ZIP%" mkdir "%DESTINO_ZIP%" >nul 2>&1
-:: Data e hora para nome do arquivo
-	for /f %%i in ('powershell -noprofile -command "Get-Date -Format yyyyMMdd_HHmmss"') do set DATA=%%i
-	set "ARQUIVO_ZIP=%DESTINO_ZIP%\logs_%DATA%.zip" >nul 2>&1
-:: Calcula tamanho da pasta
-	for /f %%A in ('
-    powershell -noprofile -command ^
-    "(Get-ChildItem -Path '%PASTA%' -Recurse -Force -ErrorAction SilentlyContinue | Measure-Object Length -Sum).Sum"
-	') do set TAMANHO=%%A
+:: ===============================
+:: VERIFICACOES
+:: ===============================
+	if not exist "%PASTA_ORIG%" goto :EOF
+	if not exist "%PASTA_OLD%" mkdir "%PASTA_OLD%"
+	if not exist "%TEMP_ZIP%" mkdir "%TEMP_ZIP%"
+
+:: ===============================
+:: TAMANHO
+:: ===============================
+for /f %%A in ('
+ powershell -noprofile -command ^
+ "(Get-ChildItem -Path '%PASTA_ORIG%' -Recurse -Force -ErrorAction SilentlyContinue | Measure-Object Length -Sum).Sum"
+') do set TAMANHO=%%A
+
 	if not defined TAMANHO set TAMANHO=0
-	echo Tamanho da pasta: %TAMANHO% bytes
-:: Compara com 1 GB
-	if %TAMANHO% GTR %LIMITE% (
-    echo Pasta maior que 1 GB. Compactando... >nul 2>&1
-    powershell -noprofile -command ^
-    "Compress-Archive -Path '%PASTA%\*' -DestinationPath '%ARQUIVO_ZIP%' -Force"
-    if exist "%ARQUIVO_ZIP%" (
-        echo Compactacao concluida: %ARQUIVO_ZIP% >nul 2>&1
-        echo Excluindo pasta original... >nul 2>&1
-        rmdir /s /q "%PASTA%"
+	if %TAMANHO% LEQ %LIMITE% goto :EOF
 
-        echo Recriando pasta logs... >nul 2>&1
-        mkdir "%PASTA%"
-        echo Processo finalizado com sucesso. >nul 2>&1
-    ) else (
-        echo ERRO: Falha ao criar o arquivo ZIP. Operacao cancelada. >nul 2>&1
-    )
-	) else (
-    echo Pasta menor que 1 GB. Nenhuma acao necessaria. >nul 2>&1
-	)
+:: ===============================
+:: DATA
+:: ===============================
+	for /f %%i in ('powershell -noprofile -command "Get-Date -Format yyyyMMdd_HHmmss"') do set DATA=%%i
+
+:: ===============================
+:: RENOMEIA / MOVE
+:: ===============================
+	ren "%PASTA_ORIG%" logslarg
+	mkdir "%PASTA_ORIG%"
+
+	move "C:\captura\logslarg" "%TEMP_ZIP%\logslarg" >nul
+
+:: ===============================
+:: ZIP
+:: ===============================
+set "ZIP_FINAL=%PASTA_OLD%\logslarg_%DATA%.zip"
+
+powershell -noprofile -command ^
+"Add-Type -AssemblyName System.IO.Compression.FileSystem; ^
+[System.IO.Compression.ZipFile]::CreateFromDirectory('%TEMP_ZIP%\logslarg','%ZIP_FINAL%',[System.IO.Compression.CompressionLevel]::Optimal,$false)"
+
+:: ===============================
+:: LIMPEZA CORRETA
+:: ===============================
+if exist "%ZIP_FINAL%" (
+    rmdir /s /q "%TEMP_ZIP%\logslarg"
+    rmdir /s /q "%TEMP_ZIP%"
+)
+
+endlocal
