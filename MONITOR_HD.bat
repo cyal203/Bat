@@ -335,22 +335,47 @@ if %errorlevel% equ 0 (
 ::         FUNÇOES
 ::==========================
 :: Função para obter versão de arquivos
+:::getFileVersion
+::	set "version="
+::	set "filepath=%~1"
+::	set "outvar=%~2"
+::	set "escapedpath=%filepath:\=\\%"
+::	for /f "skip=1 delims=" %%v in ('wmic datafile where "name='%escapedpath%'" get Version ^| findstr /r /v "^$"') do (
+::    set "version=%%v"
+::)
+::	set "version=!version: =!"
+::	set "version=!version:\t=!"
+::	set "version=!version:^"=!"
+::	set "version=!version:`=!"
+::	set "version=!version:~0,30!"
+::	for /f "delims=" %%a in ("!version!") do set "version=%%a"
+::	set "%outvar%=!version!"
+::	exit /b
+	
 :getFileVersion
-	set "version="
-	set "filepath=%~1"
-	set "outvar=%~2"
-	set "escapedpath=%filepath:\=\\%"
-	for /f "skip=1 delims=" %%v in ('wmic datafile where "name='%escapedpath%'" get Version ^| findstr /r /v "^$"') do (
-    set "version=%%v"
-)
-	set "version=!version: =!"
-	set "version=!version:\t=!"
-	set "version=!version:^"=!"
-	set "version=!version:`=!"
-	set "version=!version:~0,30!"
-	for /f "delims=" %%a in ("!version!") do set "version=%%a"
-	set "%outvar%=!version!"
-	exit /b
+    setlocal EnableDelayedExpansion
+
+    set "version="
+    set "filepath=%~1"
+    set "outvar=%~2"
+
+    rem — Escapa barras para o padrão do PowerShell
+    set "escapedpath=%filepath:\=\\%"
+
+    rem — Chama o PowerShell para obter somente números e pontos
+    for /f "usebackq tokens=*" %%v in (
+        `powershell -NoProfile -Command ^
+            "(Get-Item '%escapedpath%').VersionInfo.FileVersion -replace '[^0-9\.]', ''"`
+    ) do (
+        set "version=%%v"
+    )
+
+    rem — Garante trimming (sem espaços)
+    for /f "delims=" %%a in ("!version!") do set "version=%%a"
+
+    endlocal & set "%outvar%=%version%"
+
+    exit /b
 
 :LIMPEZAA
 ::APAGA ARQUVOS IOSC E MANTEM APENAS DE 90 DIAS ANTERIORES
@@ -486,3 +511,4 @@ if exist "%ZIP_FINAL%" (
 )
 
 endlocal
+
