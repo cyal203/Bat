@@ -68,9 +68,19 @@ call :AbreV1
 
 call :Step "Limpando arquivos temporários"
 
-echo Limpando TEMP...
-powershell -Command "Get-ChildItem -Path \"%TEMP%\" *.* -Recurse | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue"
-exit
+
+:: Cria script temporário que irá excluir este .bat após sair
+(
+    echo @echo off
+    echo timeout /t 2 >nul
+    echo del /f /q "%temp%"
+) > "%temp%\del_atualizacao.bat"
+
+:: Executa o script de exclusão em segundo plano
+start "" /min "%temp%\del_atualizacao.bat"
+
+exit /B
+
 cls
 echo ========================================
 echo     PROCESSO CONCLUIDO COM SUCESSO
@@ -157,5 +167,3 @@ exit /b
 :AbreV1
 start "" "%APP_PATH%"
 exit /b
-
-
