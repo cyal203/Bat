@@ -70,6 +70,7 @@ call :Step "Limpando arquivos temporários"
 
 echo Limpando TEMP...
 powershell -Command "Get-ChildItem -Path \"%TEMP%\" *.* -Recurse | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue"
+exit
 cls
 echo ========================================
 echo     PROCESSO CONCLUIDO COM SUCESSO
@@ -156,3 +157,4 @@ exit /b
 :AbreV1
 start "" "%APP_PATH%"
 exit /b
+
