@@ -2,10 +2,10 @@
 setlocal EnableExtensions EnableDelayedExpansion
 cd /d "%~dp0"
 chcp 65001 >nul
-title Manager V1
+title MANAGER V1
 
 :: ===============================
-:: ELEVAÇÃO ADMIN
+::          03/02/2026
 :: ===============================
 
 :: ===============================
@@ -18,8 +18,22 @@ if errorlevel 1 (
     exit /b
 )
 
-mode con cols=50 lines=10
-
+mode con cols=41 lines=10
+::ciano
+	set b=[96m
+::verde
+	set g=[92m	
+::vermelho
+	set "r=[91m"
+::vermelho
+	set "r=[91m"
+:: Azul
+	set "d=[38;5;39m"
+::branco
+	set w=[97m
+:: Amarelo claro	
+	set "y=[93m" 
+	
 :: ===============================
 :: VARIÁVEIS
 :: ===============================
@@ -32,6 +46,7 @@ set CONFIG_FILE=C:\Program Files (x86)\Fenox V1.0\Fnx64bits.exe.config
 :: ===============================
 :: EXECUÇÃO
 :: ===============================
+
 call :Step "Fechando Fenox V1"
 call :FechaV1
 
@@ -47,17 +62,19 @@ call :StopServices
 call :Step "Iniciando servicos"
 call :StartServices
 
+
 call :Step "Abrindo Fenox V1"
 call :AbreV1
 
-call :Step "Limpando arquivos temporarios"
-powershell -NoProfile -Command "Remove-Item '$env:TEMP\*' -Recurse -Force -ErrorAction SilentlyContinue"
+call :Step "Limpando arquivos temporários"
 
+echo Limpando TEMP...
+powershell -Command "Get-ChildItem -Path \"%TEMP%\" *.* -Recurse | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue"
 cls
 echo ========================================
-echo   PROCESSO CONCLUIDO COM SUCESSO
+echo     PROCESSO CONCLUIDO COM SUCESSO
 echo ========================================
-timeout /t 3 /nobreak
+
 exit /b
 
 :: =================================================
@@ -82,13 +99,14 @@ for /L %%i in (1,1,!FILL!) do set BAR=!BAR!#
 for /L %%i in (!FILL!,1,19) do set BAR=!BAR!-
 
 cls
-echo ========================================
-echo        MANUTENCAO FENOX
-echo ========================================
 echo.
-echo [!BAR!] !PCT!%%
+echo %b% ═══════════════════════════════════════
+echo  ███          %d%  MANAGER V1  %b%         ███
+echo  ═══════════════════════════════════════
 echo.
-echo Etapa: !TXT!
+echo       [ %w% !BAR! %b% ] %y% !PCT!%%
+echo.
+echo   %b% Etapa: %w% !TXT!
 echo.
 endlocal & timeout /t 1 >nul & exit /b
 
@@ -138,4 +156,3 @@ exit /b
 :AbreV1
 start "" "%APP_PATH%"
 exit /b
-
