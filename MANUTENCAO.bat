@@ -76,7 +76,7 @@ echo ========================================
 echo     PROCESSO CONCLUIDO COM SUCESSO
 echo ========================================
 
-exit /b
+exit
 
 :: =================================================
 :: CONTROLE DE PROGRESSO
@@ -157,4 +157,5 @@ exit /b
 :AbreV1
 start "" "%APP_PATH%"
 exit /b
+
 
