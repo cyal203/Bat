@@ -7,6 +7,10 @@ title Manager V1
 :: ===============================
 :: ELEVAÇÃO ADMIN
 :: ===============================
+
+:: ===============================
+:: ELEVAÇÃO ADMIN
+:: ===============================
 fsutil dirty query %systemdrive% >nul 2>&1
 if errorlevel 1 (
     echo Solicitando permissao de administrador...
@@ -134,3 +138,4 @@ exit /b
 :AbreV1
 start "" "%APP_PATH%"
 exit /b
+
