@@ -37,7 +37,7 @@ mode con cols=41 lines=10
 :: ===============================
 :: VARIÁVEIS
 :: ===============================
-set TOTAL=7
+set TOTAL=6
 set STEP=0
 
 set APP_PATH=C:\Program Files (x86)\Fenox V1.0\Fnx64bits.exe
@@ -66,22 +66,6 @@ call :StartServices
 call :Step "Abrindo Fenox V1"
 call :AbreV1
 
-call :Step "Limpando arquivos temporários"
-
-
-:: Cria script temporário que irá excluir este .bat após sair
-(
-    echo @echo off
-    echo timeout /t 2 >nul
-    echo del /f /q "%temp%"
-) > "%temp%\del_atualizacao.bat"
-
-:: Executa o script de exclusão em segundo plano
-start "" /min "%temp%\del_atualizacao.bat"
-
-exit
-
-cls
 echo ========================================
 echo     PROCESSO CONCLUIDO COM SUCESSO
 echo ========================================
@@ -167,4 +151,5 @@ exit /b
 :AbreV1
 start "" "%APP_PATH%"
 exit /b
+
 
