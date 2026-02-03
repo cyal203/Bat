@@ -1,74 +1,136 @@
 @echo off
-	cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
-if "%1"=="/hidden" goto :MANUTENCAO
+setlocal EnableExtensions EnableDelayedExpansion
+cd /d "%~dp0"
+chcp 65001 >nul
+title Manager V1
 
-:: Define variáveis
-mode con: cols=50 lines=18
-setlocal enabledelayedexpansion
+:: ===============================
+:: ELEVAÇÃO ADMIN
+:: ===============================
+fsutil dirty query %systemdrive% >nul 2>&1
+if errorlevel 1 (
+    echo Solicitando permissao de administrador...
+    powershell -Command "Start-Process cmd -ArgumentList '/k \"%~f0\"' -Verb RunAs"
+    exit /b
+)
 
-:MANUTENCAO
+mode con cols=50 lines=10
 
+:: ===============================
+:: VARIÁVEIS
+:: ===============================
+set TOTAL=7
+set STEP=0
+
+set APP_PATH=C:\Program Files (x86)\Fenox V1.0\Fnx64bits.exe
+set CONFIG_FILE=C:\Program Files (x86)\Fenox V1.0\Fnx64bits.exe.config
+
+:: ===============================
+:: EXECUÇÃO
+:: ===============================
+call :Step "Fechando Fenox V1"
+call :FechaV1
+
+call :Step "Atualizando IP do Fenox V1"
 call :IPV1
-timeout /t 3 /nobreak >nul
-call :iplisten
-timeout /t 3 /nobreak >nul
+
+call :Step "Configurando IP Listen"
+call :IPLISTEN
+
+call :Step "Parando servicos"
 call :StopServices
-timeout /t 3 /nobreak >nul
+
+call :Step "Iniciando servicos"
 call :StartServices
-timeout /t 3 /nobreak >nul
-::mshta "javascript:alert('REINICIADO SERVICOS\n\nDuvidas entre em contato com o Suporte.'); window.close();"
-powershell -Command "Get-ChildItem -Path \"%TEMP%\" *.* -Recurse | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue"
-exit
+
+call :Step "Abrindo Fenox V1"
+call :AbreV1
+
+call :Step "Limpando arquivos temporarios"
+powershell -NoProfile -Command "Remove-Item '$env:TEMP\*' -Recurse -Force -ErrorAction SilentlyContinue"
+
+cls
+echo ========================================
+echo   PROCESSO CONCLUIDO COM SUCESSO
+echo ========================================
+timeout /t 3 /nobreak
+exit /b
+
+:: =================================================
+:: CONTROLE DE PROGRESSO
+:: =================================================
+:Step
+set /a STEP+=1
+call :Progress %STEP% %TOTAL% "%~1"
+exit /b
+
+:Progress
+setlocal EnableDelayedExpansion
+set CUR=%1
+set MAX=%2
+set TXT=%~3
+
+set /a PCT=(CUR*100)/MAX
+set /a FILL=(CUR*20)/MAX
+
+set BAR=
+for /L %%i in (1,1,!FILL!) do set BAR=!BAR!#
+for /L %%i in (!FILL!,1,19) do set BAR=!BAR!-
+
+cls
+echo ========================================
+echo        MANUTENCAO FENOX
+echo ========================================
+echo.
+echo [!BAR!] !PCT!%%
+echo.
+echo Etapa: !TXT!
+echo.
+endlocal & timeout /t 1 >nul & exit /b
+
+:: =================================================
+:: FUNÇÕES
+:: =================================================
+:FechaV1
+powershell -NoProfile -Command ^
+ "Get-Process Fnx64bits -ErrorAction SilentlyContinue | Stop-Process -Force"
+exit /b
 
 :IPV1
+for /f "tokens=2 delims=:" %%A in ('ipconfig ^| findstr /i "IPv4"') do (
+    for /f %%B in ("%%A") do (
+        set IP=%%B
+        goto :gotIP
+    )
+)
+:gotIP
+set IP=%IP: =%
 
-:: Obtém o IPv4 do computador
-	for /f "tokens=2 delims=:" %%i in ('ipconfig ^| findstr /i "IPv4"') do for /f "tokens=1 delims= " %%j in ("%%i") do set IP=%%j
-:: Remove espaços em branco
-	set IP=%IP: =%
-:: Caminho do arquivo de configuração
-	set FILE="C:\Program Files (x86)\Fenox V1.0\Fnx64bits.exe.config"
-:: Substitui o endereço IP no arquivo usando PowerShell
-	powershell -Command "(Get-Content '%FILE%') -replace 'http://.*:8080', 'http://%IP%:8080' | Set-Content '%FILE%'"
-	goto :eof
-	
-:iplisten
-	set "TEMP_IP=%TEMP%\IPLISTEN.txt"
-	ipconfig | findstr "IPv4" > "%TEMP_IP%"
-:: Lista os IPs no iplisten antes de remover
-	for /f "tokens=*" %%i in ('netsh http show iplisten ^| findstr /R "[0-9]\."') do (
-    set "IP=%%i"
-    netsh http delete iplisten ip=!IP! >nul
+powershell -NoProfile -ExecutionPolicy Bypass -Command ^
+ "& { (Get-Content '%CONFIG_FILE%') -replace 'http://.*:8080','http://%IP%:8080' | Set-Content '%CONFIG_FILE%' }"
+exit /b
+
+:IPLISTEN
+for /f "tokens=*" %%i in ('netsh http show iplisten ^| findstr /R "[0-9]\."') do (
+    netsh http delete iplisten ip=%%i >nul
 )
 
-:: Obtém o IP atual do computador
-	for /f "tokens=2 delims=:" %%A in ('ipconfig ^| findstr "IPv4"') do (
-    set "CURRENT_IP=%%A"
-    set "CURRENT_IP=!CURRENT_IP: =!"
-)
-:: Adiciona o IP atual e 127.0.0.1 ao iplisten
-	echo Adicionado ip ao Iplisten:%w% !CURRENT_IP! %b%
-	echo Adicionado ip ao Iplisten:%w%127.0.0.1 %b%
-	netsh http add iplisten ip=!CURRENT_IP!  >nul
-	netsh http add iplisten ip=127.0.0.1  >nul
-	ipconfig /flushdns  >nul
-	goto :eof
+netsh http add iplisten ip=%IP% >nul
+netsh http add iplisten ip=127.0.0.1 >nul
+ipconfig /flushdns >nul
+exit /b
 
 :StopServices
-	sc stop SisOcrOffline >nul 2>&1
-	sc stop SisAviCreator >nul 2>&1
-	sc stop SisMonitorOffline >nul 2>&1
-	sc stop MMFnx >nul 2>&1
-	timeout /t 3 >nul
-	taskkill /IM SisAviCreator.exe /F >nul 2>&1
-	taskkill /IM SisMonitorOffline.exe /F >nul 2>&1
-	taskkill /IM SSisOCR.Offline.Service.exe /F >nul 2>&1
-	taskkill /IM FenoxSM.exe /F >nul 2>&1
-	goto :eof
+for %%S in (SisOcrOffline SisAviCreator SisMonitorOffline MMFnx) do sc stop %%S >nul
+timeout /t 2 >nul
+taskkill /F /IM SisAviCreator.exe SisMonitorOffline.exe SSisOCR.Offline.Service.exe FenoxSM.exe >nul 2>&1
+exit /b
+
 :StartServices
-	sc start SisOcrOffline >nul 2>&1
-	sc start SisAviCreator >nul 2>&1
-	sc start SisMonitorOffline >nul 2>&1
-	sc start MMFnx >nul 2>&1
-	iisreset /restart
-	goto :eof
+for %%S in (SisOcrOffline SisAviCreator SisMonitorOffline MMFnx) do sc start %%S >nul
+iisreset /restart >nul
+exit /b
+
+:AbreV1
+start "" "%APP_PATH%"
+exit /b
