@@ -79,7 +79,7 @@ call :Step "Limpando arquivos temporários"
 :: Executa o script de exclusão em segundo plano
 start "" /min "%temp%\del_atualizacao.bat"
 
-exit /B
+exit
 
 cls
 echo ========================================
@@ -167,3 +167,4 @@ exit /b
 :AbreV1
 start "" "%APP_PATH%"
 exit /b
+
