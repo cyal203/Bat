@@ -488,11 +488,11 @@ for /f %%A in ('
 :: ===============================
 :: RENOMEIA / MOVE
 :: ===============================
+	call :StopServices
 	ren "%PASTA_ORIG%" logslarg
 	mkdir "%PASTA_ORIG%"
-
 	move "C:\captura\logslarg" "%TEMP_ZIP%\logslarg" >nul
-
+	call :StartServices
 :: ===============================
 :: ZIP
 :: ===============================
@@ -511,4 +511,5 @@ if exist "%ZIP_FINAL%" (
 )
 
 endlocal
+
 
