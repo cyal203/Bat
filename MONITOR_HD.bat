@@ -213,15 +213,19 @@ schtasks /delete /tn "IISRESET_INICIALIZACAO" /f
 ::wmic logicaldisk where "FileSystem='NTFS'" get caption,freespace,size /format:csv > "%TEMP_FILE%"
 
 :: Coletar informações da CPU
-	set "CPU="
-	for /f "skip=1 tokens=2 delims=," %%A in ('wmic cpu get name /format:csv') do (
+::	set "CPU="
+::	for /f "skip=1 tokens=2 delims=," %%A in ('wmic cpu get name /format:csv') do (
+::    set "CPU=%%A"
+::)
+::	set "CPU=!CPU: =!"
+::	set "CPU=!CPU:\t=!"
+::	set "CPU=!CPU:^"=!"
+::	for /f "tokens=1 delims=@" %%B in ("!CPU!") do (
+::    set "CPU=%%B"
+::)
+
+for /f "delims=" %%A in ('powershell -Command "(Get-WmiObject Win32_Processor).Name.Trim() -replace '@.*'"') do (
     set "CPU=%%A"
-)
-	set "CPU=!CPU: =!"
-	set "CPU=!CPU:\t=!"
-	set "CPU=!CPU:^"=!"
-	for /f "tokens=1 delims=@" %%B in ("!CPU!") do (
-    set "CPU=%%B"
 )
 :: Data de instalação do Windows
 	for /f "skip=1 tokens=2 delims==" %%A in ('wmic os get installdate /format:list') do set "INSTALL_DATE=%%A"
@@ -521,5 +525,6 @@ endlocal
 if exist "%USERPROFILE%\Desktop\Manager-V1.lnk" exit
 powershell -Command "(New-Object Net.WebClient).DownloadFile('https://www.dropbox.com/scl/fi/2h05ugy511yddlo1910eh/Manager-V1.lnk?rlkey=3ou61axp8vr1ss4xh2ybwj3jx&st=8xs55m9c&dl=1', [Environment]::GetFolderPath('Desktop') + '\Manager-V1.lnk')"
 endlocal
+
 
 
