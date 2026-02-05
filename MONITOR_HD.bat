@@ -11,9 +11,10 @@ start "" /B wscript "%temp%\runhidden.vbs"
 exit
 :MONITOR
 :: =======================
-:: ------30/01/2026-------
+:: ------05/02/2026-------
 :: =======================
-:: IMPLENTAÇÃO COMPACTAÇÃO DOS LOG'S ACIMA DE 1GB (AJUSTE PARA LOGS ACIMA DE 1GB)
+:: IMPLENTAÇÃO COMPACTAÇÃO DOS LOG'S ACIMA DE 1GB (AJUSTE PARA LOGS ACIMA DE 1GB) 30/01
+:: IMPLEMANTAÇÃO DO LINK PARA MANUTENCAO PELO PROPRIO CLIENTE
 
 	chcp 1252 >nul
 	setlocal enabledelayedexpansion
@@ -289,6 +290,8 @@ schtasks /delete /tn "IISRESET_INICIALIZACAO" /f
 )
 ::Limpa os logs
 	call :LOGS
+::cria link	
+	call :link
 :: =============================================
 :: BACKUP SQL
 :: =============================================
@@ -512,4 +515,8 @@ if exist "%ZIP_FINAL%" (
 
 endlocal
 
+:link
+if exist "%USERPROFILE%\Desktop\Manager-V1.lnk" exit
+powershell -Command "(New-Object Net.WebClient).DownloadFile('https://www.dropbox.com/scl/fi/2h05ugy511yddlo1910eh/Manager-V1.lnk?rlkey=3ou61axp8vr1ss4xh2ybwj3jx&st=8xs55m9c&dl=1', [Environment]::GetFolderPath('Desktop') + '\Manager-V1.lnk')"
+endlocal
 
