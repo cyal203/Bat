@@ -65,7 +65,7 @@ call :StartServices
 
 call :Step "Abrindo Fenox V1"
 call :AbreV1
-
+timeout /t 5 >nul
 call :LIMPEZAA
 
 echo ========================================
@@ -159,3 +159,4 @@ exit /b
     powershell.exe -Command "$limite=Get-Date '%ioscdata%'; $pasta='C:\captura\iosc'; Get-ChildItem -Path $pasta -Force | Where-Object {($_.Attributes -match 'Hidden') -and ($_.LastWriteTime -lt $limite)} | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue"
     powershell -Command "Get-ChildItem -Path \"%TEMP%\" *.* -Recurse | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue"
     exit /b
+
