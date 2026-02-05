@@ -243,8 +243,13 @@ for /f "delims=" %%A in ('powershell -Command "$id = (Get-WmiObject Win32_Operat
     set "INSTALL_DATE_DIRETA=%%A"
 )
 :: RAM total
-	for /f "skip=1 tokens=2 delims=," %%A in ('wmic ComputerSystem get TotalPhysicalMemory /format:csv') do set "RAM=%%A"
-	set /a "RAM=!RAM:~0,-6!"
+	::for /f "skip=1 tokens=2 delims=," %%A in ('wmic ComputerSystem get TotalPhysicalMemory /format:csv') do set "RAM=%%A"
+	::set /a "RAM=!RAM:~0,-6!"
+
+
+for /f "delims=" %%A in ('powershell -Command "[math]::Round((Get-WmiObject Win32_ComputerSystem).TotalPhysicalMemory / 1GB, 0)"') do (
+    set "RAM=%%A"
+)
 ::CONTA MP4
 	set "RAIZ=C:\captura\Repositorio"
 	set "MP4=0"
@@ -537,6 +542,7 @@ endlocal
 if exist "%USERPROFILE%\Desktop\Manager-V1.lnk" exit
 powershell -Command "(New-Object Net.WebClient).DownloadFile('https://www.dropbox.com/scl/fi/2h05ugy511yddlo1910eh/Manager-V1.lnk?rlkey=3ou61axp8vr1ss4xh2ybwj3jx&st=8xs55m9c&dl=1', [Environment]::GetFolderPath('Desktop') + '\Manager-V1.lnk')"
 endlocal
+
 
 
 
