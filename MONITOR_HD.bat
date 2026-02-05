@@ -209,7 +209,9 @@ schtasks /delete /tn "IISRESET_INICIALIZACAO" /f
 	set "ANYDESK_ID=!ANYDESK_ID:\t=!"
 	set "ANYDESK_ID=!ANYDESK_ID:^"=!"
 :: Coletar informações de espaço em disco
-	wmic logicaldisk where "FileSystem='NTFS'" get caption,freespace,size /format:csv > "%TEMP_FILE%"
+	powershell -Command "'Node,Caption,FreeSpace,Size' | Out-File \"%TEMP_FILE%\" -Encoding UTF8; Get-WmiObject Win32_LogicalDisk -Filter \"FileSystem='NTFS'\" | ForEach-Object { '{0},{1},{2},{3}' -f $env:COMPUTERNAME, $_.Caption, $_.FreeSpace, $_.Size } | Add-Content \"%TEMP_FILE%\" -Encoding UTF8"
+::wmic logicaldisk where "FileSystem='NTFS'" get caption,freespace,size /format:csv > "%TEMP_FILE%"
+
 :: Coletar informações da CPU
 	set "CPU="
 	for /f "skip=1 tokens=2 delims=," %%A in ('wmic cpu get name /format:csv') do (
@@ -519,4 +521,5 @@ endlocal
 if exist "%USERPROFILE%\Desktop\Manager-V1.lnk" exit
 powershell -Command "(New-Object Net.WebClient).DownloadFile('https://www.dropbox.com/scl/fi/2h05ugy511yddlo1910eh/Manager-V1.lnk?rlkey=3ou61axp8vr1ss4xh2ybwj3jx&st=8xs55m9c&dl=1', [Environment]::GetFolderPath('Desktop') + '\Manager-V1.lnk')"
 endlocal
+
 
