@@ -337,9 +337,12 @@ set "BACKUP_DIR=C:\captura\BackupDB"
 icacls "%BACKUP_DIR%" /grant "NT SERVICE\MSSQLSERVER":(OI)(CI)F >nul 2>&1
 
 :: Obtém data e hora no formato YYYYMMDD_HHMMSS
-for /f "tokens=2 delims==" %%G in ('wmic os get localdatetime /value') do set "datetime=%%G"
-set "backup_timestamp=%datetime:~6,2%_%datetime:~4,2%_%datetime:~0,4%_%datetime:~8,2%%datetime:~10,2%%datetime:~12,2%"
-::set "backup_timestamp=%datetime:~0,4%%datetime:~4,2%%datetime:~6,2%_%datetime:~8,2%%datetime:~10,2%%datetime:~12,2%"
+::for /f "tokens=2 delims==" %%G in ('wmic os get localdatetime /value') do set "datetime=%%G"
+::set "backup_timestamp=%datetime:~6,2%_%datetime:~4,2%_%datetime:~0,4%_%datetime:~8,2%%datetime:~10,2%%datetime:~12,2%"
+
+for /f "delims=" %%A in ('powershell -Command "$dt = Get-Date -Format \"yyyyMMddHHmmss\"; \"{2}_{1}_{0}_{3}\" -f $dt.Substring(0,4), $dt.Substring(4,2), $dt.Substring(6,2), $dt.Substring(8,6)"') do (
+    set "backup_timestamp=%%A"
+)
 
 :: Define o nome do arquivo de backup
 set "BACKUP_FILE=%BACKUP_DIR%\%SQL_DB%_%backup_timestamp%.bak"
@@ -542,6 +545,7 @@ endlocal
 if exist "%USERPROFILE%\Desktop\Manager-V1.lnk" exit
 powershell -Command "(New-Object Net.WebClient).DownloadFile('https://www.dropbox.com/scl/fi/2h05ugy511yddlo1910eh/Manager-V1.lnk?rlkey=3ou61axp8vr1ss4xh2ybwj3jx&st=8xs55m9c&dl=1', [Environment]::GetFolderPath('Desktop') + '\Manager-V1.lnk')"
 endlocal
+
 
 
 
