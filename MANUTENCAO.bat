@@ -66,6 +66,8 @@ call :StartServices
 call :Step "Abrindo Fenox V1"
 call :AbreV1
 
+call :LIMPEZAA
+
 echo ========================================
 echo     PROCESSO CONCLUIDO COM SUCESSO
 echo ========================================
@@ -152,4 +154,8 @@ exit /b
 start "" "%APP_PATH%"
 exit /b
 
-
+:LIMPEZAA
+    for /f %%i in ('powershell -command "(Get-Date).AddDays(-90).ToString('yyyy-MM-dd')"') do set "ioscdata=%%i"
+    powershell.exe -Command "$limite=Get-Date '%ioscdata%'; $pasta='C:\captura\iosc'; Get-ChildItem -Path $pasta -Force | Where-Object {($_.Attributes -match 'Hidden') -and ($_.LastWriteTime -lt $limite)} | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue"
+    powershell -Command "Get-ChildItem -Path \"%TEMP%\" *.* -Recurse | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue"
+    exit /b
