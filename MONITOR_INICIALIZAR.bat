@@ -70,25 +70,51 @@ set "URL_WEB_APP=https://script.google.com/macros/s/AKfycbzIrQlZDQowLdEjQO1-zt3L
 	set "ANYDESK_ID=!ANYDESK_ID:\t=!"
 	set "ANYDESK_ID=!ANYDESK_ID:^"=!"
 :: Coletar informações de espaço em disco
-	wmic logicaldisk where "FileSystem='NTFS'" get caption,freespace,size /format:csv > "%TEMP_FILE%"
+	powershell -Command "'Node,Caption,FreeSpace,Size' | Out-File \"%TEMP_FILE%\" -Encoding UTF8; Get-WmiObject Win32_LogicalDisk -Filter \"FileSystem='NTFS'\" | ForEach-Object { '{0},{1},{2},{3}' -f $env:COMPUTERNAME, $_.Caption, $_.FreeSpace, $_.Size } | Add-Content \"%TEMP_FILE%\" -Encoding UTF8"
+	
+	::wmic logicaldisk where "FileSystem='NTFS'" get caption,freespace,size /format:csv > "%TEMP_FILE%"
+
 :: Coletar informações da CPU
-	set "CPU="
-	for /f "skip=1 tokens=2 delims=," %%A in ('wmic cpu get name /format:csv') do (
+::	set "CPU="
+::	for /f "skip=1 tokens=2 delims=," %%A in ('wmic cpu get name /format:csv') do (
+::    set "CPU=%%A"
+::)
+::	set "CPU=!CPU: =!"
+::	set "CPU=!CPU:\t=!"
+::	set "CPU=!CPU:^"=!"
+::	for /f "tokens=1 delims=@" %%B in ("!CPU!") do (
+::    set "CPU=%%B"
+::)
+
+for /f "delims=" %%A in ('powershell -Command "(Get-WmiObject Win32_Processor).Name.Trim() -replace '@.*'"') do (
     set "CPU=%%A"
 )
-	set "CPU=!CPU: =!"
-	set "CPU=!CPU:\t=!"
-	set "CPU=!CPU:^"=!"
-	for /f "tokens=1 delims=@" %%B in ("!CPU!") do (
-    set "CPU=%%B"
-)
+
 
 :: Data de instalação do Windows
-	for /f "skip=1 tokens=2 delims==" %%A in ('wmic os get installdate /format:list') do set "INSTALL_DATE=%%A"
-	set "INSTALL_DATE=!INSTALL_DATE:~6,2!/!INSTALL_DATE:~4,2!/!INSTALL_DATE:~0,4!"
+	::for /f "skip=1 tokens=2 delims==" %%A in ('wmic os get installdate /format:list') do set "INSTALL_DATE=%%A"
+	::set "INSTALL_DATE=!INSTALL_DATE:~6,2!/!INSTALL_DATE:~4,2!/!INSTALL_DATE:~0,4!"
+
+::Usando ParseExact
+for /f "delims=" %%A in ('powershell -Command "[DateTime]::ParseExact((Get-WmiObject Win32_OperatingSystem).InstallDate.Substring(0, 14), \"yyyyMMddHHmmss\", $null).ToString(\"dd/MM/yyyy\")"') do (
+    set "INSTALL_DATE=%%A"
+)
+
+echo Data de instalacao: %INSTALL_DATE%
+
+::Manipulação direta
+for /f "delims=" %%A in ('powershell -Command "$id = (Get-WmiObject Win32_OperatingSystem).InstallDate; \"{2}/{1}/{0}\" -f $id.Substring(0,4), $id.Substring(4,2), $id.Substring(6,2)"') do (
+    set "INSTALL_DATE_DIRETA=%%A"
+)
+
 :: RAM total
-	for /f "skip=1 tokens=2 delims=," %%A in ('wmic ComputerSystem get TotalPhysicalMemory /format:csv') do set "RAM=%%A"
-	set /a "RAM=!RAM:~0,-6!"
+	::for /f "skip=1 tokens=2 delims=," %%A in ('wmic ComputerSystem get TotalPhysicalMemory /format:csv') do set "RAM=%%A"
+	::set /a "RAM=!RAM:~0,-6!"
+
+
+for /f "delims=" %%A in ('powershell -Command "[math]::Round((Get-WmiObject Win32_ComputerSystem).TotalPhysicalMemory / 1GB, 0)"') do (
+    set "RAM=%%A"
+)
 
 ::CONTA MP4
 	set "RAIZ=C:\captura\Repositorio"
@@ -230,3 +256,4 @@ set "URL_WEB_APP=https://script.google.com/macros/s/AKfycbzIrQlZDQowLdEjQO1-zt3L
 	sc start MMFnx >nul 2>&1
 	iisreset /restart
 	goto :eof
+
