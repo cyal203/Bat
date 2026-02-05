@@ -189,21 +189,29 @@ for /f "delims=" %%A in ('powershell -Command "[math]::Round((Get-WmiObject Win3
 ::==========================
 :: Função para obter versão de arquivos
 :getFileVersion
-	set "version="
-	set "filepath=%~1"
-	set "outvar=%~2"
-	set "escapedpath=%filepath:\=\\%"
-	for /f "skip=1 delims=" %%v in ('wmic datafile where "name='%escapedpath%'" get Version ^| findstr /r /v "^$"') do (
-    set "version=%%v"
-)
-	set "version=!version: =!"
-	set "version=!version:\t=!"
-	set "version=!version:^"=!"
-	set "version=!version:`=!"
-	set "version=!version:~0,30!"
-	for /f "delims=" %%a in ("!version!") do set "version=%%a"
-	set "%outvar%=!version!"
-	exit /b
+    setlocal EnableDelayedExpansion
+
+    set "version="
+    set "filepath=%~1"
+    set "outvar=%~2"
+
+    rem — Escapa barras para o padrão do PowerShell
+    set "escapedpath=%filepath:\=\\%"
+
+    rem — Chama o PowerShell para obter somente números e pontos
+    for /f "usebackq tokens=*" %%v in (
+        `powershell -NoProfile -Command ^
+            "(Get-Item '%escapedpath%').VersionInfo.FileVersion -replace '[^0-9\.]', ''"`
+    ) do (
+        set "version=%%v"
+    )
+
+    rem — Garante trimming (sem espaços)
+    for /f "delims=" %%a in ("!version!") do set "version=%%a"
+
+    endlocal & set "%outvar%=%version%"
+
+    exit /b
 
 :LIMPEZAA
 	for /f %%i in ('powershell -command "(Get-Date).AddDays(-90).ToString('yyyy-MM-dd')"') do set "ioscdata=%%i"
@@ -256,4 +264,5 @@ for /f "delims=" %%A in ('powershell -Command "[math]::Round((Get-WmiObject Win3
 	sc start MMFnx >nul 2>&1
 	iisreset /restart
 	goto :eof
+
 
