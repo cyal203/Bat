@@ -11,10 +11,11 @@ start "" /B wscript "%temp%\runhidden.vbs"
 exit
 :MONITOR
 :: =======================
-:: ------05/02/2026-------
+:: ------11/02/2026-------
 :: =======================
 :: IMPLENTAÇÃO COMPACTAÇÃO DOS LOG'S ACIMA DE 1GB (AJUSTE PARA LOGS ACIMA DE 1GB) 30/01
 :: IMPLEMANTAÇÃO DO LINK PARA MANUTENCAO PELO PROPRIO CLIENTE
+:: MENSSAGEM AO INICIAR O COMPUTADOR
 
 	chcp 1252 >nul
 	setlocal enabledelayedexpansion
@@ -362,23 +363,6 @@ if %errorlevel% equ 0 (
 ::==========================
 ::         FUNÇOES
 ::==========================
-:: Função para obter versão de arquivos
-:::getFileVersion
-::	set "version="
-::	set "filepath=%~1"
-::	set "outvar=%~2"
-::	set "escapedpath=%filepath:\=\\%"
-::	for /f "skip=1 delims=" %%v in ('wmic datafile where "name='%escapedpath%'" get Version ^| findstr /r /v "^$"') do (
-::    set "version=%%v"
-::)
-::	set "version=!version: =!"
-::	set "version=!version:\t=!"
-::	set "version=!version:^"=!"
-::	set "version=!version:`=!"
-::	set "version=!version:~0,30!"
-::	for /f "delims=" %%a in ("!version!") do set "version=%%a"
-::	set "%outvar%=!version!"
-::	exit /b
 	
 :getFileVersion
     setlocal EnableDelayedExpansion
@@ -548,12 +532,3 @@ goto :eof
 :inicializar
 powershell -Command "(New-Object Net.WebClient).DownloadFile('https://www.dropbox.com/scl/fi/akorc9rgtubicumxfgv8b/Menssagem.vbs?rlkey=0yxqyoicv6u83hlya8bnlar0r&st=vxv6y6ax&dl=1', [Environment]::GetFolderPath('Startup') + '\Menssagem.vbs')"
 goto :eof
-
-
-
-
-
-
-
-
-
