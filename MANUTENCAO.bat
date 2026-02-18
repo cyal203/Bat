@@ -2,7 +2,7 @@
 setlocal EnableExtensions EnableDelayedExpansion
 cd /d "%~dp0"
 chcp 65001 >nul
-title MANAGER V1
+title Reinicia Camera
 
 :: ===============================
 ::          03/02/2026
@@ -97,7 +97,7 @@ for /L %%i in (!FILL!,1,19) do set BAR=!BAR!-
 cls
 echo.
 echo %b% ═══════════════════════════════════════
-echo  ███          %d%  MANAGER V1  %b%         ███
+echo  ███          %d%  MANAGER  %b%            ███
 echo  ═══════════════════════════════════════
 echo.
 echo       [ %w% !BAR! %b% ] %y% !PCT!%%
@@ -152,3 +152,4 @@ exit /b
 :AbreV1
 start "" "%APP_PATH%"
 exit /b
+
