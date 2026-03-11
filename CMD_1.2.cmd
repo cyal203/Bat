@@ -1,17 +1,18 @@
 @echo off
 chcp 65001 >nul
-title Versão 1.7.4
+title Versão 1.7.5
 ::==========================================================================================================================
 ::      DATA
-::    20-01-2026
+::    11-03-2026
 ::
 :: ********NOTAS******* 
-:: Obs.:  Alterando o tamanho maximo de conteudo permitido no IIS LINHA - 967
+:: Obs.:20/02 Alterando o tamanho maximo de conteudo permitido no IIS LINHA - 967
+::		11/03 Inserido a correção para certificado
 ::==========================================================================================================================
 	set "params=%*"
 	cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
 	if "%Admin%"=="ops" goto :eof
-	mode con: cols=60 lines=22
+	mode con: cols=60 lines=25
 	setlocal enabledelayedexpansion
 	set "params=%*"
 ::branco
@@ -73,7 +74,7 @@ title Versão 1.7.4
 	echo %d%        ██║     ███████╗██║ ╚████║ ╚██████╔╝██║   ██╗
 	echo %d%        ╚═╝     ╚══════╝╚═╝  ╚═══╝  ╚═════╝ ╚═╝   ╚═╝
 	echo.
-	echo %b%        ════════════════════════════════════════════
+	echo %b%        ═════════════════════════════════════════════
 	echo.   
 	echo             [%w%1%b%]%w% OTIMIZACAO%b%     [%w%2%b%]%w% ADD IPLISTEN%b%     
 	echo.                 
@@ -81,9 +82,12 @@ title Versão 1.7.4
 	echo.
 	echo             [%w%5%b%]%w% HD 100%b%         [%w%6%b%]%r% AREA RESTRITA%b%
 	echo.
-	echo %b%        ════════════════════════════════════════════
+	echo             [%w%7%b%]%y% CERTIFICADO%b%
+	echo. 	
+	echo %b%        ═════════════════════════════════════════════
 	echo.
 	Set /p option= %w%            Escolha uma Opcao:%b%
+	echo.
 
 	if %option%==1 goto otimizacao
 	if %option%==2 goto iplisten
@@ -92,6 +96,7 @@ title Versão 1.7.4
 	if %option%==5 goto hd100
 	if %option%==10 goto atualizadorv1
 	if %option%==6 goto arearestrita
+	if %option%==7 goto certificado
 	if %option%==x goto arearestrita
 	if %option%==xyz goto arearestrita
 	echo.
@@ -1077,5 +1082,89 @@ echo.
 	echo Limite configurado: %newValue% bytes (%newValue:~0,-6% MB)
 goto :eof
 
+:certificado
+cls
+@echo off
+setlocal
+
+set APP_PATH=C:\Program Files (x86)\Fenox V1.0\Fnx64bits.exe
+
+call :fechav1
+
+:: ================================
+:: Verificar privilégio administrativo
+:: ================================
+net session >nul 2>&1
+if %errorlevel% neq 0 (
+    echo Este script precisa ser executado como ADMINISTRADOR.
+    pause
+    exit /b 1
+)
+
+:: ================================
+:: Aplicar chaves do registro
+:: ================================
+
+	timeout /t 2 >nul
+	cls
+	echo.
+	echo.
+	echo            ═══════════════════════════════════
+	echo            ███        %w%AJUSTANDO. . .%b%       ███
+	echo            ═══════════════════════════════════
+echo.
+timeout /t 2 >nul
+reg add "HKLM\SOFTWARE\Microsoft\Cryptography\Calais" /v DisableCapiOverrideForRSA /t REG_DWORD /d 0 /f >> nul 2>&1
+
+reg add "HKLM\SOFTWARE\Microsoft\Cryptography\Calais\Cache" /ve /t REG_DWORD /d 0 /f >> nul 2>&1
+
+reg add "HKLM\SOFTWARE\Microsoft\Cryptography\Calais\SmartCards\Identity Device (Microsoft Generic Profile)" /v "80000001" /t REG_SZ /d "C:\Windows\System32\msclmd.dll" /f >> nul 2>&1
+reg add "HKLM\SOFTWARE\Microsoft\Cryptography\Calais\SmartCards\Identity Device (Microsoft Generic Profile)" /v "Crypto Provider" /t REG_SZ /d "Microsoft Base Smart Card Crypto Provider" /f >> nul 2>&1
+reg add "HKLM\SOFTWARE\Microsoft\Cryptography\Calais\SmartCards\Identity Device (Microsoft Generic Profile)" /v "Smart Card Key Storage Provider" /t REG_SZ /d "Microsoft Smart Card Key Storage Provider" /f >> nul 2>&1
+
+reg add "HKLM\SOFTWARE\Microsoft\Cryptography\Calais\SmartCards\Identity Device (NIST SP 800-73 [PIV])" /v "80000001" /t REG_SZ /d "C:\Windows\System32\msclmd.dll" /f >> nul 2>&1
+reg add "HKLM\SOFTWARE\Microsoft\Cryptography\Calais\SmartCards\Identity Device (NIST SP 800-73 [PIV])" /v "Crypto Provider" /t REG_SZ /d "Microsoft Base Smart Card Crypto Provider" /f >> nul 2>&1
+reg add "HKLM\SOFTWARE\Microsoft\Cryptography\Calais\SmartCards\Identity Device (NIST SP 800-73 [PIV])" /v "Smart Card Key Storage Provider" /t REG_SZ /d "Microsoft Smart Card Key Storage Provider" /f >> nul 2>&1
+
+
+:: ================================
+:: Reiniciar servico Smart Card
+:: ================================
+echo Reiniciando servico Smart Card...
+
+sc query SCardSvr | find "RUNNING" >nul
+if %errorlevel%==0 (
+    net stop SCardSvr >> nul 2>&1
+)
+
+net start SCardSvr >> nul 2>&1
+
+:: ================================
+:: Reiniciar servico de criptografia
+:: ================================
+echo Reiniciando servico CryptSvc...
+
+sc query CryptSvc | find "RUNNING" >nul
+if %errorlevel%==0 (
+net stop CryptSvc >> nul 2>&1
+)
+net start CryptSvc >> nul 2>&1
+
+:: ================================
+:: Limpeza de cache criptografico
+:: ================================
+certutil -scinfo >nul 2>&1
+
+echo.
+echo Configuracao aplicada com sucesso.
+start "" "%APP_PATH%"
+echo.
+cls
+goto inicio
+
+:fechav1
+powershell -NoProfile -Command ^
+ "Get-Process Fnx64bits -ErrorAction SilentlyContinue | Stop-Process -Force"
+exit /b
 
 
