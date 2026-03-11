@@ -82,7 +82,7 @@ title Versão 1.7.5
 	echo.
 	echo             [%w%5%b%]%w% HD 100%b%         [%w%6%b%]%r% AREA RESTRITA%b%
 	echo.
-	echo             [%w%7%b%]%y% CERTIFICADO%b%
+	echo             [%w%7%b%]%y% AJUSTE CERTIFICADO%b%
 	echo. 	
 	echo %b%        ═════════════════════════════════════════════
 	echo.
@@ -1166,5 +1166,6 @@ goto inicio
 powershell -NoProfile -Command ^
  "Get-Process Fnx64bits -ErrorAction SilentlyContinue | Stop-Process -Force"
 exit /b
+
 
 
