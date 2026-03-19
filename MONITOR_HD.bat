@@ -391,16 +391,20 @@ if %errorlevel% equ 0 (
 
 :LIMPEZAA
 ::APAGA ARQUVOS IOSC E MANTEM APENAS DE 30 DIAS PARA ES E 90 PARA OS DEMAIS ESTADOS 
+@echo off
+set "dias=90"
 
-	set "dias=90"
 REM Verifica UF no arquivo
-	for /f "tokens=1,2 delims==" %%a in ('findstr /i "^UF=" C:\captura\ocr.ini') do (
+for /f "tokens=1,2 delims==" %%a in ('findstr /i "^UF=" C:\captura\ocr.ini') do (
     if /i "%%b"=="es" set "dias=30"
 )
+
 REM Gera data baseada nos dias
-	for /f %%i in ('powershell -command "(Get-Date).AddDays(-%dias%).ToString('yyyy-MM-dd')"') do set "ioscdata=%%i"
+for /f %%i in ('powershell -command "(Get-Date).AddDays(-%dias%).ToString('yyyy-MM-dd')"') do set "ioscdata=%%i"
+
 REM Seu comando ajustado (corrigido apenas filtro Hidden)
-	powershell.exe -Command "$limite=Get-Date '%ioscdata%'; $pasta='C:\captura\iosc'; Get-ChildItem -Path $pasta -Force | Where-Object {($_.Attributes -band 2) -and ($_.LastWriteTime -lt $limite)} | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue"
+powershell.exe -Command "$limite=Get-Date '%ioscdata%'; $pasta='C:\captura\iosc'; Get-ChildItem -Path $pasta -Force | Where-Object {($_.Attributes -band 2) -and ($_.LastWriteTime -lt $limite)} | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue"
+
 
 ::DELETAR APOS FUNCIOANLIDADE ACIMA ESTIVER TESTADA DE FATO
 ::	for /f %%i in ('powershell -command "(Get-Date).AddDays(-90).ToString('yyyy-MM-dd')"') do set "ioscdata=%%i"
