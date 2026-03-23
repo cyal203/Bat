@@ -11,7 +11,7 @@
 	exit
 
 :: ===================================================================================================================
-:: ------20/03/2026-------
+:: ------23/03/2026-------
 :: IMPLENTAÇÃO COMPACTAÇÃO DOS LOG'S ACIMA DE 1GB (AJUSTE PARA LOGS ACIMA DE 1GB) 30/01
 :: IMPLEMANTAÇÃO DO LINK PARA MANUTENCAO PELO PROPRIO CLIENTE
 :: MENSSAGEM AO INICIAR O COMPUTADOR
@@ -292,8 +292,6 @@ for /f "delims=" %%A in ('powershell -Command "[math]::Round((Get-WmiObject Win3
     echo =============================
 )
 
-
-
 	call :LOGS
 	call :link
 	call :inicializar
@@ -343,11 +341,15 @@ for /f "tokens=1,2 delims==" %%a in ('findstr /i "^UF=" C:\captura\ocr.ini') do 
 REM Gera data baseada nos dias
 for /f %%i in ('powershell -command "(Get-Date).AddDays(-%dias%).ToString('yyyy-MM-dd')"') do set "ioscdata=%%i"
 
+
 REM Seu comando ajustado (corrigido apenas filtro Hidden)
-powershell.exe -Command "$limite=Get-Date '%ioscdata%'; $pasta='C:\captura\iosc'; Get-ChildItem -Path $pasta -Force | Where-Object {($_.Attributes -band 2) -and ($_.LastWriteTime -lt $limite)} | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue"
+:: NAO OCULTOS ::powershell.exe -Command "$limite=Get-Date '%ioscdata%'; $pasta='C:\captura\iosc'; Get-ChildItem -Path $pasta -File -Recurse | Where-Object {$_.LastWriteTime -lt $limite} | Remove-Item -Force -ErrorAction SilentlyContinue"	
+::OCULTOS::powershell.exe -Command "$limite=Get-Date '%ioscdata%'; $pasta='C:\captura\iosc'; Get-ChildItem -Path $pasta -Force | Where-Object {($_.Attributes -match 'Hidden') -and ($_.LastWriteTime -lt $limite)} | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue"
+powershell.exe -Command "$limite=Get-Date '%ioscdata%'; $pasta='C:\captura\iosc'; Get-ChildItem -Path $pasta -File -Recurse -Force | Where-Object {$_.LastWriteTime -lt $limite} | Remove-Item -Force -ErrorAction SilentlyContinue"
+	
 	rmdir /s /q "C:\SisMonitorOffline" >nul 2>&1
 	rmdir /s /q "C:\SisAviCreator" >nul 2>&1
-	rmdir /s /q "C:\SisOcr Offline" 2>&1
+	rmdir /s /q "C:\SisOcr Offline" >nul 2>&1
 	powershell -Command "Get-ChildItem -Path \"%TEMP%\" *.* -Recurse | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue"
 :IPV1
 :: Obtém o IPv4 do computador
