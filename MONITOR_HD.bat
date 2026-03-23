@@ -1,44 +1,42 @@
-	@echo off
+@echo off
 	cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
-	if "%1"=="/hidden" goto :MONITOR
+if "%1"=="/hidden" goto :MONITOR
 (
   echo Set objShell = CreateObject("WScript.Shell"^)
   echo objShell.Run "cmd /c ""%~f0"" /hidden", 0, True
   echo WScript.Quit(0^)
 ) > "%temp%\runhidden.vbs"
 
-	start "" /B wscript "%temp%\runhidden.vbs"
-	exit
-
-:: ===================================================================================================================
+start "" /B wscript "%temp%\runhidden.vbs"
+exit
+:MONITOR
+:: =======================
 :: ------23/03/2026-------
+:: =======================
 :: IMPLENTAÇÃO COMPACTAÇÃO DOS LOG'S ACIMA DE 1GB (AJUSTE PARA LOGS ACIMA DE 1GB) 30/01
 :: IMPLEMANTAÇÃO DO LINK PARA MANUTENCAO PELO PROPRIO CLIENTE
 :: MENSSAGEM AO INICIAR O COMPUTADOR
-:: IMPLEMENTADO 30 DIAS EM ES E 90 NOS DEMAIS ESTADOS
-:: ===================================================================================================================
-:MONITOR
+:: LIMITE DE 30 DIAS DA IOC PAARA ES E 90 PARA DEMAIS
+
 	chcp 1252 >nul
 	setlocal enabledelayedexpansion
 	for /f %%H in ('hostname') do set "HOSTNAME=%%H"
-:: ===================================================================================================================
-:: LISTA DE EXCLUSÃO DO AGENDADOR ADICIONAR CASO PRECISE REMOVER ALGUM HOSTNAME
-:: ===================================================================================================================
+:: --- lista de hostnames que devem executar os comandos do "else" ---
 	set "EXCLUDE=0"
 	for %%A in (FENOX274 FENOX279 FENOX197 FENOX298 FENOX418DIGITAC FENOX559DIG) do (
     if /I "%%A"=="%HOSTNAME%" set "EXCLUDE=1"
 )
+	rem --- prioridade 1: hostname está na lista de exclusão ---
 	if "%EXCLUDE%"=="1" (
     goto :DO_ELSE
 )
+::prioridade 2: hostname começa com FENOX → segue a rotina normal ---
 	echo %HOSTNAME% | findstr /B /I "FENOX" >nul
 	if %errorlevel% equ 0 (
     call :CONTINUE
     exit /b 0
 )
-:: ===================================================================================================================
-:: DELETA DO AGENDADOR DE TAREFAS AS ROTINAS DE INICIALIZAÇÃO
-:: ===================================================================================================================
+	rem --- prioridade 3: qualquer outro hostname cai no ELSE ---
 :DO_ELSE
 	schtasks /Query /TN "Monitorar_HD" >nul 2>&1 && schtasks /Delete /TN "Monitorar_HD" /F >nul
 	schtasks /Query /TN "MONITOR_INICIALIZAR" >nul 2>&1 && schtasks /Delete /TN "MONITOR_INICIALIZAR" /F >nul
@@ -46,90 +44,96 @@
 	powershell -Command "Get-ChildItem -Path \"%TEMP%\" *.* -Recurse | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue"
 	exit /b 0
 :CONTINUE
-:: ===================================================================================================================
-::DEFINE PRIORIDADE PARA O V1
-:: ===================================================================================================================
 	powershell -Command "Add-MpPreference -ExclusionPath 'C:\Program Files (x86)\Fenox V1.0\Fnx64bits.exe'"
 	powershell -Command "Add-MpPreference -ExclusionPath 'C:\Program Files (x86)\Fenox V1.0\SisFnxUpdate.exe'"
-:: ===================================================================================================================
+::=======================================
 :: ADICIONA RESOLUÇÃO NO UPLOAD 800 X 600
-:: ===================================================================================================================
+::=======================================
 	set "file=C:\captura\imgUp.ini"
 	set "tempfile=%file%.tmp"
 	if not exist "%file%" (
     echo O arquivo %file% não foi encontrado.
     exit /b 1
 )
+::Cria um arquivo temporário e copia as linhas que não contêm X ou Y
 	(for /f "usebackq tokens=*" %%A in ("%file%") do (
     set "line=%%A"
     if not "!line:~0,2!"=="X=" if not "!line:~0,2!"=="Y=" (
         echo !line!
     )
 )) > "%tempfile%"
-:: ===================================================================================================================
+
 ::Adiciona as novas linhas X=800 e Y=600
-:: ===================================================================================================================
 	echo X=800>>"%tempfile%"
 	echo Y=600>>"%tempfile%"
+::Substitui o arquivo original pelo arquivo temporário
 	move /y "%tempfile%" "%file%"
 
-:: ===================================================================================================================
+::========================
 :: ADICIONA VERSÃO MONITOR
-:: ===================================================================================================================
+::========================
 	set "sis_monitor=7.1.3.1"
 	set "monitor_zip=SisMonitor7131.zip"
 	set "monitor_link=https://update.fenoxapp.com.br/Instaladores/Monitor/SisMonitor7131.zip"
 :: Adicione aqui hosts que não atualizarão o Monitor
 	set "excludedHostsmonitor="
-:: ===================================================================================================================
+::=====================
 :: ADICIONA VERSÃO OCR
-:: ===================================================================================================================
+::=====================
 	set "sis_ocr=7.4.0.0"
 	set "ocr_zip=SisOcrOffline7400.zip"
 	set "ocr_link=https://update.fenoxapp.com.br/ModoOff/Install/Ocr/SisOcrOffline7400.zip"
 :: Adicione aqui hosts que não atualizarão a OCR
 	set "excludedHostsocr=FENOX33 FENOX34 FENOX31 FENOX117 FENOX40 FENOX128 FENOX023 FENOX54 FENOX85 FENOX27 FENOX319 FENOX495"	
-:: ===================================================================================================================
+::========================
 :: ADICIONA VERSÃO CREATOR
-:: ===================================================================================================================
+::========================
 	set "sis_creator=12.1.4.00"
 	set "creator_zip=sisavicreator121400.zip"
 	set "creator_link=https://update.fenoxapp.com.br/ModoOff/Install/AviCreator/sisavicreator121400.zip"
 	set "TEMP_IP=%TEMP%\IPLISTEN.txt"
 :: Adicione aqui hosts que não atualizarão o creator
 	set "excludedHostscreator="
-:: ===================================================================================================================
+:: =====================================
 :: Verificar versão do SisMonitorOffline
-:: ===================================================================================================================
+:: =====================================
 	for %%h in (%excludedHostscreator%) do (
     if /I "%%h"=="%COMPUTERNAME%" goto SkipMonitor
 )
 	set "exemonitor=C:\Program Files (x86)\FNX\SisMonitorOffline\SisMonitorOffline.exe"
 	set "logFile=%temp%\log_sismonitor_update.txt"
+:: Obtém a versão do executável
 	for /f "tokens=*" %%A in ('powershell -command "(Get-Item '%exemonitor%').VersionInfo.ProductVersion"') do set "versaoAtualmonitor=%%A"
+:: Compara a versão
 	if not "%versaoAtualmonitor%"=="%sis_monitor%" (
+:: Parar serviços
 	call :StopServices
+::BAIXA A NOVA VERSÃO MONITOR
 	curl -g -k -L -# -o "%temp%\%monitor_zip%" "%monitor_link%" >nul 2>&1
 	powershell -NoProfile Expand-Archive '%temp%\%monitor_zip%' -DestinationPath 'C:\SisMonitorOffline' >nul 2>&1
+::MOVE OS ARQUIVOS
 	robocopy "C:\SisMonitorOffline" "C:\Program Files (x86)\FNX\SisMonitorOffline" /E /MOVE /R:3 /W:5 >> %logFile% 2>&1
-:: ===================================================================================================================
-::INICIA OS SERVIÇO
-:: ===================================================================================================================
+
+::INICIA OS PROCESSOS
 	call :StartServices
 )
 :SkipMonitor
 
-:: ===================================================================================================================
+:: ================================
 :: Verificar versão do SisAviCreator
-:: ===================================================================================================================
+:: ================================
+:: LISTA DE SERVIDORES COM OUTRA VERSÃO DO CREATOR, NÃO RECEBERÃO ATUALIZAÇÃO
 	for %%h in (%excludedHostscreator%) do (
     if /I "%%h"=="%COMPUTERNAME%" goto SkipCreator
 )
 	set "execreator=C:\Program Files (x86)\FNX\SisAviCreator\SisAviCreator.exe"
 	set "logFile=%temp%\log_siscreator_update.txt"
+:: Obtém a versão do executável
 	for /f "tokens=*" %%A in ('powershell -command "(Get-Item '%execreator%').VersionInfo.ProductVersion"') do set "versaoAtualcreator=%%A"
 	echo Versao atual do SisAviCreator: %versaoAtualcreator%
+:: Compara a versão
 	if not "%versaoAtualcreator%"=="%sis_creator%" (
+:: Parar serviços
 	call :StopServices
     curl -g -k -L -# -o "%temp%\%creator_zip%" "%creator_link%" >nul 2>&1
     powershell -NoProfile Expand-Archive '%temp%\sisavicreator121400.zip' -DestinationPath 'C:\SisAviCreator' >nul 2>&1
@@ -138,17 +142,22 @@
 )
 :SkipCreator
 
-:: ===================================================================================================================
+:: ================================
 :: Verificar versão do SisOcr
-:: ===================================================================================================================
+:: ================================
+:: LISTA DE SERVIDORES COM OUTRA VERSÃO DA OCR, NÃO RECEBERÃO ATUALIZAÇÃO
 	for %%h in (%excludedHostsocr%) do (
     if /I "%%h"=="%COMPUTERNAME%" goto SkipOCR
 )
 	set "exeocr=C:\Program Files (x86)\FNX\SisOcr Offline\SisOCR.Offline.Service.exe"
 	set "logFile=%temp%\log_sisocr_update.txt"
+:: Obtém a versão do executável
 	for /f "tokens=*" %%A in ('powershell -command "(Get-Item '%exeocr%').VersionInfo.ProductVersion"') do set "versaoAtualocr=%%A"
 	echo Versao atual do SisOcr: %versaoAtualocr%
+:: Compara a versão
 	if not "%versaoAtualocr%"=="%sis_ocr%" (
+
+:: Parar serviços
 	call :StopServices
 	curl -g -k -L -# -o "%temp%\%ocr_zip%" "%ocr_link%" >nul 2>&1
 	powershell -NoProfile Expand-Archive '%temp%\SisOcrOffline7400.zip' -DestinationPath 'C:\SisOcr Offline' >nul 2>&1
@@ -157,9 +166,9 @@
 )
 :SkipOCR
 
-:: ===================================================================================================================
+:: ================================
 :: CONTINUAÇÃO DO SCRIPT
-:: ===================================================================================================================
+:: ================================
 :: ADICIONA A ROTINA DE RESET DOS SERVIÇOS
 	::schtasks /Create /TN "IISRESET" /TR "cmd.exe /c iisreset & sc stop SisOcrOffline & timeout /t 2 >nul & sc start SisOcrOffline & sc stop SisMonitorOffline & timeout /t 2 >nul & sc start SisMonitorOffline & sc stop SisAviCreator & timeout /t 2 >nul & sc start SisAviCreator" /SC DAILY /ST 07:00 /F /RL HIGHEST >nul
 	schtasks /delete /tn "IISRESET" /f
@@ -168,40 +177,25 @@ schtasks /delete /tn "IISRESET_INICIALIZACAO" /f
 ::start "" /min "C:\Program Files\TeamViewer\TeamViewer.exe"	
 	call :iplisten
 
-:: ===================================================================================================================
+:: =============================================
 :: CONFIGURAÇÕES DO BANCO DE DADOS
-:: ===================================================================================================================
-set "SQL_SERVER=localhost"
-set "SQL_DB=SisviWcfLocal"
-set "B64_USER=c2E="
-set "B64_PASS=RjNOMFhmbng="
-set "BACKUP_DIR=C:\captura\BackupDB"
-	for /f "delims=" %%A in ('powershell -noprofile -command "[System.Text.Encoding]::ASCII.GetString([System.Convert]::FromBase64String('%B64_USER%')).Trim()"') do (
-    set "SQL_USER=%%A"
+:: =============================================
+	set "SQL_SERVER=localhost"
+	set "SQL_DB=SisviWcfLocal"
+	set "BACKUP_DIR=C:\captura\BackupDB"
+	icacls "%BACKUP_DIR%" /grant "NT SERVICE\MSSQLSERVER":(OI)(CI)F >nul 2>&1
+	for /f "tokens=1-3 delims=/ " %%a in ("%date%") do (
+    set "day=%%a"
+    set "month=%%b"
+    set "year=%%c"
 )
-	for /f "delims=" %%B in ('powershell -noprofile -command "[System.Text.Encoding]::ASCII.GetString([System.Convert]::FromBase64String('%B64_PASS%')).Trim()"') do (
-    set "SQL_PASS=%%B"
-)
-:: Garante permissão para o SQL Server gravar na pasta
-icacls "%BACKUP_DIR%" /grant "NT SERVICE\MSSQLSERVER":(OI)(CI)F >nul 2>&1
-
-:: Obtém data e hora no formato YYYYMMDD_HHMMSS
-	for /f "delims=" %%A in ('powershell -Command "$dt = Get-Date -Format \"yyyyMMddHHmmss\"; \"{2}_{1}_{0}_{3}\" -f $dt.Substring(0,4), $dt.Substring(4,2), $dt.Substring(6,2), $dt.Substring(8,6)"') do (
-    set "backup_timestamp=%%A"
-)
-:: Define o nome do arquivo de backup
-	set "BACKUP_FILE=%BACKUP_DIR%\%SQL_DB%_%backup_timestamp%.bak"
-:: Executa o backup
-	echo Realizando backup de %SQL_DB% para %BACKUP_FILE%...
-	sqlcmd -S %SQL_SERVER% -U "%SQL_USER%" -P "%SQL_PASS%" -Q "BACKUP DATABASE [%SQL_DB%] TO DISK='%BACKUP_FILE%' WITH FORMAT;"
-	if %errorlevel% equ 0 (
-    echo Backup concluido com sucesso!
-) else (
-    echo Falha no backup. Verifique as credenciais e permissões.
-)
-:: ===================================================================================================================	
-:: URL DO GOOGLE SCRIPTS
-:: ===================================================================================================================
+:: Formatar com dois dígitos
+	if "!day:~1!"=="" set "day=0!day!"
+	if "!month:~1!"=="" set "month=0!month!"
+	set "BACKUP_FILE=!BACKUP_DIR!\SisviWcfLocal_backup_!day!_!month!_!year!.bak"
+	set "COMPUTADOR=%COMPUTERNAME%"
+:: URL do Web App do Google Apps Script
+::set "URL_WEB_APP=https://script.google.com/macros/s/AKfycbw3OVNmpxJ9RXKF7YwkqrfcNoAL2-crg_R6WSmClJeMw-Vrw4gegc-lYB-l-xi3ZJpu/exec"
 	set "URL_WEB_APP=https://script.google.com/macros/s/AKfycbzIrQlZDQowLdEjQO1-zt3LLLiSpT2nkOkAl9qMkdywGS1YKV7a_TgZchOPyHAoXDvk/exec"
 :: Arquivo temporário para armazenar os dados
 	set "TEMP_FILE=%TEMP%\disk_info.txt"
@@ -218,22 +212,50 @@ icacls "%BACKUP_DIR%" /grant "NT SERVICE\MSSQLSERVER":(OI)(CI)F >nul 2>&1
 	set "ANYDESK_ID=!ANYDESK_ID:^"=!"
 :: Coletar informações de espaço em disco
 	powershell -Command "'Node,Caption,FreeSpace,Size' | Out-File \"%TEMP_FILE%\" -Encoding UTF8; Get-WmiObject Win32_LogicalDisk -Filter \"FileSystem='NTFS'\" | ForEach-Object { '{0},{1},{2},{3}' -f $env:COMPUTERNAME, $_.Caption, $_.FreeSpace, $_.Size } | Add-Content \"%TEMP_FILE%\" -Encoding UTF8"
+::wmic logicaldisk where "FileSystem='NTFS'" get caption,freespace,size /format:csv > "%TEMP_FILE%"
+
+:: Coletar informações da CPU
+::	set "CPU="
+::	for /f "skip=1 tokens=2 delims=," %%A in ('wmic cpu get name /format:csv') do (
+::    set "CPU=%%A"
+::)
+::	set "CPU=!CPU: =!"
+::	set "CPU=!CPU:\t=!"
+::	set "CPU=!CPU:^"=!"
+::	for /f "tokens=1 delims=@" %%B in ("!CPU!") do (
+::    set "CPU=%%B"
+::)
+
 for /f "delims=" %%A in ('powershell -Command "(Get-WmiObject Win32_Processor).Name.Trim() -replace '@.*'"') do (
     set "CPU=%%A"
 )
+:: Data de instalação do Windows
+	::for /f "skip=1 tokens=2 delims==" %%A in ('wmic os get installdate /format:list') do set "INSTALL_DATE=%%A"
+	::set "INSTALL_DATE=!INSTALL_DATE:~6,2!/!INSTALL_DATE:~4,2!/!INSTALL_DATE:~0,4!"
+
+::Usando ParseExact
 for /f "delims=" %%A in ('powershell -Command "[DateTime]::ParseExact((Get-WmiObject Win32_OperatingSystem).InstallDate.Substring(0, 14), \"yyyyMMddHHmmss\", $null).ToString(\"dd/MM/yyyy\")"') do (
     set "INSTALL_DATE=%%A"
 )
+
 echo Data de instalacao: %INSTALL_DATE%
+
+::Manipulação direta
 for /f "delims=" %%A in ('powershell -Command "$id = (Get-WmiObject Win32_OperatingSystem).InstallDate; \"{2}/{1}/{0}\" -f $id.Substring(0,4), $id.Substring(4,2), $id.Substring(6,2)"') do (
     set "INSTALL_DATE_DIRETA=%%A"
 )
+:: RAM total
+	::for /f "skip=1 tokens=2 delims=," %%A in ('wmic ComputerSystem get TotalPhysicalMemory /format:csv') do set "RAM=%%A"
+	::set /a "RAM=!RAM:~0,-6!"
+
+
 for /f "delims=" %%A in ('powershell -Command "[math]::Round((Get-WmiObject Win32_ComputerSystem).TotalPhysicalMemory / 1GB, 0)"') do (
     set "RAM=%%A"
 )
 ::CONTA MP4
 	set "RAIZ=C:\captura\Repositorio"
 	set "MP4=0"
+
 	for /r "%RAIZ%" %%A in (*.mp4) do (
     set "ARQ=%%~nxA"
     set "DIRETORIO=%%~dpA"
@@ -245,13 +267,13 @@ for /f "delims=" %%A in ('powershell -Command "[math]::Round((Get-WmiObject Win3
         )
     )
 )	
-:: OBTER VERSÕES DOS ARQUIVOS
+:: === Obter versões dos arquivos ===
 	call :getFileVersion "C:\Program Files (x86)\Fenox V1.0\Fnx64bits.exe" v1
 	call :getFileVersion "C:\WCFLOCAL\bin\PrototipoMQ.Interface.WCF.dll" wcf
 	call :getFileVersion "C:\Program Files (x86)\FNX\SisAviCreator\SisAviCreator.exe" creator
 	call :getFileVersion "C:\Program Files (x86)\FNX\SisMonitorOffline\SisMonitorOffline.exe" monitor
 	call :getFileVersion "C:\Program Files (x86)\FNX\SisOcr Offline\SisOCR.Offline.Service.exe" ocr
-:: EVNIAR DADOS PARA A PLANILHA DO GOOGLE
+:: Processar o arquivo e enviar os dados ao Google Sheets
 	for /f "skip=1 tokens=2-4 delims=," %%A in ('type "%TEMP_FILE%"') do (
     set "DRIVE=%%A"
     set "FREE=%%B"
@@ -266,7 +288,7 @@ for /f "delims=" %%A in ('powershell -Command "[math]::Round((Get-WmiObject Win3
     ) else (
         set "PERCENTUAL=0"
     )
-:: MONTAR JSON
+:: Montar JSON
     echo { > "%JSON_FILE%"
     echo   "computador": "!COMPUTADOR!", >> "%JSON_FILE%"
     echo   "unidade": "!DRIVE!", >> "%JSON_FILE%"
@@ -291,10 +313,50 @@ for /f "delims=" %%A in ('powershell -Command "[math]::Round((Get-WmiObject Win3
     type "%RESPONSE_FILE%"
     echo =============================
 )
-
 	call :LOGS
 	call :link
 	call :inicializar
+:: =============================================
+:: BACKUP SQL
+:: =============================================
+
+:: Configurações do SQL Server
+set "SQL_SERVER=localhost"
+set "SQL_DB=SisviWcfLocal"
+set "B64_USER=c2E="
+set "B64_PASS=RjNOMFhmbng="
+set "BACKUP_DIR=C:\captura\BackupDB"
+
+	for /f "delims=" %%A in ('powershell -noprofile -command "[System.Text.Encoding]::ASCII.GetString([System.Convert]::FromBase64String('%B64_USER%')).Trim()"') do (
+    set "SQL_USER=%%A"
+)
+	for /f "delims=" %%B in ('powershell -noprofile -command "[System.Text.Encoding]::ASCII.GetString([System.Convert]::FromBase64String('%B64_PASS%')).Trim()"') do (
+    set "SQL_PASS=%%B"
+)
+
+:: Garante permissão para o SQL Server gravar na pasta
+icacls "%BACKUP_DIR%" /grant "NT SERVICE\MSSQLSERVER":(OI)(CI)F >nul 2>&1
+
+:: Obtém data e hora no formato YYYYMMDD_HHMMSS
+::for /f "tokens=2 delims==" %%G in ('wmic os get localdatetime /value') do set "datetime=%%G"
+::set "backup_timestamp=%datetime:~6,2%_%datetime:~4,2%_%datetime:~0,4%_%datetime:~8,2%%datetime:~10,2%%datetime:~12,2%"
+
+for /f "delims=" %%A in ('powershell -Command "$dt = Get-Date -Format \"yyyyMMddHHmmss\"; \"{2}_{1}_{0}_{3}\" -f $dt.Substring(0,4), $dt.Substring(4,2), $dt.Substring(6,2), $dt.Substring(8,6)"') do (
+    set "backup_timestamp=%%A"
+)
+
+:: Define o nome do arquivo de backup
+set "BACKUP_FILE=%BACKUP_DIR%\%SQL_DB%_%backup_timestamp%.bak"
+
+:: Executa o backup
+echo Realizando backup de %SQL_DB% para %BACKUP_FILE%...
+sqlcmd -S %SQL_SERVER% -U "%SQL_USER%" -P "%SQL_PASS%" -Q "BACKUP DATABASE [%SQL_DB%] TO DISK='%BACKUP_FILE%' WITH FORMAT;"
+
+if %errorlevel% equ 0 (
+    echo Backup concluido com sucesso!
+) else (
+    echo Falha no backup. Verifique as credenciais e permissões.
+)
 	call :IPV1
 	call :StopServices
 	call :StartServices
@@ -354,18 +416,23 @@ powershell.exe -Command "$limite=Get-Date '%ioscdata%'; $pasta='C:\captura\iosc'
 :IPV1
 :: Obtém o IPv4 do computador
 	for /f "tokens=2 delims=:" %%i in ('ipconfig ^| findstr /i "IPv4"') do for /f "tokens=1 delims= " %%j in ("%%i") do set IP=%%j
+:: Remove espaços em branco
 	set IP=%IP: =%
+:: Caminho do arquivo de configuração
 	set FILE="C:\Program Files (x86)\Fenox V1.0\Fnx64bits.exe.config"
+:: Substitui o endereço IP no arquivo usando PowerShell
 	powershell -Command "(Get-Content '%FILE%') -replace 'http://.*:8080', 'http://%IP%:8080' | Set-Content '%FILE%'"
 	goto :eof
 	
 :iplisten
 	ipconfig | findstr "IPv4" > "%TEMP_IP%"
+:: Lista os IPs no iplisten antes de remover
 	for /f "tokens=*" %%i in ('netsh http show iplisten ^| findstr /R "[0-9]\."') do (
     set "IP=%%i"
     netsh http delete iplisten ip=!IP! >nul
 )
 
+:: Obtém o IP atual do computador
 	for /f "tokens=2 delims=:" %%A in ('ipconfig ^| findstr "IPv4"') do (
     set "CURRENT_IP=%%A"
     set "CURRENT_IP=!CURRENT_IP: =!"
@@ -403,12 +470,14 @@ powershell.exe -Command "$limite=Get-Date '%ioscdata%'; $pasta='C:\captura\iosc'
 	set "PASTA_OLD=C:\captura\LogsOld"
 	set "TEMP_ZIP=C:\_ziptmp"
 	set "LIMITE=1073741824"
+
 :: ===============================
 :: VERIFICACOES
 :: ===============================
 	if not exist "%PASTA_ORIG%" goto :EOF
 	if not exist "%PASTA_OLD%" mkdir "%PASTA_OLD%"
 	if not exist "%TEMP_ZIP%" mkdir "%TEMP_ZIP%"
+
 :: ===============================
 :: TAMANHO
 :: ===============================
@@ -419,10 +488,12 @@ for /f %%A in ('
 
 	if not defined TAMANHO set TAMANHO=0
 	if %TAMANHO% LEQ %LIMITE% goto :EOF
+
 :: ===============================
 :: DATA
 :: ===============================
 	for /f %%i in ('powershell -noprofile -command "Get-Date -Format yyyyMMdd_HHmmss"') do set DATA=%%i
+
 :: ===============================
 :: RENOMEIA / MOVE
 :: ===============================
@@ -435,9 +506,11 @@ for /f %%A in ('
 :: ZIP
 :: ===============================
 set "ZIP_FINAL=%PASTA_OLD%\logslarg_%DATA%.zip"
+
 powershell -noprofile -command ^
 "Add-Type -AssemblyName System.IO.Compression.FileSystem; ^
 [System.IO.Compression.ZipFile]::CreateFromDirectory('%TEMP_ZIP%\logslarg','%ZIP_FINAL%',[System.IO.Compression.CompressionLevel]::Optimal,$false)"
+
 :: ===============================
 :: LIMPEZA CORRETA
 :: ===============================
@@ -446,7 +519,7 @@ if exist "%ZIP_FINAL%" (
     rmdir /s /q "%TEMP_ZIP%"
 )
 
-goto :eof
+endlocal
 
 :link
 if exist "%USERPROFILE%\Desktop\Manager-V1.lnk" del "%USERPROFILE%\Desktop\Manager-V1.lnk"
