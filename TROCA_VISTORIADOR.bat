@@ -1,7 +1,10 @@
 @echo off
+::ADICIONADO OPÇÃO DE BUSCA POR CHASSI
+	set "params=%*"
+	cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
+	if "%Admin%"=="ops" goto :eof
+	mode con: cols=95 lines=12
 setlocal enabledelayedexpansion
-:: ADIÇÃO DE BUSCA POR CHASSI
-:: 24/03/26
 set "SQL_SERVER=localhost"
 set "SQL_DB=SisviWcfLocal"
 set "BACKUP_DIR=C:\captura\BackupDB"
@@ -56,13 +59,14 @@ if %errorlevel% equ 0 (
 
 :: Escolha do tipo de busca
 cls
-echo ====================================================
-echo Escolha o tipo de busca:
-echo ====================================================
-echo 1 - Buscar por PLACA
-echo 2 - Buscar por CHASSI
+echo ===============================================================================================
+echo   Escolha o tipo de busca:
+echo ===============================================================================================
+
+echo     [1] - PLACA
+echo     [2] - CHASSI
 echo.
-set /p TIPO_BUSCA=Digite 1 ou 2: 
+set /p TIPO_BUSCA=Digite: 
 
 cls
 if "%TIPO_BUSCA%"=="1" (
