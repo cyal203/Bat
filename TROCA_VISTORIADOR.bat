@@ -1,18 +1,19 @@
 @echo off
 setlocal enabledelayedexpansion
-
-	set "SQL_SERVER=localhost"
-	set "SQL_DB=SisviWcfLocal"
-	set "BACKUP_DIR=C:\captura\BackupDB"
-	for /f "tokens=1-3 delims=/ " %%a in ("%date%") do (
+:: ADIÇÃO DE BUSCA POR CHASSI
+:: 24/03/26
+set "SQL_SERVER=localhost"
+set "SQL_DB=SisviWcfLocal"
+set "BACKUP_DIR=C:\captura\BackupDB"
+for /f "tokens=1-3 delims=/ " %%a in ("%date%") do (
     set "day=%%a"
     set "month=%%b"
     set "year=%%c"
 )
 :: Formatar com dois dígitos
-	if "!day:~1!"=="" set "day=0!day!"
-	if "!month:~1!"=="" set "month=0!month!"
-	set "BACKUP_FILE=!BACKUP_DIR!\SisviWcfLocal_backup_!day!_!month!_!year!.bak"
+if "!day:~1!"=="" set "day=0!day!"
+if "!month:~1!"=="" set "month=0!month!"
+set "BACKUP_FILE=!BACKUP_DIR!\SisviWcfLocal_backup_!day!_!month!_!year!.bak"
 
 :: Configurações do SQL Server
 set "SQL_SERVER=localhost"
@@ -21,10 +22,10 @@ set "B64_USER=c2E="
 set "B64_PASS=RjNOMFhmbng="
 set "BACKUP_DIR=C:\captura\BackupDB"
 
-	for /f "delims=" %%A in ('powershell -noprofile -command "[System.Text.Encoding]::ASCII.GetString([System.Convert]::FromBase64String('%B64_USER%')).Trim()"') do (
+for /f "delims=" %%A in ('powershell -noprofile -command "[System.Text.Encoding]::ASCII.GetString([System.Convert]::FromBase64String('%B64_USER%')).Trim()"') do (
     set "SQL_USER=%%A"
 )
-	for /f "delims=" %%B in ('powershell -noprofile -command "[System.Text.Encoding]::ASCII.GetString([System.Convert]::FromBase64String('%B64_PASS%')).Trim()"') do (
+for /f "delims=" %%B in ('powershell -noprofile -command "[System.Text.Encoding]::ASCII.GetString([System.Convert]::FromBase64String('%B64_PASS%')).Trim()"') do (
     set "SQL_PASS=%%B"
 )
 
@@ -34,7 +35,6 @@ icacls "%BACKUP_DIR%" /grant "NT SERVICE\MSSQLSERVER":(OI)(CI)F >nul 2>&1
 :: Obtém data e hora no formato YYYYMMDD_HHMMSS
 for /f "tokens=2 delims==" %%G in ('wmic os get localdatetime /value') do set "datetime=%%G"
 set "backup_timestamp=%datetime:~6,2%_%datetime:~4,2%_%datetime:~0,4%_%datetime:~8,2%%datetime:~10,2%%datetime:~12,2%"
-::set "backup_timestamp=%datetime:~0,4%%datetime:~4,2%%datetime:~6,2%_%datetime:~8,2%%datetime:~10,2%%datetime:~12,2%"
 
 :: Define o nome do arquivo de backup
 set "BACKUP_FILE=%BACKUP_DIR%\%SQL_DB%_%backup_timestamp%.bak"
@@ -44,20 +44,42 @@ echo Realizando backup de %SQL_DB% para %BACKUP_FILE%...
 sqlcmd -S %SQL_SERVER% -U "%SQL_USER%" -P "%SQL_PASS%" -Q "BACKUP DATABASE [%SQL_DB%] TO DISK='%BACKUP_FILE%' WITH FORMAT;"
 
 if %errorlevel% equ 0 (
-	cls
-	echo.
-	echo ====================================================
+    cls
+    echo.
+    echo ====================================================
     echo Backup concluido com sucesso!
-	echo ====================================================
-	echo.
+    echo ====================================================
+    echo.
 ) else (
     echo Falha no backup. Verifique as credenciais e permissões.
 )
 
-:: Entrada de dados
-set /p PLACA=Digite a placa: 
+:: Escolha do tipo de busca
+cls
+echo ====================================================
+echo Escolha o tipo de busca:
+echo ====================================================
+echo 1 - Buscar por PLACA
+echo 2 - Buscar por CHASSI
+echo.
+set /p TIPO_BUSCA=Digite 1 ou 2: 
+
+cls
+if "%TIPO_BUSCA%"=="1" (
+    set /p VALOR_BUSCA=Digite a placa: 
+    set "CAMPO_BUSCA=Placa"
+) else if "%TIPO_BUSCA%"=="2" (
+    set /p VALOR_BUSCA=Digite o chassi: 
+    set "CAMPO_BUSCA=Chassi"
+) else (
+    echo Opcao invalida!
+    pause
+    exit /b
+)
+
 set /p CPF_ANTIGO=Digite o CPF do vistoriador atual: 
 set /p CPF_NOVO=Digite o CPF do novo vistoriador: 
+
 cls
 echo ====================================================
 echo Buscando ID do vistoriador novo...
@@ -81,10 +103,28 @@ if "%ID_NOVO%"=="" (
 echo Novo vistoriador: %NOME_NOVO% (ID=%ID_NOVO%, CPF=%CPF_NOVO_CONF%)
 
 echo ====================================================
-echo Buscando OSs pela placa %PLACA%...
+echo Buscando OSs por %CAMPO_BUSCA% %VALOR_BUSCA%...
 echo ====================================================
 echo.
-sqlcmd -S %SQL_SERVER% -d %SQL_DB% -U "%SQL_USER%" -P "%SQL_PASS%" -W -s "," -Q "SET NOCOUNT ON; SELECT IdentificadorOrdemServico, DataHora, IdVistoriador, CpfVistoriador FROM OrdemServico WHERE Placa='%PLACA%' ORDER BY DataCadastro DESC"
+
+:: Criar um arquivo SQL temporário para a consulta
+set "TEMP_SQL=%TEMP%\consulta_os.sql"
+echo SET NOCOUNT ON; > "%TEMP_SQL%"
+echo SELECT IdentificadorOrdemServico, DataHora, IdVistoriador, CpfVistoriador, Placa, Chassi >> "%TEMP_SQL%"
+echo FROM OrdemServico >> "%TEMP_SQL%"
+if "%TIPO_BUSCA%"=="1" (
+    echo WHERE Placa = '%VALOR_BUSCA%' >> "%TEMP_SQL%"
+) else (
+    echo WHERE Chassi = '%VALOR_BUSCA%' >> "%TEMP_SQL%"
+)
+echo ORDER BY DataCadastro DESC; >> "%TEMP_SQL%"
+
+:: Executar a consulta usando o arquivo temporário
+sqlcmd -S %SQL_SERVER% -d %SQL_DB% -U "%SQL_USER%" -P "%SQL_PASS%" -i "%TEMP_SQL%" -W -s ","
+
+:: Remover arquivo temporário
+del "%TEMP_SQL%" 2>nul
+
 echo.
 set /p OS_ID=Digite o Identificador da OS que deseja atualizar: 
 
@@ -106,4 +146,3 @@ echo ====================================================
 echo Para concluir Feche o Sistema V1 
 echo ====================================================
 pause
-
