@@ -1,6 +1,7 @@
 @echo off
 chcp 65001 >nul
-::--------12/10/2025-------------
+::--------02/04/2026-------------
+:: EXE DUPLA VALIDAÇAO
 	title MG ATUALIZADOR
 ::==========================
 ::EXECUTA COMO ADMINISTRADOR
@@ -35,8 +36,8 @@ chcp 65001 >nul
 echo         ╔══════════════════════════╗
 echo         ║                          ║
 echo         ║     VERSAO MG:%w%%VERSAOV1%%b%    ║
-echo         ║          BAIXA           ║
-echo         ║          12-11           ║
+echo         ║VALOR NULO DUPLA VALIDACAO║
+echo         ║          02-04           ║
 echo         ║    %w%1 - DIGITACAO%b%         ║
 echo         ║    %w%2 - SERVIDOR%b%          ║
 echo         ║                          ║
@@ -76,6 +77,8 @@ REM ******************* INSTALANDO ****************
 	call :SHOW_PROGRESS 04 %passos%
 	%temp%\Fenox\%VERSAOINST% /silent
 	%temp%\Fenox\%VERSAOINSTWCF% /silent
+	del /f /q "C:\Program Files (x86)\Fenox V1.0\Fnx64bits.exe"
+	copy "C:\Users\fenox\AppData\Local\Temp\Fenox\Fnx64bits.exe" "C:\Program Files (x86)\Fenox V1.0\"
 	timeout /t 2 /nobreak >nul
 	cls
 REM Obtém o IPv4 do computador
@@ -251,6 +254,8 @@ REM ******************* INSTALANDO ****************
 REM ******************* DELETA PASTAS ****************
 	rmdir /s /q "C:\Program Files (x86)\Fenox V1.0.OLD1"  >nul
 	del /f "C:\Program Files (x86)\Fenox V1.0\notasAtualizacao.html"  >nul
+	del /f /q "C:\Program Files (x86)\Fenox V1.0\Fnx64bits.exe"
+	copy "C:\Users\fenox\AppData\Local\Temp\Fenox\Fnx64bits.exe" "C:\Program Files (x86)\Fenox V1.0\"
 	timeout /t 2 /nobreak >nul
 	cls
 	call :SHOW_PROGRESS 04 %passos2%
