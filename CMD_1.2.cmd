@@ -1211,9 +1211,9 @@ echo.
 
 :: --- BUSCA DE OS ---
 cls
-echo =============================================
-echo    Escolha o tipo de busca:
-echo =============================================
+echo ═════════════════════════════════════════════
+echo  ███   %w%Escolha o tipo de busca:%b%       ███
+echo ═════════════════════════════════════════════
 echo      [1] - PLACA
 echo      [2] - CHASSI
 echo.
