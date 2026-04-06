@@ -137,6 +137,7 @@ echo Atualizando OS %OS_ID%...
 echo ====================================================
 
 sqlcmd -S %SQL_SERVER% -d %SQL_DB% -U "%SQL_USER%" -P "%SQL_PASS%" -Q "UPDATE OrdemServico SET IdVistoriador='%ID_NOVO%', CpfVistoriador='%CPF_NOVO%' WHERE IdentificadorOrdemServico='%OS_ID%'"
+sqlcmd -S %SQL_SERVER% -d %SQL_DB% -U "%SQL_USER%" -P "%SQL_PASS%" -Q "UPDATE OrdemServico SET IdUsuarioIntegracao='%ID_NOVO%', CpfVistoriador='%CPF_NOVO%' WHERE IdentificadorOrdemServico='%OS_ID%'"
 
 echo ====================================================
 echo OS %OS_ID% atualizada com sucesso!
