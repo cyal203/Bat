@@ -1211,11 +1211,12 @@ echo.
 
 :: --- BUSCA DE OS ---
 cls
-echo ═════════════════════════════════════════════
+echo ═════════════════════════════════════════
 echo  ███   %w%Escolha o tipo de busca:%b%       ███
-echo ═════════════════════════════════════════════
-echo      [1] - PLACA
-echo      [2] - CHASSI
+echo ═════════════════════════════════════════
+echo.
+echo          [%w%1%b%] - PLACA
+echo          [%w%2%b%] - CHASSI
 echo.
 set /p TIPO_BUSCA=Digite: 
 cls
