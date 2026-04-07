@@ -523,8 +523,9 @@ endlocal
 
 :link
 if exist "%USERPROFILE%\Desktop\Manager-V1.lnk" del "%USERPROFILE%\Desktop\Manager-V1.lnk"
-if exist "%USERPROFILE%\Desktop\Reinicia-Camera.lnk" exit
-powershell -Command "(New-Object Net.WebClient).DownloadFile('https://www.dropbox.com/scl/fi/2h05ugy511yddlo1910eh/Manager-V1.lnk?rlkey=3ou61axp8vr1ss4xh2ybwj3jx&st=8xs55m9c&dl=1', [Environment]::GetFolderPath('Desktop') + '\Reinicia-Camera.lnk')"
+if exist "%USERPROFILE%\Desktop\Reinicia-Camera.lnk" del "%USERPROFILE%\Desktop\Reinicia-Camera.lnk"
+::powershell -Command "(New-Object Net.WebClient).DownloadFile('https://www.dropbox.com/scl/fi/2h05ugy511yddlo1910eh/Manager-V1.lnk?rlkey=3ou61axp8vr1ss4xh2ybwj3jx&st=8xs55m9c&dl=1', [Environment]::GetFolderPath('Desktop') + '\Reinicia-Camera.lnk')"
+powershell -Command "(New-Object Net.WebClient).DownloadFile('https://www.dropbox.com/scl/fi/2h05ugy511yddlo1910eh/Reinicia-Camera.lnk?rlkey=3ou61axp8vr1ss4xh2ybwj3jx&st=z6lvzk4p&dl=1', [Environment]::GetFolderPath('Desktop') + '\Reinicia-Camera.lnk')"
 goto :eof
 
 :inicializar
