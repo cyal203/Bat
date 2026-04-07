@@ -5,24 +5,23 @@ chcp 65001 >nul
 title Reinicia Camera
 
 :: ===============================
-::          03/02/2026
+::          07/04/2026
 :: ===============================
-
-:: ===============================
-:: ELEVAÇÃO ADMIN
+:: ADIÇÃO DA CONFIGURAÇÃO POR MAC
+:: ADIÇÃO DE VERIFICAÇÃO DE FRAME PRETO
 :: ===============================
 fsutil dirty query %systemdrive% >nul 2>&1
 if errorlevel 1 (
     echo Solicitando permissao de administrador...
-    powershell -Command "Start-Process cmd -ArgumentList '/k \"%~f0\"' -Verb RunAs"
+    powershell -Command "Start-Process cmd -ArgumentList '/c \"%~f0\"' -Verb RunAs"
     exit /b
 )
 
 mode con cols=41 lines=10
 ::ciano
-	set b=[96m
+	set "b=[96m"
 ::verde
-	set g=[92m	
+	set "g=[92m"
 ::vermelho
 	set "r=[91m"
 ::vermelho
@@ -31,41 +30,44 @@ mode con cols=41 lines=10
 	set "d=[38;5;39m"
 ::branco
 	set w=[97m
-:: Amarelo claro	
-	set "y=[93m" 
-	
+:: Amarelo claro
+	set "y=[93m"
 :: ===============================
 :: VARIÁVEIS
 :: ===============================
-set TOTAL=6
+set TOTAL=8
 set STEP=0
 
-set APP_PATH=C:\Program Files (x86)\Fenox V1.0\Fnx64bits.exe
-set CONFIG_FILE=C:\Program Files (x86)\Fenox V1.0\Fnx64bits.exe.config
+set "APP_PATH=C:\Program Files (x86)\Fenox V1.0\Fnx64bits.exe"
+set "CONFIG_FILE=C:\Program Files (x86)\Fenox V1.0\Fnx64bits.exe.config"
 
 :: ===============================
 :: EXECUÇÃO
 :: ===============================
 
-call :Step "Fechando Fenox V1"
+call :Step "FECHANDO FENOX V1"
 call :FechaV1
 
-call :Step "Atualizando IP do Fenox V1"
+call :Step "ATUALOZANDO IP NO V1"
 call :IPV1
 
-call :Step "Configurando IP Listen"
+call :Step "CONFIGURANDO IPLISTEN"
 call :IPLISTEN
 
-call :Step "Parando servicos"
+call :Step "AJUSTANDO IP CAM"
+call :AJUSTEIP
+
+call :Step "PARANDO SERVICOS"
 call :StopServices
 
-call :Step "Iniciando servicos"
+call :Step "INICIANDO SERVICOS"
 call :StartServices
 
+call :Step "VERIFICANDO IMAGENS"
+call :imagemescura
 
-call :Step "Abrindo Fenox V1"
+call :Step "ABRINDO FENOX V1"
 call :AbreV1
-
 
 echo ========================================
 echo     PROCESSO CONCLUIDO COM SUCESSO
@@ -83,6 +85,7 @@ exit /b
 
 :Progress
 setlocal EnableDelayedExpansion
+chcp 65001 >nul
 set CUR=%1
 set MAX=%2
 set TXT=%~3
@@ -123,7 +126,6 @@ for /f "tokens=2 delims=:" %%A in ('ipconfig ^| findstr /i "IPv4"') do (
 )
 :gotIP
 set IP=%IP: =%
-
 powershell -NoProfile -ExecutionPolicy Bypass -Command ^
  "& { (Get-Content '%CONFIG_FILE%') -replace 'http://.*:8080','http://%IP%:8080' | Set-Content '%CONFIG_FILE%' }"
 exit /b
@@ -153,3 +155,126 @@ exit /b
 start "" "%APP_PATH%"
 exit /b
 
+:AJUSTEIP
+set "INI_FILE=C:\captura\sensor.ini"
+set "HOSTS_FILE=%SystemRoot%\System32\drivers\etc\hosts"
+set "TEMP_HOSTS=%TEMP%\hosts_new.txt"
+
+if not exist "%INI_FILE%" exit /b
+
+:: --- NOVA VERIFICAÇÃO ---
+:: Verifica se a seção [CANALXMAC] existe no arquivo. 
+:: Se não encontrar, pula para o final do processo.
+findstr /i /c:"[CANALXMAC]" "%INI_FILE%" >nul 2>&1
+if %errorlevel% neq 0 (
+    echo Seção [CANALXMAC] não encontrada. Encerrando...
+    goto :FIM_SCRIP
+)
+:: -------------------------
+
+attrib -r "%HOSTS_FILE%" 2>nul
+
+:: Detecta o padrao silenciosamente
+set "PREFIXO=ca"
+if exist "%HOSTS_FILE%" (
+    findstr /r /i "\<c[0-9][0-9]*\>" "%HOSTS_FILE%" >nul 2>&1
+    if !errorlevel! equ 0 (
+        set "PREFIXO=c"
+    ) else (
+        findstr /r /i "\<ca[0-9][0-9]*\>" "%HOSTS_FILE%" >nul 2>&1
+        if !errorlevel! equ 0 set "PREFIXO=ca"
+    )
+)
+
+set "inSection=0"
+set "HAS_CHANGES=0"
+
+if exist "%HOSTS_FILE%" (
+    copy /y "%HOSTS_FILE%" "%TEMP_HOSTS%" >nul
+) else (
+    type nul > "%TEMP_HOSTS%"
+)
+
+for /f "usebackq tokens=1,2 delims==" %%A in ("%INI_FILE%") do (
+    set "line=%%A"
+    if /i "!line!"=="[CANALXMAC]" (
+        set "inSection=1"
+    ) else (
+        echo !line! | findstr /r "^\[" >nul
+        if !errorlevel! == 0 set "inSection=0"
+        
+        if !inSection! == 1 (
+            set "CANAL_STR=%%A"
+            set "MAC_INI=%%B"
+            if defined MAC_INI (
+                set "MAC_SEARCH=!MAC_INI::=-!"
+                set "NUM=!CANAL_STR:~-2!"
+                if "!NUM:~0,1!"=="0" set "NUM=!NUM:~1!"
+                set "HOSTNAME=!PREFIXO!!NUM!"
+                
+                set "IP_FOUND="
+                for /f "tokens=1" %%I in ('arp -a ^| findstr /i /c:"!MAC_SEARCH!"') do (
+                    set "IP_FOUND=%%I"
+                )
+
+                if defined IP_FOUND (
+                    set "NEW_LINE=!IP_FOUND! !HOSTNAME!"
+                    findstr /v /i "\<c!NUM!\>" "%TEMP_HOSTS%" > "%TEMP%\hosts_temp.txt" 2>nul
+                    findstr /v /i "\<ca!NUM!\>" "%TEMP%\hosts_temp.txt" > "%TEMP%\hosts_temp2.txt" 2>nul
+                    move /y "%TEMP%\hosts_temp2.txt" "%TEMP_HOSTS%" >nul
+                    echo !NEW_LINE!>> "%TEMP_HOSTS%"
+                    set "HAS_CHANGES=1"
+                )
+            )
+        )
+    )
+)
+
+del "%TEMP%\hosts_temp.txt" 2>nul
+del "%TEMP%\hosts_temp2.txt" 2>nul
+
+if !HAS_CHANGES! equ 1 (
+    findstr /v /r "^$" "%TEMP_HOSTS%" > "%TEMP%\hosts_clean.txt"
+    chcp 1252 >nul
+    copy /y "%TEMP%\hosts_clean.txt" "%HOSTS_FILE%" >nul
+    del "%TEMP%\hosts_clean.txt" 2>nul
+)
+
+del "%TEMP_HOSTS%" 2>nul
+
+:: Reinicia cache DNS silenciosamente
+net stop dnscache >nul 2>&1
+ipconfig /flushdns >nul 2>&1
+net start dnscache >nul 2>&1
+
+:FIM_SCRIP
+exit /b
+
+:imagemescura
+set "folder=C:\captura\preview"
+set "threshold=8300"
+set "lista_erros="
+
+if not exist "%folder%" exit /b
+
+pushd "%folder%"
+for %%F in (*.png) do (
+    set "filename=%%~nF"
+    set "filesize=%%~zF"
+
+    echo !filename! | findstr /i "temp" >nul
+    if errorlevel 1 (
+        if !filesize! LEQ %threshold% (
+            set "lista_erros=!lista_erros! CAMERA: !filename!,"
+        )
+    )
+)
+popd
+
+if not "!lista_erros!"=="" (
+    set "lista_erros=!lista_erros:~0,-1!"
+    
+    :: Utilizamos a concatenacao do PowerShell para inserir as quebras de linha reais
+    powershell -WindowStyle Hidden -Command "Add-Type -AssemblyName PresentationFramework; $msg = 'CAMERAS SEM IMAGEM: !lista_erros!.' + [Environment]::NewLine + [Environment]::NewLine + 'Favor entrar em contato com o suporte.'; [System.Windows.MessageBox]::Show($msg, '', 'OK', 'Error')"
+)
+exit /b
