@@ -10,6 +10,7 @@ title Versão 1.7.5
 :: 20/02 Alterando o tamanho maximo de conteudo permitido no IIS LINHA - 967
 :: 11/03 Inserido a correção para certificado
 :: 06/04 Relacionamento
+:: 07/04 Adicionado FenoxSM
 ::==========================================================================================================================
 	set "params=%*"
 	cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
@@ -84,7 +85,7 @@ title Versão 1.7.5
 	echo.
 	echo             [%w%5%b%]%w% HD 100%b%         [%w%6%b%]%r% AREA RESTRITA%b%
 	echo.
-	echo             [%w%7%b%]%y% AJUSTE CERTIFICADO%b%
+	echo             [%w%7%b%]%y% AJUSTE CERTIF.%b%
 	echo. 	
 	echo %b%        ═════════════════════════════════════════════
 	echo.
@@ -321,7 +322,7 @@ echo %HOSTNAME% | findstr /B /I "FENOX" >nul
 	echo.
 	echo              [%w%7%b%]%w% CERTIFICADOS%b%  [%w%8%b%]%w% ADVANCED IP SCANN%b%
 	echo.
-	echo              [%w%9%b%]%w% NSI%b%
+	echo              [%w%9%b%]%w% NSI%b%           [%w%10%b%]%w% FENOX_SM%b%
 	echo.
 	echo.
 	Set /p option0= %w%             Escolha uma opcao:%b%
@@ -335,7 +336,7 @@ echo %HOSTNAME% | findstr /B /I "FENOX" >nul
 	if %option0%==7 goto CERTIFICADOS
 	if %option0%==8 goto ADVANCED
 	if %option0%==9 goto NSI
-	if %option0%==10 goto IMPERIUS
+	if %option0%==10 goto FENOX_SM
 
 :IPUTILITY
 	cls
@@ -647,6 +648,44 @@ echo %HOSTNAME% | findstr /B /I "FENOX" >nul
 
 	cls
 	goto inicio
+
+:FENOX_SM
+	cls
+	echo.
+	echo.
+	echo       ══════════════════════════════════
+	echo       ███    %w%DOWNLOAD (1/3)%b%          ███
+	echo       ══════════════════════════════════
+	timeout /t 1 /nobreak >nul
+	set "params=%*"
+	cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
+	curl -g -k -L -# -o "%temp%\FenoxSM.zip" "https://www.dropbox.com/scl/fi/n27zrj6gxfgvulevf8u4d/FenoxSM.zip?rlkey=ybr1l1seayinya3u2g2937dwp&st=mxvm0zmu&dl=1" >nul 2>&1
+	cls
+	echo.
+	echo.
+	echo       ══════════════════════════════════
+	echo       ███    %w%INICIANDO (2/3)%b%        ███
+	echo       ══════════════════════════════════
+	timeout /t 1 /nobreak >nul
+	powershell -NoProfile Expand-Archive '%temp%\FenoxSM.zip' -DestinationPath 'C:\captura\FenoxSM' >nul 2>&1
+	cls
+	echo.
+	echo.
+	echo       ══════════════════════════════════
+	echo       ███    %w%INSTALANDO (3/3)%b%        ███
+	echo       ══════════════════════════════════
+	timeout /t 1 /nobreak >nul
+	C:\captura\FenoxSM\"dotnet-sdk-6.0.400-win-x64.exe" /s /v/qb
+	C:\captura\FenoxSM\"FenoxSM.exe"
+	timeout /t 5 /nobreak >nul
+	cls
+	goto inicio
+
+
+
+
+
+
 
 :ram
 	cls
@@ -1285,6 +1324,3 @@ if "%FALTA_RELACAO%"=="S" (
     powershell -WindowStyle Hidden -Command "Add-Type -AssemblyName PresentationFramework; [System.Windows.MessageBox]::Show('[SUCESSO] %CAMPO%: %VALOR_BUSCA%' + [Environment]::NewLine + 'Atualize o V1.', 'Sucesso', 'OK', 'Information')"
 )
 exit /b
-
-
-
