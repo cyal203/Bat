@@ -1,5 +1,4 @@
 @echo off
-:: 08/04/26
 :: VERSÃO COM INPUT MANUAL PARA ID VISTORIADOR BAHIA
 set "params=%*"
 cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
@@ -101,11 +100,10 @@ cls
 echo Vistoriador encontrado: %NOME_NOVO% (ID: %ID_NOVO%)
 echo.
 echo Buscando OS por %CAMPO_BUSCA% %VALOR_BUSCA%...
-sqlcmd -S %SQL_SERVER% -d %SQL_DB% -U "%SQL_USER%" -P "%SQL_PASS%" -Q "SELECT IdentificadorOrdemServico, DataHora, Placa, FROM OrdemServico WHERE %CAMPO_BUSCA%='%VALOR_BUSCA%' ORDER BY DataCadastro DESC" -W -s ","
-sqlcmd -S %SQL_SERVER% -d %SQL_DB% -U "%SQL_USER%" -P "%SQL_PASS%" -Q "delete from BinBA where %CAMPO_BUSCA%='%VALOR_BUSCA%'" -W -s ",">nul 2>&1
-
+sqlcmd -S %SQL_SERVER% -d %SQL_DB% -U "%SQL_USER%" -P "%SQL_PASS%" -Q "SELECT IdentificadorOrdemServico, DataHora, Placa, Chassi FROM OrdemServico WHERE %CAMPO_BUSCA%='%VALOR_BUSCA%' ORDER BY DataCadastro DESC" -W -s ","
 
 echo.
+
 set /p OS_ID=%w%Número da OS:%b% 
 
 :: --- EXECUÇÃO DO UPDATE CONFORME O ESTADO ---
@@ -121,7 +119,7 @@ if "%ESTADO%"=="2" (
 
 echo.
 echo ════════════════════════════════════════════════════
-echo ███     %w%OS %VALOR_BUSCA% atualizada com sucesso!%b%       ███
+echo ███     %w%OS %VALOR_BUSCA% atualizada com sucesso %b%       ███
 echo ════════════════════════════════════════════════════
 timeout /t 2 >nul
 taskkill /IM Fnx64bits.exe /F >nul 2>&1
