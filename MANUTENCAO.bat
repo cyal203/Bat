@@ -48,7 +48,7 @@ set "CONFIG_FILE=C:\Program Files (x86)\Fenox V1.0\Fnx64bits.exe.config"
 call :Step "FECHANDO FENOX V1"
 call :FechaV1
 
-call :Step "ATUALOZANDO IP NO V1"
+call :Step "ATUALIZANDO IP NO V1"
 call :IPV1
 
 call :Step "CONFIGURANDO IPLISTEN"
