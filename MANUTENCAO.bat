@@ -5,10 +5,11 @@ chcp 65001 >nul
 title Reinicia Camera
 
 :: ===============================
-::          07/04/2026
+::          09/04/2026
 :: ===============================
 :: ADIÇÃO DA CONFIGURAÇÃO POR MAC
 :: ADIÇÃO DE VERIFICAÇÃO DE FRAME PRETO
+:: BACKUP DO HOSTS E CRIAÇÃO DE UM ARQUIVO NOVO
 :: ===============================
 fsutil dirty query %systemdrive% >nul 2>&1
 if errorlevel 1 (
@@ -158,42 +159,31 @@ exit /b
 :AJUSTEIP
 set "INI_FILE=C:\captura\sensor.ini"
 set "HOSTS_FILE=%SystemRoot%\System32\drivers\etc\hosts"
+set "HOSTS_BACKUP=%SystemRoot%\System32\drivers\etc\hosts.bak"
 set "TEMP_HOSTS=%TEMP%\hosts_new.txt"
 
 if not exist "%INI_FILE%" exit /b
 
-:: --- NOVA VERIFICAÇÃO ---
-:: Verifica se a seção [CANALXMAC] existe no arquivo. 
-:: Se não encontrar, pula para o final do processo.
+:: Verifica se a seção [CANALXMAC] existe
 findstr /i /c:"[CANALXMAC]" "%INI_FILE%" >nul 2>&1
 if %errorlevel% neq 0 (
-    echo Seção [CANALXMAC] não encontrada. Encerrando...
+    echo Seção [CANALXMAC] não encontrada.
     goto :FIM_SCRIP
 )
-:: -------------------------
 
+:: --- LOGICA DE BACKUP E RESET ---
+:: Cria backup (sobrescreve se já existir)
+copy /y "%HOSTS_FILE%" "%HOSTS_BACKUP%" >nul
+:: Remove atributo de somente leitura para poder alterar
 attrib -r "%HOSTS_FILE%" 2>nul
+:: Cria um arquivo temporário vazio (isso garante que o novo hosts só terá o que o script achar)
+type nul > "%TEMP_HOSTS%"
 
-:: Detecta o padrao silenciosamente
 set "PREFIXO=ca"
-if exist "%HOSTS_FILE%" (
-    findstr /r /i "\<c[0-9][0-9]*\>" "%HOSTS_FILE%" >nul 2>&1
-    if !errorlevel! equ 0 (
-        set "PREFIXO=c"
-    ) else (
-        findstr /r /i "\<ca[0-9][0-9]*\>" "%HOSTS_FILE%" >nul 2>&1
-        if !errorlevel! equ 0 set "PREFIXO=ca"
-    )
-)
-
+:: Tenta detectar se o padrão é 'c' ou 'ca' com base no INI ou padrão anterior
+:: (Mantido da sua lógica original)
 set "inSection=0"
 set "HAS_CHANGES=0"
-
-if exist "%HOSTS_FILE%" (
-    copy /y "%HOSTS_FILE%" "%TEMP_HOSTS%" >nul
-) else (
-    type nul > "%TEMP_HOSTS%"
-)
 
 for /f "usebackq tokens=1,2 delims==" %%A in ("%INI_FILE%") do (
     set "line=%%A"
@@ -218,11 +208,7 @@ for /f "usebackq tokens=1,2 delims==" %%A in ("%INI_FILE%") do (
                 )
 
                 if defined IP_FOUND (
-                    set "NEW_LINE=!IP_FOUND! !HOSTNAME!"
-                    findstr /v /i "\<c!NUM!\>" "%TEMP_HOSTS%" > "%TEMP%\hosts_temp.txt" 2>nul
-                    findstr /v /i "\<ca!NUM!\>" "%TEMP%\hosts_temp.txt" > "%TEMP%\hosts_temp2.txt" 2>nul
-                    move /y "%TEMP%\hosts_temp2.txt" "%TEMP_HOSTS%" >nul
-                    echo !NEW_LINE!>> "%TEMP_HOSTS%"
+                    echo !IP_FOUND! !HOSTNAME!>> "%TEMP_HOSTS%"
                     set "HAS_CHANGES=1"
                 )
             )
@@ -230,10 +216,9 @@ for /f "usebackq tokens=1,2 delims==" %%A in ("%INI_FILE%") do (
     )
 )
 
-del "%TEMP%\hosts_temp.txt" 2>nul
-del "%TEMP%\hosts_temp2.txt" 2>nul
-
+:: Se foram encontrados IPs, substitui o arquivo hosts original pelo novo
 if !HAS_CHANGES! equ 1 (
+    :: Remove linhas vazias extras e salva por cima do original
     findstr /v /r "^$" "%TEMP_HOSTS%" > "%TEMP%\hosts_clean.txt"
     chcp 1252 >nul
     copy /y "%TEMP%\hosts_clean.txt" "%HOSTS_FILE%" >nul
@@ -242,10 +227,13 @@ if !HAS_CHANGES! equ 1 (
 
 del "%TEMP_HOSTS%" 2>nul
 
-:: Reinicia cache DNS silenciosamente
+:: Reinicia cache DNS
 net stop dnscache >nul 2>&1
 ipconfig /flushdns >nul 2>&1
 net start dnscache >nul 2>&1
+
+:FIM_SCRIP
+exit /b
 
 :FIM_SCRIP
 exit /b
