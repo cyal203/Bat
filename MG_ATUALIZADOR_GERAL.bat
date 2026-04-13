@@ -24,13 +24,11 @@ chcp 65001 >nul
 	SET "LINK1=https://downloads.fenoxapp.com.br/Fnx_1.8.0.7_x64.exe"
 	SET "LINK2=https://update.fenoxapp.com.br/Executaveis/ServicoLocal/WCFLocalFenox_1.8.0.7_x86.exe"
 	SET VERSAO=1.8.0.7
-	SET VERSAOV1=Fnx_1.8.0.7_x64.exe
-	SET VERSAOWCF=WCFLocalFenox_1.8.0.7_x86.exe
 	SET VERSAOINST=Fnx_1.8.0.7_x64.exe
 	SET VERSAOINSTWCF=WCFLocalFenox_1.8.0.7_x86.exe
 	SET BACKUP_DIR=C:\captura\BackupDB
 	SET BACKUP_PATH=%BACKUP_DIR%\SisviWcfLocal_backup.bak
-	set passos=07
+	set passos=08
 	set passos2=06
 	set "ARQ=C:\Program Files (x86)\Fenox V1.0\Fnx64bits.exe.config"
 	set "TEMPO=00:45:00"
@@ -72,9 +70,9 @@ REM ******************* RENOMEANDO WCF e V1 ****************
 REM ******************* BAIXA A NOVA VERSAO ****************
 	echo.
 	echo Efetuando Download da nova versao %VERSAO%...
-	curl -g -k -L -# -f -o "%temp%\%VERSAOV1%.exe" "%LINK1%"
-	cls
-	curl -g -k -L -# -f -o "%temp%\%VERSAOWCF%.exe" "%LINK2%"
+	curl -g -k -L -# -f -o "%temp%\%VERSAOINST%" "%LINK1%"
+	echo Download WCF....
+	curl -g -k -L -# -f -o "%temp%\%VERSAOINSTWCF%" "%LINK2%"
 	timeout /t 2 /nobreak >nul
 	cls
 	call :SHOW_PROGRESS 03 %passos%
@@ -123,7 +121,7 @@ if not exist "%pasta%" (
     echo Pasta nao encontrada. Criando...
     mkdir "%pasta%"
 ) else (
-    echo A pasta ja existe.
+    echo A pasta ja existe. >nul
 )
 	set "SQL_SERVER=localhost"
 	set "SQL_DB=SisviWcfLocal"
@@ -244,18 +242,18 @@ REM ******************* BAIXA A NOVA VERSAO ****************
 	cls
 	call :SHOW_PROGRESS 01 %passos2%
 	echo Efetuando Download da versao %VERSAO%...
-	curl -g -k -L -# -f -o "%temp%\%VERSAOV1%.exe" "%LINK1%" -o "%temp%\Fenox"
+	curl -g -k -L -# -f -o "%temp%\%VERSAOINST%" "%LINK1%"
 	cls
 REM ******************* EXTRAI TEMPO V1 ****************
 	timeout /t 2 /nobreak >nul
 	cls
 	call :SHOW_PROGRESS 02 %passos2%
-	powershell -NoProfile Expand-Archive '%temp%\%VERSAOV1%.zip' -DestinationPath '%temp%\Fenox' >nul 2>&1 
+
 REM ******************* INSTALANDO ****************
 	timeout /t 2 /nobreak >nul
 	cls
 	call :SHOW_PROGRESS 03 %passos2%
-	%temp%\Fenox\%VERSAOINST% /silent
+	%temp%\%VERSAOINST% /silent
 	timeout /t 2 /nobreak >nul
 REM ******************* DELETA PASTAS ****************
 	rmdir /s /q "C:\Program Files (x86)\Fenox V1.0.OLD1"  >nul
