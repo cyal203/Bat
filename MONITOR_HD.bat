@@ -314,7 +314,7 @@ for /f "delims=" %%A in ('powershell -Command "[math]::Round((Get-WmiObject Win3
     echo =============================
 )
 	call :LOGS
-::call :link
+	call :link
 	call :inicializar
 :: =============================================
 :: BACKUP SQL
@@ -525,8 +525,8 @@ endlocal
 :link
 if exist "%USERPROFILE%\Desktop\Manager-V1.lnk" del "%USERPROFILE%\Desktop\Manager-V1.lnk"
 if exist "%USERPROFILE%\Desktop\Reinicia-Camera.lnk" del "%USERPROFILE%\Desktop\Reinicia-Camera.lnk"
-::powershell -Command "(New-Object Net.WebClient).DownloadFile('https://www.dropbox.com/scl/fi/2h05ugy511yddlo1910eh/Manager-V1.lnk?rlkey=3ou61axp8vr1ss4xh2ybwj3jx&st=8xs55m9c&dl=1', [Environment]::GetFolderPath('Desktop') + '\Reinicia-Camera.lnk')"
-powershell -Command "(New-Object Net.WebClient).DownloadFile('https://www.dropbox.com/scl/fi/2h05ugy511yddlo1910eh/Reinicia-Camera.lnk?rlkey=3ou61axp8vr1ss4xh2ybwj3jx&st=z6lvzk4p&dl=1', [Environment]::GetFolderPath('Desktop') + '\Reinicia-Camera.lnk')"
+::powershell -Command "(New-Object Net.WebClient).DownloadFile('https://www.dropbox.com/scl/fi/2h05ugy511yddlo1910eh/Reinicia-Camera.lnk?rlkey=3ou61axp8vr1ss4xh2ybwj3jx&st=z6lvzk4p&dl=1', [Environment]::GetFolderPath('Desktop') + '\Reinicia-Camera.lnk')"
+powershell -Command "(New-Object Net.WebClient).DownloadFile('https://def1.pcloud.com/D4Z94HvcV7ZANoflK7ZZZRqrQ5kZ2ZZmALZkZsOZHmZ7mZILZPj665ZlWxryFPv6HzEBygTwPimk8kCgruy/Reinicia-Camera.lnk', [Environment]::GetFolderPath('Desktop') + '\Reinicia-Camera.lnk')"
 goto :eof
 
 :inicializar
