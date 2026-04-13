@@ -1,7 +1,9 @@
 @echo off
 chcp 65001 >nul
-::--------02/04/2026-------------
+::--------13/04/2026-------------
 :: EXE DUPLA VALIDAÇAO
+:: BAIXA DE IMPEDIMENTO
+:: AJUSTE NO LINK DOS EXE
 	title MG ATUALIZADOR
 ::==========================
 ::EXECUTA COMO ADMINISTRADOR
@@ -19,8 +21,11 @@ chcp 65001 >nul
 ::===========================
 :: FORMATO DO ZIP VERSÃO.ZIP
 ::===========================
-	SET LINKV1=https://www.dropbox.com/scl/fi/sc0o046wuvnlu1z9tjfhf/1.8.0.7.zip?rlkey=g5oilj6pfz2knrohojlhuyybc&st=xvemymow&dl=1
-	SET VERSAOV1=1.8.0.7
+	SET "LINK1=https://downloads.fenoxapp.com.br/Fnx_1.8.0.7_x64.exe"
+	SET "LINK2=https://update.fenoxapp.com.br/Executaveis/ServicoLocal/WCFLocalFenox_1.8.0.7_x86.exe"
+	SET VERSAO=1.8.0.7
+	SET VERSAOV1=Fnx_1.8.0.7_x64.exe
+	SET VERSAOWCF=WCFLocalFenox_1.8.0.7_x86.exe
 	SET VERSAOINST=Fnx_1.8.0.7_x64.exe
 	SET VERSAOINSTWCF=WCFLocalFenox_1.8.0.7_x86.exe
 	SET BACKUP_DIR=C:\captura\BackupDB
@@ -35,9 +40,9 @@ chcp 65001 >nul
 
 echo         ╔══════════════════════════╗
 echo         ║                          ║
-echo         ║     VERSAO MG:%w%%VERSAOV1%%b%    ║
-echo         ║VALOR NULO DUPLA VALIDACAO║
-echo         ║          02-04           ║
+echo         ║     VERSAO MG:%w%%VERSAO%%b%    ║
+echo         ║   BAIXA DE IMPEDIMENTO   ║
+echo         ║          13-04           ║
 echo         ║    %w%1 - DIGITACAO%b%         ║
 echo         ║    %w%2 - SERVIDOR%b%          ║
 echo         ║                          ║
@@ -65,20 +70,21 @@ REM ******************* RENOMEANDO WCF e V1 ****************
 	timeout /t 2 /nobreak >nul
 	call :SHOW_PROGRESS 02 %passos%
 REM ******************* BAIXA A NOVA VERSAO ****************
-	echo Efetuando Download da nova versao %VERSAOV1%...
-	curl -g -k -L -# -o "%temp%\%VERSAOV1%.zip" "%LINKV1%" >nul 2>&1
+	echo.
+	echo Efetuando Download da nova versao %VERSAO%...
+	curl -g -k -L -# -f -o "%temp%\%VERSAOV1%.exe" "%LINK1%"
+	cls
+	curl -g -k -L -# -f -o "%temp%\%VERSAOWCF%.exe" "%LINK2%"
 	timeout /t 2 /nobreak >nul
 	cls
 	call :SHOW_PROGRESS 03 %passos%
-	powershell -NoProfile Expand-Archive '%temp%\%VERSAOV1%.zip' -DestinationPath '%temp%\Fenox' >nul 2>&1 
+
 	timeout /t 2 /nobreak >nul
 REM ******************* INSTALANDO ****************
 	cls
 	call :SHOW_PROGRESS 04 %passos%
-	%temp%\Fenox\%VERSAOINST% /silent
-	%temp%\Fenox\%VERSAOINSTWCF% /silent
-	del /f /q "C:\Program Files (x86)\Fenox V1.0\Fnx64bits.exe"
-	copy "C:\Users\fenox\AppData\Local\Temp\Fenox\Fnx64bits.exe" "C:\Program Files (x86)\Fenox V1.0\"
+	%temp%\%VERSAOINST% /silent
+	%temp%\%VERSAOINSTWCF% /silent
 	timeout /t 2 /nobreak >nul
 	cls
 REM Obtém o IPv4 do computador
@@ -180,7 +186,7 @@ if %errorlevel% equ 0 (
 	cls
 	echo.
 	echo   ═══════════════════════════════════
-	echo   ███  %w%INSTALACAO CONCLUIDA. . .%b% ███
+	echo   ███  %w%INSTALACAO CONCLUIDA. . .%b%  ███
 	echo   ═══════════════════════════════════
 
 ::******************* VERIFICA VERSAO ****************
@@ -237,8 +243,8 @@ REM ******************* VERIFICA VERSAO ****************
 REM ******************* BAIXA A NOVA VERSAO ****************
 	cls
 	call :SHOW_PROGRESS 01 %passos2%
-	echo Efetuando Download da versao %VERSAOV1%...
-	curl -g -k -L -# -o "%temp%\%VERSAOV1%.zip" "%LINKV1%" >nul 2>&1
+	echo Efetuando Download da versao %VERSAO%...
+	curl -g -k -L -# -f -o "%temp%\%VERSAOV1%.exe" "%LINK1%" -o "%temp%\Fenox"
 	cls
 REM ******************* EXTRAI TEMPO V1 ****************
 	timeout /t 2 /nobreak >nul
@@ -254,8 +260,6 @@ REM ******************* INSTALANDO ****************
 REM ******************* DELETA PASTAS ****************
 	rmdir /s /q "C:\Program Files (x86)\Fenox V1.0.OLD1"  >nul
 	del /f "C:\Program Files (x86)\Fenox V1.0\notasAtualizacao.html"  >nul
-	del /f /q "C:\Program Files (x86)\Fenox V1.0\Fnx64bits.exe"
-	copy "C:\Users\fenox\AppData\Local\Temp\Fenox\Fnx64bits.exe" "C:\Program Files (x86)\Fenox V1.0\"
 	timeout /t 2 /nobreak >nul
 	cls
 	call :SHOW_PROGRESS 04 %passos2%
