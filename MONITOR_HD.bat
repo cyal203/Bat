@@ -314,7 +314,7 @@ for /f "delims=" %%A in ('powershell -Command "[math]::Round((Get-WmiObject Win3
     echo =============================
 )
 	call :LOGS
-	call :link
+::call :link
 	call :inicializar
 :: =============================================
 :: BACKUP SQL
