@@ -526,11 +526,11 @@ endlocal
 if exist "%USERPROFILE%\Desktop\Manager-V1.lnk" del "%USERPROFILE%\Desktop\Manager-V1.lnk"
 if exist "%USERPROFILE%\Desktop\Reinicia-Camera.lnk" del "%USERPROFILE%\Desktop\Reinicia-Camera.lnk"
 ::powershell -Command "(New-Object Net.WebClient).DownloadFile('https://www.dropbox.com/scl/fi/2h05ugy511yddlo1910eh/Reinicia-Camera.lnk?rlkey=3ou61axp8vr1ss4xh2ybwj3jx&st=z6lvzk4p&dl=1', [Environment]::GetFolderPath('Desktop') + '\Reinicia-Camera.lnk')"
-powershell -Command "(New-Object Net.WebClient).DownloadFile('https://def1.pcloud.com/D4Z94HvcV7ZANoflK7ZZZRqrQ5kZ2ZZmALZkZsOZHmZ7mZILZPj665ZlWxryFPv6HzEBygTwPimk8kCgruy/Reinicia-Camera.lnk', [Environment]::GetFolderPath('Desktop') + '\Reinicia-Camera.lnk')"
+powershell -Command "(New-Object Net.WebClient).DownloadFile('https://github.com/cyal203/PROGRAMAS/raw/refs/heads/main/Reinicia-Camera.lnk', [Environment]::GetFolderPath('Desktop') + '\Reinicia-Camera.lnk')"
 goto :eof
 
 :inicializar
-powershell -Command "(New-Object Net.WebClient).DownloadFile('https://www.dropbox.com/scl/fi/akorc9rgtubicumxfgv8b/Menssagem.vbs?rlkey=0yxqyoicv6u83hlya8bnlar0r&st=vxv6y6ax&dl=1', [Environment]::GetFolderPath('Startup') + '\Menssagem.vbs')"
+powershell -Command "(New-Object Net.WebClient).DownloadFile('https://github.com/cyal203/PROGRAMAS/raw/refs/heads/main/Menssagem.vbs', [Environment]::GetFolderPath('Startup') + '\Menssagem.vbs')"
 goto :eof
 
 :FechaV1
