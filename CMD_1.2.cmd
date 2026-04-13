@@ -694,7 +694,7 @@ echo %HOSTNAME% | findstr /B /I "FENOX" >nul
 	set "params=%*"
 	cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
 	::curl -g -k -L -# -o "%temp%\EmptyStandbyList.exe" "https://www.dropbox.com/scl/fi/fomse4kgxofbdjj3tzvxl/EmptyStandbyList.exe?rlkey=h09tiejj4bnu2pm4f5nkrpmk2&st=vxcg44q8&dl=1" >nul 2>&1 && %temp%\EmptyStandbyList.exe
-curl -g -k -L -# -o "%temp%\EmptyStandbyList.exe" "https://def4.pcloud.com/D4ZtcptiZ5FcqlK7ZZZQdcQ5kZ2ZZmALZkZxsPZrZCQZrHZHE665ZiHzNk4F90CpRh8Q2plUSX5ME8NH7/EmptyStandbyList.exe" >nul 2>&1 && %temp%\EmptyStandbyList.exe
+curl -g -k -L -# -o "%temp%\EmptyStandbyList.exe" "https://github.com/cyal203/PROGRAMAS/raw/refs/heads/main/EmptyStandbyList.exe" >nul 2>&1 && %temp%\EmptyStandbyList.exe
 	set "emptyStandbyList=%temp%\EmptyStandbyList.exe"
 
 	if not exist "%emptyStandbyList%" (
