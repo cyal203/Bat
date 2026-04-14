@@ -76,7 +76,8 @@ REM ******************* RENOMEANDO WCF e V1 ****************
 	call :SHOW_PROGRESS 02 %passos%
 REM ******************* BAIXA A NOVA VERSAO ****************
 	echo Efetuando Download da nova versao %VERSAOV1%...
-	curl -g -k -L -# -o "%temp%\%VERSAOV1%.zip" "%LINKV1%" >nul 2>&1
+::	curl -g -k -L -# -o "%temp%\%VERSAOV1%.zip" "%LINKV1%" >nul 2>&1
+powershell -Command "Invoke-WebRequest -Uri 'https://fenoxteccombr-my.sharepoint.com/:u:/g/personal/alan_silva_fenoxtec_com_br/IQDbnb_wOmsiR4_48IO4IxPQAexhD-DIQ_rsg5n0SrKzhcQ?e=37S2U2&download=1' -OutFile '%temp%\1.1.0.2.zip'"
 	timeout /t 2 /nobreak >nul
 	cls
 	call :SHOW_PROGRESS 03 %passos%
