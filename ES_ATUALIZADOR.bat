@@ -1,8 +1,9 @@
 @echo off
 chcp 65001 >nul
-::-------------------------------
-::---------19/01/2026------------
-::-------------------------------
+::==========================
+:: 14/04/2026
+:: TROCA DO LINK
+::==========================
 	title ES ATUALIZADOR
 ::==========================
 ::EXECUTA COMO ADMINISTRADOR
@@ -20,7 +21,7 @@ chcp 65001 >nul
 ::===========================
 :: FORMATO DO ZIP VERSÃO.ZIP
 ::===========================
-	SET LINKV1=https://www.dropbox.com/scl/fi/jhbmkl25470eljvemtgpg/1.3.0.20.zip?rlkey=dv8ygofg5sj5r9zvg7ibrwakj&st=rhtc5n6b&dl=1
+	SET LINKV1=https://fenoxteccombr-my.sharepoint.com/:u:/g/personal/alan_silva_fenoxtec_com_br/IQDbnb_wOmsiR4_48IO4IxPQAexhD-DIQ_rsg5n0SrKzhcQ?e=37S2U2&download=1
 	SET VERSAOV1=1.3.0.20
 	SET VERSAOINST=Fnx_1.3.0.20_x64.exe
 	SET VERSAOINSTWCF=WCFLocalFenox_1.3.0.20_x86.exe
