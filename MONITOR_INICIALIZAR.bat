@@ -6,97 +6,87 @@ if "%1"=="/hidden" goto :MONITOR
   echo objShell.Run "cmd /c ""%~f0"" /hidden", 0, True
   echo WScript.Quit(0^)
 ) > "%temp%\runhidden.vbs"
-
-start "" /B wscript "%temp%\runhidden.vbs"
-exit
+	start "" /B wscript "%temp%\runhidden.vbs"
+	exit /b
 
 :MONITOR
 :: =======================
-:: ------05/02/2026-------
+:: ------14/04/2026-------
 :: =======================
-::
-chcp 1252 >nul
-setlocal enabledelayedexpansion
-for /f %%H in ('hostname') do set "HOSTNAME=%%H"
-:: --- lista de hostnames que devem executar os comandos do "else" ---
-set "EXCLUDE=0"
-for %%A in (FENOX274 FENOX279 FENOX197 FENOX298 FENOX418DIGITAC FENOX559DIG) do (
+
+	setlocal enabledelayedexpansion
+	for /f %%H in ('hostname') do set "HOSTNAME=%%H"
+::LISTA DE HOSTNAMES QUE DEVEM EXECUTAR OS COMANDOS DO "ELSE"
+	set "EXCLUDE=0"
+	for %%A in (FENOX274 FENOX279 FENOX197 FENOX298 FENOX418DIGITAC FENOX559DIG) do (
     if /I "%%A"=="%HOSTNAME%" set "EXCLUDE=1"
 )
-rem --- prioridade 1: hostname está na lista de exclusão ---
-if "%EXCLUDE%"=="1" (
+::PRIORIDADE 1: HOSTNAME ESTÁ NA LISTA DE EXCLUSÃO
+	if "%EXCLUDE%"=="1" (
     goto :DO_ELSE
 )
-::prioridade 2: hostname começa com FENOX → segue a rotina normal ---
-echo %HOSTNAME% | findstr /B /I "FENOX" >nul
-if %errorlevel% equ 0 (
+::PRIORIDADE 2: HOSTNAME COMEÇA COM FENOX → SEGUE A ROTINA NORMAL
+	echo %HOSTNAME% | findstr /B /I "FENOX" >nul
+	if %errorlevel% equ 0 (
     call :CONTINUE
     exit /b 0
 )
-rem --- prioridade 3: qualquer outro hostname cai no ELSE ---
+::PRIORIDADE 3: QUALQUER OUTRO HOSTNAME CAI NO ELSE
 :DO_ELSE
-schtasks /Query /TN "Monitorar_HD" >nul 2>&1 && schtasks /Delete /TN "Monitorar_HD" /F >nul
-schtasks /Query /TN "MONITOR_INICIALIZAR" >nul 2>&1 && schtasks /Delete /TN "MONITOR_INICIALIZAR" /F >nul
-schtasks /Query /TN "IISRESET" >nul 2>&1 && schtasks /Delete /TN "IISRESET" /F >nul
-powershell -Command "Get-ChildItem -Path \"%TEMP%\" *.* -Recurse | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue"
+	schtasks /Query /TN "Monitorar_HD" >nul 2>&1 && schtasks /Delete /TN "Monitorar_HD" /F >nul
+	schtasks /Query /TN "MONITOR_INICIALIZAR" >nul 2>&1 && schtasks /Delete /TN "MONITOR_INICIALIZAR" /F >nul
+	schtasks /Query /TN "IISRESET" >nul 2>&1 && schtasks /Delete /TN "IISRESET" /F >nul
+	powershell -Command "Get-ChildItem -Path \"%TEMP%\" *.* -Recurse | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue"
 exit /b 0
 :CONTINUE
 ::============
 ::iisreset
 ::============
-iisreset /restart
-powershell -Command "Add-MpPreference -ExclusionPath 'C:\Program Files (x86)\Fenox V1.0\Fnx64bits.exe'"
-powershell -Command "Add-MpPreference -ExclusionPath 'C:\Program Files (x86)\Fenox V1.0\SisFnxUpdate.exe'"
-set "COMPUTADOR=%COMPUTERNAME%"
-set "TEMP_IP=%TEMP%\IPLISTEN.txt"
-:: URL do Web App do Google Apps Script
-::set "URL_WEB_APP=https://script.google.com/macros/s/AKfycbw3OVNmpxJ9RXKF7YwkqrfcNoAL2-crg_R6WSmClJeMw-Vrw4gegc-lYB-l-xi3ZJpu/exec"
-set "URL_WEB_APP=https://script.google.com/macros/s/AKfycbzIrQlZDQowLdEjQO1-zt3LLLiSpT2nkOkAl9qMkdywGS1YKV7a_TgZchOPyHAoXDvk/exec"
-:: Arquivo temporário para armazenar os dados
-set "TEMP_FILE=%TEMP%\disk_info.txt"
-set "RESPONSE_FILE=%TEMP%\response.txt"
-set "JSON_FILE=%TEMP%\json_payload.txt"
-set "ANYDESK_CONFIG=%appdata%\AnyDesk\system.conf"
-:: Extrair o ID do AnyDesk
-set "ANYDESK_ID="
-if exist "%ANYDESK_CONFIG%" (
+	set "COMPUTADOR=%COMPUTERNAME%"
+:: URL DO WEB APP DO GOOGLE APPS SCRIPT
+	set "URL_WEB_APP=https://script.google.com/macros/s/AKfycbzIrQlZDQowLdEjQO1-zt3LLLiSpT2nkOkAl9qMkdywGS1YKV7a_TgZchOPyHAoXDvk/exec"
+:: ARQUIVO TEMPORÁRIO PARA ARMAZENAR OS DADOS
+	set "TEMP_FILE=%TEMP%\disk_info.txt"
+	set "RESPONSE_FILE=%TEMP%\response.txt"
+	set "JSON_FILE=%TEMP%\json_payload.txt"
+	set "ANYDESK_CONFIG=%appdata%\AnyDesk\system.conf"
+:: EXTRAIR O ID DO ANYDESK
+	set "ANYDESK_ID="
+	if exist "%ANYDESK_CONFIG%" (
     for /f "tokens=2 delims==" %%I in ('findstr /i "ad.anynet.id" "%ANYDESK_CONFIG%"') do (
         set "ANYDESK_ID=%%I"
     )
 )
-if defined ANYDESK_ID (
+	if defined ANYDESK_ID (
     set "ANYDESK_ID=!ANYDESK_ID: =!"
     set "ANYDESK_ID=!ANYDESK_ID:    =!"
     set "ANYDESK_ID=!ANYDESK_ID:^"=!"
 ) else (
     set "ANYDESK_ID=N/A"
 )
-:: Coletar informações de espaço em disco
-powershell -Command "'Node,Caption,FreeSpace,Size' | Out-File \"%TEMP_FILE%\" -Encoding UTF8; Get-WmiObject Win32_LogicalDisk -Filter \"FileSystem='NTFS'\" | ForEach-Object { '{0},{1},{2},{3}' -f $env:COMPUTERNAME, $_.Caption, $_.FreeSpace, $_.Size } | Add-Content \"%TEMP_FILE%\" -Encoding UTF8"
-
-:: Coletar informações da CPU
-set "CPU="
-for /f "delims=" %%A in ('powershell -Command "(Get-WmiObject Win32_Processor).Name.Trim() -replace '@.*'"') do (
+:: COLETAR INFORMAÇÕES DE ESPAÇO EM DISCO
+	powershell -Command "'Node,Caption,FreeSpace,Size' | Out-File \"%TEMP_FILE%\" -Encoding UTF8; Get-WmiObject Win32_LogicalDisk -Filter \"FileSystem='NTFS'\" | ForEach-Object { '{0},{1},{2},{3}' -f $env:COMPUTERNAME, $_.Caption, $_.FreeSpace, $_.Size } | Add-Content \"%TEMP_FILE%\" -Encoding UTF8"
+::COLETAR INFORMAÇÕES DA CPU
+	set "CPU="
+	for /f "delims=" %%A in ('powershell -Command "(Get-WmiObject Win32_Processor).Name.Trim() -replace '@.*'"') do (
     set "CPU=%%A"
 )
-
-:: Data de instalação do Windows
-set "INSTALL_DATE="
-for /f "delims=" %%A in ('powershell -Command "[DateTime]::ParseExact((Get-WmiObject Win32_OperatingSystem).InstallDate.Substring(0, 14), \"yyyyMMddHHmmss\", $null).ToString(\"dd/MM/yyyy\")"') do (
+:: DATA DE INSTALAÇÃO DO WINDOWS
+	set "INSTALL_DATE="
+	for /f "delims=" %%A in ('powershell -Command "[DateTime]::ParseExact((Get-WmiObject Win32_OperatingSystem).InstallDate.Substring(0, 14), \"yyyyMMddHHmmss\", $null).ToString(\"dd/MM/yyyy\")"') do (
     set "INSTALL_DATE=%%A"
 )
 
-:: RAM total
-set "RAM="
-for /f "delims=" %%A in ('powershell -Command "[math]::Round((Get-WmiObject Win32_ComputerSystem).TotalPhysicalMemory / 1GB, 0)"') do (
+:: RAM TOTAL
+	set "RAM="
+	for /f "delims=" %%A in ('powershell -Command "[math]::Round((Get-WmiObject Win32_ComputerSystem).TotalPhysicalMemory / 1GB, 0)"') do (
     set "RAM=%%A"
 )
 
 ::CONTA MP4
-set "RAIZ=C:\captura\Repositorio"
-set "MP4=0"
-
-if exist "%RAIZ%" (
+	set "RAIZ=C:\captura\Repositorio"
+	set "MP4=0"
+	if exist "%RAIZ%" (
     for /r "%RAIZ%" %%A in (*.mp4) do (
         set "ARQ=%%~nxA"
         set "DIRETORIO=%%~dpA"
@@ -110,15 +100,15 @@ if exist "%RAIZ%" (
     )
 )
 
-:: === Obter versões dos arquivos ===
-call :getFileVersion "C:\Program Files (x86)\Fenox V1.0\Fnx64bits.exe" v1
-call :getFileVersion "C:\WCFLOCAL\bin\PrototipoMQ.Interface.WCF.dll" wcf
-call :getFileVersion "C:\Program Files (x86)\FNX\SisAviCreator\SisAviCreator.exe" creator
-call :getFileVersion "C:\Program Files (x86)\FNX\SisMonitorOffline\SisMonitorOffline.exe" monitor
-call :getFileVersion "C:\Program Files (x86)\FNX\SisOcr Offline\SisOCR.Offline.Service.exe" ocr
+::OBTER VERSÕES DOS ARQUIVOS
+	call :VERSAOARQUIVO "C:\Program Files (x86)\Fenox V1.0\Fnx64bits.exe" v1
+	call :VERSAOARQUIVO "C:\WCFLOCAL\bin\PrototipoMQ.Interface.WCF.dll" wcf
+	call :VERSAOARQUIVO "C:\Program Files (x86)\FNX\SisAviCreator\SisAviCreator.exe" creator
+	call :VERSAOARQUIVO "C:\Program Files (x86)\FNX\SisMonitorOffline\SisMonitorOffline.exe" monitor
+	call :VERSAOARQUIVO "C:\Program Files (x86)\FNX\SisOcr Offline\SisOCR.Offline.Service.exe" ocr
 
-:: Processar o arquivo e enviar os dados ao Google Sheets
-if exist "%TEMP_FILE%" (
+:: PROCESSAR O ARQUIVO E ENVIAR OS DADOS AO GOOGLE SHEETS
+	if exist "%TEMP_FILE%" (
     for /f "skip=1 tokens=2-4 delims=," %%A in ('type "%TEMP_FILE%"') do (
         set "DRIVE=%%A"
         set "FREE=%%B"
@@ -145,7 +135,7 @@ if exist "%TEMP_FILE%" (
             set "PERCENTUAL=0"
         )
 
-        :: Montar JSON
+::MONTAR JSON
         echo { > "%JSON_FILE%"
         echo   "computador": "!COMPUTADOR!", >> "%JSON_FILE%"
         echo   "unidade": "!DRIVE!", >> "%JSON_FILE%"
@@ -178,29 +168,24 @@ if exist "%TEMP_FILE%" (
 ) else (
     echo Arquivo temporario nao encontrado: %TEMP_FILE%
 )
-
-call :iplisten
-call :IPV1
-call :IIS
-call :LIMPEZAA
+	call :LIMPEZA
 exit /b
 
-::==========================
-::         FUNÇOES
-::==========================
-:: Função para obter versão de arquivos
+::========================================
+::         FUNÇOES ADICIONAIS
+::========================================
 
-:getFileVersion
+:VERSAOARQUIVO
     setlocal EnableDelayedExpansion
 
     set "version="
     set "filepath=%~1"
     set "outvar=%~2"
 
-    rem — Escapa barras para o padrão do PowerShell
+::TRATAMENTO DE CAMINHO
     set "escapedpath=%filepath:\=\\%"
 
-    rem — Chama o PowerShell para obter somente números e pontos
+::CHAMA O POWERSHELL PARA OBTER SOMENTE NÚMEROS E PONTOS
     for /f "usebackq tokens=*" %%v in (
         `powershell -NoProfile -Command ^
             "(Get-Item '%escapedpath%').VersionInfo.FileVersion -replace '[^0-9\.]', ''"`
@@ -208,77 +193,13 @@ exit /b
         set "version=%%v"
     )
 
-    rem — Garante trimming (sem espaços)
+::GARANTE TRIMMING (SEM ESPAÇOS)
     for /f "delims=" %%a in ("!version!") do set "version=%%a"
 
     endlocal & set "%outvar%=%version%"
 
     exit /b
 
-:LIMPEZAA
-    for /f %%i in ('powershell -command "(Get-Date).AddDays(-90).ToString('yyyy-MM-dd')"') do set "ioscdata=%%i"
-    powershell.exe -Command "$limite=Get-Date '%ioscdata%'; $pasta='C:\captura\iosc'; Get-ChildItem -Path $pasta -Force | Where-Object {($_.Attributes -match 'Hidden') -and ($_.LastWriteTime -lt $limite)} | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue"
-    powershell -Command "Get-ChildItem -Path \"%TEMP%\" *.* -Recurse | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue"
-    exit /b
-
-:IPV1
-    :: Obtém o IPv4 do computador
-    set "IP="
-    for /f "tokens=2 delims=:" %%i in ('ipconfig ^| findstr /i "IPv4"') do for /f "tokens=1 delims= " %%j in ("%%i") do set IP=%%j
-    :: Remove espaços em branco
-    set IP=%IP: =%
-    
-    :: Caminho do arquivo de configuração
-    set "FILE=C:\Program Files (x86)\Fenox V1.0\Fnx64bits.exe.config"
-    
-    :: Substitui o endereço IP no arquivo usando PowerShell
-    if exist "%FILE%" (
-        if defined IP (
-            powershell -Command "(Get-Content '%FILE%') -replace 'http://.*:8080', 'http://%IP%:8080' | Set-Content '%FILE%'"
-        )
-    )
-    exit /b
-    
-:iplisten
-    if exist "%TEMP_IP%" del "%TEMP_IP%"
-    ipconfig | findstr "IPv4" > "%TEMP_IP%"
-    
-    :: Lista os IPs no iplisten antes de remover
-    set "CURRENT_IP="
-    for /f "tokens=*" %%i in ('netsh http show iplisten ^| findstr /R "[0-9]\."') do (
-        set "IP=%%i"
-        netsh http delete iplisten ip=!IP! >nul 2>&1
-    )
-
-    :: Obtém o IP atual do computador
-    for /f "tokens=2 delims=:" %%A in ('ipconfig ^| findstr "IPv4"') do (
-        set "CURRENT_IP=%%A"
-        set "CURRENT_IP=!CURRENT_IP: =!"
-    )
-    
-    :: Adiciona o IP atual e 127.0.0.1 ao iplisten
-    if defined CURRENT_IP (
-        echo Adicionado ip ao Iplisten: !CURRENT_IP!
-        echo Adicionado ip ao Iplisten: 127.0.0.1
-        netsh http add iplisten ip=!CURRENT_IP! >nul 2>&1
-        netsh http add iplisten ip=127.0.0.1 >nul 2>&1
-        ipconfig /flushdns >nul 2>&1
-    )
-    exit /b
-
-:IIS
-    sc stop SisOcrOffline >nul 2>&1
-    sc stop SisAviCreator >nul 2>&1
-    sc stop SisMonitorOffline >nul 2>&1
-    sc stop MMFnx >nul 2>&1
-    timeout /t 3 >nul
-    taskkill /IM SisAviCreator.exe /F >nul 2>&1
-    taskkill /IM SisMonitorOffline.exe /F >nul 2>&1
-    taskkill /IM SSisOCR.Offline.Service.exe /F >nul 2>&1
-    timeout /t 2 /nobreak >nul
-    sc start SisOcrOffline >nul 2>&1
-    sc start SisAviCreator >nul 2>&1
-    sc start SisMonitorOffline >nul 2>&1
-    sc start MMFnx >nul 2>&1
-    iisreset /restart
-    exit /b
+:LIMPEZA
+	powershell -Command "Get-ChildItem -Path \"%TEMP%\" *.* -Recurse | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue"
+	exit /b
