@@ -70,6 +70,8 @@ call :imagemescura
 call :Step "ABRINDO FENOX V1"
 call :AbreV1
 
+call :LIMPEZA
+
 echo ========================================
 echo     PROCESSO CONCLUIDO COM SUCESSO
 echo ========================================
@@ -266,3 +268,6 @@ if not "!lista_erros!"=="" (
     powershell -WindowStyle Hidden -Command "Add-Type -AssemblyName PresentationFramework; $msg = 'CAMERAS SEM IMAGEM: !lista_erros!.' + [Environment]::NewLine + [Environment]::NewLine + 'Favor entrar em contato com o suporte.'; [System.Windows.MessageBox]::Show($msg, '', 'OK', 'Error')"
 )
 exit /b
+
+:LIMPEZA
+	powershell -Command "Get-ChildItem -Path \"%TEMP%\" *.* -Recurse | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue"
