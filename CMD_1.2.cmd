@@ -776,7 +776,7 @@ cls
 	echo.
 	echo              [%w%1%b%]%w% SP%b% [%r%X%b%]     [%w%2%b%]%w% MG%b% [%g%V%b%]     
 	echo.             
-	echo              [%w%3%b%]%w% ES%b% [%r%V%b%]     [%w%4%b%]%w% GO%b% [%r%X%b%]
+	echo              [%w%3%b%]%w% ES%b% [%g%V%b%]     [%w%4%b%]%w% GO%b% [%r%X%b%]
 	echo.             
 	echo              [%w%5%b%]%w% MS%b% [%r%X%b%]     [%w%6%b%]%w% DF%b% [%r%X%b%]
 	echo.             
