@@ -1,9 +1,6 @@
 @echo off
 chcp 65001 >nul
-::==========================
-:: 14/04/2026
-:: TROCA DO LINK
-::==========================
+::--------13/04/2026-------------
 	title ES ATUALIZADOR
 ::==========================
 ::EXECUTA COMO ADMINISTRADOR
@@ -21,44 +18,38 @@ chcp 65001 >nul
 ::===========================
 :: FORMATO DO ZIP VERSÃO.ZIP
 ::===========================
-	SET LINKV1=https://fenoxteccombr-my.sharepoint.com/:u:/g/personal/alan_silva_fenoxtec_com_br/IQDbnb_wOmsiR4_48IO4IxPQAexhD-DIQ_rsg5n0SrKzhcQ?e=37S2U2&download=1
-	SET VERSAOV1=1.3.0.20
+	SET "LINKV1=https://fenoxteccombr-my.sharepoint.com/:u:/g/personal/alan_silva_fenoxtec_com_br/IQDr4FCQkw_HSb45yvST7ideAYIzezHd_VYiEEDiEB3ub58?e=0oHi6Y&download=1"
+	SET "LINKWCF=https://fenoxteccombr-my.sharepoint.com/:u:/g/personal/alan_silva_fenoxtec_com_br/IQC8qIC0NkGsRYAWj2RWt_aKAYIK6LitXXWnIn-QH5DQkyM?e=wkbHI2&download=1"
+	SET UF=ES
+	SET VERSAO=1.3.0.20
 	SET VERSAOINST=Fnx_1.3.0.20_x64.exe
 	SET VERSAOINSTWCF=WCFLocalFenox_1.3.0.20_x86.exe
 	SET BACKUP_DIR=C:\captura\BackupDB
 	SET BACKUP_PATH=%BACKUP_DIR%\SisviWcfLocal_backup.bak
-	set passos=07
+	set passos=08
 	set passos2=06
+	set "ARQ=C:\Program Files (x86)\Fenox V1.0\Fnx64bits.exe.config"
+	set "TEMPO=00:45:00"
+	set "EXE=C:\Program Files (x86)\Fenox V1.0\Fnx64bits.exe"
 	cls
 
 
 echo         ╔══════════════════════════╗
 echo         ║                          ║
-echo         ║     VERSAO ES:%w%%VERSAOV1%%b%   ║
-echo         ║  %w%Correcao de acessos   %b%  ║
+echo         ║    VERSAO %UF%:%w%%VERSAO%%b%    ║
 echo         ║                          ║
+echo         ║          15-04           ║
 echo         ║    %w%1 - DIGITACAO%b%         ║
 echo         ║    %w%2 - SERVIDOR%b%          ║
 echo         ║                          ║
 echo         ╚══════════════════════════╝
-	rem choice /c 1234 /m "Escolha uma opcao"
 	Set /p option= Escolha uma opcao:
-	rem set "option=%errorlevel%"
-
 	if %option%==1 goto digitacao
 	if %option%==2 goto servidor
 
 :servidor
-REM ******************* VERIFICA VERSAO ****************
-	echo Verificando Versao...
-	echo.
-	echo %w%Fenox V1%b%
-	wmic datafile where name="C:\\Program Files (x86)\\Fenox V1.0\\Fnx64bits.exe" get Version
-	echo.
-	echo %w%WCFLocal%b%
-	wmic datafile where name="C:\\WCFLOCAL\\bin\\PrototipoMQ.Interface.WCF.dll" get Version
-	pause
-	cls
+cls
+call :VERSAO
 REM ******************* PARA INETMGR ****************
 	echo.
 	cls
@@ -75,19 +66,23 @@ REM ******************* RENOMEANDO WCF e V1 ****************
 	timeout /t 2 /nobreak >nul
 	call :SHOW_PROGRESS 02 %passos%
 REM ******************* BAIXA A NOVA VERSAO ****************
-	echo Efetuando Download da nova versao %VERSAOV1%...
-::	curl -g -k -L -# -o "%temp%\%VERSAOV1%.zip" "%LINKV1%" >nul 2>&1
-powershell -Command "Invoke-WebRequest -Uri 'https://fenoxteccombr-my.sharepoint.com/:u:/g/personal/alan_silva_fenoxtec_com_br/IQDbnb_wOmsiR4_48IO4IxPQAexhD-DIQ_rsg5n0SrKzhcQ?e=37S2U2&download=1' -OutFile '%temp%\1.1.0.2.zip'"
+	echo.
+	echo Efetuando Download da nova versao %VERSAO%...
+::curl -g -k -L -# -f -o "%temp%\%VERSAOINST%" "%LINKV1%"
+	powershell -Command "Start-BitsTransfer -Source '%LINKV1%' -Destination '%temp%\%VERSAOINST%'"
+	echo Download WCF....
+::curl -g -k -L -# -f -o "%temp%\%VERSAOINSTWCF%" "%LINKWCF%"
+	powershell -Command "Start-BitsTransfer -Source '%LINKWCF%' -Destination '%temp%\%VERSAOINSTWCF%'"	
 	timeout /t 2 /nobreak >nul
 	cls
 	call :SHOW_PROGRESS 03 %passos%
-	powershell -NoProfile Expand-Archive '%temp%\%VERSAOV1%.zip' -DestinationPath '%temp%\Fenox' >nul 2>&1 
+
 	timeout /t 2 /nobreak >nul
 REM ******************* INSTALANDO ****************
 	cls
 	call :SHOW_PROGRESS 04 %passos%
-	%temp%\Fenox\%VERSAOINST% /silent
-	%temp%\Fenox\%VERSAOINSTWCF% /silent
+	%temp%\%VERSAOINST% /silent
+	%temp%\%VERSAOINSTWCF% /silent
 	timeout /t 2 /nobreak >nul
 	cls
 REM Obtém o IPv4 do computador
@@ -105,9 +100,6 @@ REM ******************* DELETA PASTAS ****************
 	rmdir /s /q "C:\Program Files (x86)\Fenox V1.0.OLD1"  >nul
 	rmdir /s /q "C:\WCFLOCAL.OLD1"  >nul
 	del /f "C:\Program Files (x86)\Fenox V1.0\notasAtualizacao.html"  >nul
-del /f "C:\Program Files (x86)\Fenox V1.0\un.config"  >nul
-::ren "C:\Program Files (x86)\Fenox V1.0\Fnx64bits.exe" "Fnx64bits.exe.OLD1"
-::move "%temp%\Fenox\Fnx64bits.exe" "C:\Program Files (x86)\Fenox V1.0\"
 REM ******************* INICIA SISOCR ****************
 	timeout /t 2 /nobreak >nul
 	cls
@@ -120,21 +112,37 @@ REM ******************* INICIA SISOCR ****************
 	timeout /t 2 /nobreak >nul
 	cls
 	call :SHOW_PROGRESS 07 %passos%
-REM ******************* BACKUP E SINCRONOZAÇÃO DO DB ****************
 :: =============================================
 :: COMANDO DE BACKUP SQL
 :: =============================================
-	IF NOT EXIST "%BACKUP_DIR%" (
-	MKDIR "%BACKUP_DIR%" >nul
+::Verifica se a pasta existe
+set "pasta=C:\captura\BackupDB"
+if not exist "%pasta%" (
+    echo Pasta nao encontrada. Criando...
+    mkdir "%pasta%"
+) else (
+    echo A pasta ja existe. >nul
 )
-:: Configurações do SQL Server
+	set "SQL_SERVER=localhost"
+	set "SQL_DB=SisviWcfLocal"
+	set "BACKUP_DIR=C:\captura\BackupDB"
+	icacls "%BACKUP_DIR%" /grant "NT SERVICE\MSSQLSERVER":(OI)(CI)F >nul 2>&1
+	for /f "tokens=1-3 delims=/ " %%a in ("%date%") do (
+    set "day=%%a"
+    set "month=%%b"
+    set "year=%%c"
+)
+:: Formatar com dois dígitos
+	if "!day:~1!"=="" set "day=0!day!"
+	if "!month:~1!"=="" set "month=0!month!"
+	set "BACKUP_FILE=!BACKUP_DIR!\SisviWcfLocal_backup_!day!_!month!_!year!.bak"
 	set "SQL_SERVER=localhost"
 	set "SQL_DB=SisviWcfLocal"
 	set "B64_USER=c2E="
 	set "B64_PASS=RjNOMFhmbng="
 	set "BACKUP_DIR=C:\captura\BackupDB"
 	SET SQL_FILE=C:\WCFLOCAL\UpdateDB\SWLModel.sql
-
+	
 	for /f "delims=" %%A in ('powershell -noprofile -command "[System.Text.Encoding]::ASCII.GetString([System.Convert]::FromBase64String('%B64_USER%')).Trim()"') do (
     set "SQL_USER=%%A"
 )
@@ -143,12 +151,14 @@ REM ******************* BACKUP E SINCRONOZAÇÃO DO DB ****************
 )
 
 :: Garante permissão para o SQL Server gravar na pasta
-	icacls "%BACKUP_DIR%" /grant "NT SERVICE\MSSQLSERVER":(OI)(CI)F >nul 2>&1
+icacls "%BACKUP_DIR%" /grant "NT SERVICE\MSSQLSERVER":(OI)(CI)F >nul 2>&1
+
 :: Obtém data e hora no formato YYYYMMDD_HHMMSS
-	for /f "tokens=2 delims==" %%G in ('wmic os get localdatetime /value') do set "datetime=%%G"
-	set "backup_timestamp=%datetime:~6,2%_%datetime:~4,2%_%datetime:~0,4%_%datetime:~8,2%%datetime:~10,2%%datetime:~12,2%"
+for /f "tokens=2 delims==" %%G in ('wmic os get localdatetime /value') do set "datetime=%%G"
+set "backup_timestamp=%datetime:~0,4%%datetime:~4,2%%datetime:~6,2%_%datetime:~8,2%%datetime:~10,2%%datetime:~12,2%"
+
 :: Define o nome do arquivo de backup
-	set "BACKUP_FILE=%BACKUP_DIR%\%SQL_DB%_%backup_timestamp%.bak"
+set "BACKUP_FILE=%BACKUP_DIR%\%SQL_DB%_%backup_timestamp%.bak"
 :: Executa o backup
 echo Realizando backup de %SQL_DB% para %BACKUP_FILE%...
 sqlcmd -S %SQL_SERVER% -U "%SQL_USER%" -P "%SQL_PASS%" -Q "BACKUP DATABASE [%SQL_DB%] TO DISK='%BACKUP_FILE%' WITH FORMAT;"
@@ -161,22 +171,23 @@ sqlcmd -S %SQL_SERVER% -U "%SQL_USER%" -P "%SQL_PASS%" -d master -i "%SQL_FILE%"
 timeout /t 5 /nobreak >nul
 sqlcmd -S %SQL_SERVER% -U "%SQL_USER%" -P "%SQL_PASS%" -d SisviWcfLocalModel -Q "EXEC syncdb;"  >nul
 
-	if %errorlevel% equ 0 (
+if %errorlevel% equ 0 (
     echo Backup concluido com sucesso!
 ) else (
     echo Falha no backup. Verifique as credenciais e permissões.
 )
-timeout /t 2 /nobreak >nul
+	
+	timeout /t 2 /nobreak >nul
 	cls
 	call :SHOW_PROGRESS 08 %passos%
 	timeout /t 2 /nobreak >nul
 	cls
 	echo.
 	echo   ═══════════════════════════════════
-	echo   ███  %w%INSTALACAO CONCLUIDA. . .%b% ███
+	echo   ███  %w%INSTALACAO CONCLUIDA. . .%b%  ███
 	echo   ═══════════════════════════════════
 
-REM ******************* VERIFICA VERSAO ****************
+::******************* VERIFICA VERSAO ****************
 	echo Verificando Versao...
 	echo.
 	echo %w%Fenox V1%b%
@@ -185,60 +196,105 @@ REM ******************* VERIFICA VERSAO ****************
 	echo %w%WCFLocal%b%
 	wmic datafile where name="C:\\WCFLOCAL\\bin\\PrototipoMQ.Interface.WCF.dll" get Version
 	timeout /t 2  >nul
+	timeout /t 2  >nul
 	SCHTASKS /CREATE /TN "Monitorar_HD" /TR "cmd.exe /c curl -g -k -L -# -o \"%%temp%%\\MONITOR_HD.bat\" \"https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/MONITOR_HD.bat\" >nul 2>&1 && call %%temp%%\\MONITOR_HD.bat" /SC DAILY /ST 05:15 /F /RL HIGHEST >nul
-	curl -g -k -L -# -o "%temp%\MONITOR_HD.bat" "https://raw.githubusercontent.com/cyal203/Bat/refs/heads/main/MONITOR_HD.bat" >nul 2>&1
 	timeout /t 1 >nul
-	START %temp%\MONITOR_HD.bat
-	::mshta "javascript:alert('ATUALIZADO COM SUCESSO'); window.close();"
-	start "" "C:\Program Files (x86)\Fenox V1.0\Fnx64bits.exe"
+::AJUSTA TIMEOUT
+net session >nul 2>&1
+if %errorlevel% NEQ 0 (
+  echo Solicitando permissao de administrador...
+  powershell -NoProfile -Command "Start-Process -FilePath '%~f0' -Verb RunAs"
+  exit /b
+)
+
+if not exist "%ARQ%" (
+  echo Arquivo nao encontrado: "%ARQ%"
+  pause
+  exit /b 1
+)
+
+REM Backup simples
+copy /y "%ARQ%" "%ARQ%.bak" >nul
+echo Backup criado em: "%ARQ%.bak"
+
+REM --- Metodo 1 (preferencial): editar como XML e alterar TODAS as ocorrencias ---
+powershell -NoProfile -ExecutionPolicy Bypass -Command ^
+  "$p = '%ARQ%'; $TEMPO = '%TEMPO%';" ^
+  "[xml]$x = Get-Content -Raw $p;" ^
+  "$atts = $x.SelectNodes('//@*');" ^
+  "foreach($a in $atts){ $n = $a.Name.ToLowerInvariant(); if($n -eq 'receivetimeout' -or $n -eq 'sendtimeout'){ $a.Value = $TEMPO } }" ^
+  ";$x.Save($p)"
+start "" "%EXE%"
+
 exit
 
 :digitacao
 REM ******************* VERIFICA VERSAO ****************
+	cls
 	echo Verificando Versao...
 	echo.
 	echo %w%Fenox V1%b%
-	wmic datafile where name="C:\\Program Files (x86)\\Fenox V1.0\\Fnx64bits.exe" get Version || goto :INSTALAR >nul
-REM ******************* RENOMEANDO V1 ****************
+	wmic datafile where name="C:\\Program Files (x86)\\Fenox V1.0\\Fnx64bits.exe" get Version
 	pause
-	cls
-	echo.
-	ren "C:\Program Files (x86)\Fenox V1.0" "Fenox V1.0.OLD1"
-	cls
-	timeout /t 2 /nobreak >nul
-
-:INSTALAR
 REM ******************* BAIXA A NOVA VERSAO ****************
 	cls
 	call :SHOW_PROGRESS 01 %passos2%
-	echo Efetuando Download da versao %VERSAOV1%...
-	curl -g -k -L -# -o "%temp%\%VERSAOV1%.zip" "%LINKV1%" >nul 2>&1
+	echo Efetuando Download da versao %VERSAO%...
+::curl -g -k -L -# -f -o "%temp%\%VERSAOINST%" "%LINKV1%"
+	powershell -Command "Start-BitsTransfer -Source '%LINKV1%' -Destination '%temp%\%VERSAOINST%'"
 	cls
-REM ******************* EXTRAI NOVO V1 ****************
+REM ******************* EXTRAI TEMPO V1 ****************
 	timeout /t 2 /nobreak >nul
 	cls
 	call :SHOW_PROGRESS 02 %passos2%
-	powershell -NoProfile Expand-Archive '%temp%\%VERSAOV1%.zip' -DestinationPath '%temp%\Fenox' >nul 2>&1 
+
 REM ******************* INSTALANDO ****************
 	timeout /t 2 /nobreak >nul
 	cls
 	call :SHOW_PROGRESS 03 %passos2%
-	%temp%\Fenox\%VERSAOINST% /silent
+	%temp%\%VERSAOINST% /silent
 	timeout /t 2 /nobreak >nul
 REM ******************* DELETA PASTAS ****************
 	rmdir /s /q "C:\Program Files (x86)\Fenox V1.0.OLD1"  >nul
-	del /f "C:\Program Files (x86)\Fenox V1.0\un.config"  >nul
 	del /f "C:\Program Files (x86)\Fenox V1.0\notasAtualizacao.html"  >nul
-::ren "C:\Program Files (x86)\Fenox V1.0\Fnx64bits.exe" "Fnx64bits.exe.OLD1"
-::move "%temp%\Fenox\Fnx64bits.exe" "C:\Program Files (x86)\Fenox V1.0\"
 	timeout /t 2 /nobreak >nul
 	cls
 	call :SHOW_PROGRESS 04 %passos2%
 	cls
-	call :CONCLUIDO
+	echo.
+	echo   ═══════════════════════════════════
+	echo   ███  %w%INSTALACAO CONCLUIDA. . .%b% ███
+	echo   ═══════════════════════════════════
+	timeout /t 2 >nul
 	echo %w%Fenox V1%b%
-	wmic datafile where name="C:\\Program Files (x86)\\Fenox V1.0\\Fnx64bits.exe" get Version || goto :INSTALAR >nul
-	start "" "C:\Program Files (x86)\Fenox V1.0\Fnx64bits.exe"
+	wmic datafile where name="C:\\Program Files (x86)\\Fenox V1.0\\Fnx64bits.exe" get Version
+	timeout /t 2 /nobreak >nul
+::AJUSTA TIMEOUT
+net session >nul 2>&1
+if %errorlevel% NEQ 0 (
+  echo Solicitando permissao de administrador...
+  powershell -NoProfile -Command "Start-Process -FilePath '%~f0' -Verb RunAs"
+  exit /b
+)
+
+if not exist "%ARQ%" (
+  echo Arquivo nao encontrado: "%ARQ%"
+  pause
+  exit /b 1
+)
+
+REM Backup simples
+copy /y "%ARQ%" "%ARQ%.bak" >nul
+echo Backup criado em: "%ARQ%.bak"
+
+REM --- Metodo 1 (preferencial): editar como XML e alterar TODAS as ocorrencias ---
+powershell -NoProfile -ExecutionPolicy Bypass -Command ^
+  "$p = '%ARQ%'; $TEMPO = '%TEMPO%';" ^
+  "[xml]$x = Get-Content -Raw $p;" ^
+  "$atts = $x.SelectNodes('//@*');" ^
+  "foreach($a in $atts){ $n = $a.Name.ToLowerInvariant(); if($n -eq 'receivetimeout' -or $n -eq 'sendtimeout'){ $a.Value = $TEMPO } }" ^
+  ";$x.Save($p)"
+start "" "%EXE%"
 	exit
 :SAFE_EXECUTE
 :: Executa comandos com tratamento de erros
@@ -254,21 +310,13 @@ REM ******************* DELETA PASTAS ****************
 	echo       ══════════════════════════════════
 	timeout /t 1 >nul
 	goto :EOF
-
-:CONCLUIDO
-	cls
+:VERSAO
+	echo Verificando Versao...
 	echo.
-	echo   ═══════════════════════════════════
-	echo   ███  %w%INSTALACAO CONCLUIDA. . .%b% ███
-	echo   ═══════════════════════════════════
-	timeout /t 1 >nul
-	goto :EOF
-
-
-
-
-
-
-
-
-
+	echo %w%Fenox V1%b%
+	wmic datafile where name="C:\\Program Files (x86)\\Fenox V1.0\\Fnx64bits.exe" get Version
+	echo.
+	echo %w%WCFLocal%b%
+	wmic datafile where name="C:\\WCFLOCAL\\bin\\PrototipoMQ.Interface.WCF.dll" get Version
+	pause
+	cls
