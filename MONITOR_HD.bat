@@ -484,7 +484,7 @@ goto :eof
 
 :inicializar
 powershell -Command "(New-Object Net.WebClient).DownloadFile('https://github.com/cyal203/PROGRAMAS/raw/refs/heads/main/Menssagem.vbs', [Environment]::GetFolderPath('Startup') + '\Menssagem.vbs')"
-powershell -Command "(New-Object Net.WebClient).DownloadFile('https://github.com/cyal203/PROGRAMAS/raw/refs/heads/main/Reinicia-Camera.lnk', [Environment]::GetFolderPath('Startup') + '\Menssagem.vbs')"
+powershell -Command "(New-Object Net.WebClient).DownloadFile('https://github.com/cyal203/PROGRAMAS/raw/refs/heads/main/Reinicia-Camera.lnk', [Environment]::GetFolderPath('Startup') + '\Reinicia-Camera.lnk')"
 goto :eof
 
 :FechaV1
