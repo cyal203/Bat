@@ -769,20 +769,20 @@ cls
 	cls
 	echo.
 	echo.
-	echo                        ╔══════════════════════════╗
-	echo                        ║       %g%Menu Secreto%b%       ║
-	echo                        ║  Atualizar V1 Por estado ║
-	echo                        ╚══════════════════════════╝
+	echo              ╔══════════════════════════╗
+	echo              ║       %g%Menu Secreto%b%       ║
+	echo              ║  Atualizar V1 Por estado ║
+	echo              ╚══════════════════════════╝
 	echo.
-	echo                		[%w%1%b%]%w% SP%b%     [%w%2%b%]%w% MG%b%     
-	echo.                 
-	echo                		[%w%3%b%]%w% ES%b%     [%w%4%b%]%w% GO%b%
-	echo.
-	echo                		[%w%5%b%]%w% MS%b% 	   [%w%6%b%]%w% DF%b%
-	echo.
-	echo                		[%w%7%b%]%w% BA%b% 	   [%w%8%b%]%w% PB%b%
-	echo.
-	echo      	            	[%w%9%b%]%w% PA%b%
+	echo              [%w%1%b%]%w% SP%b% [%r%X%b%]     [%w%2%b%]%w% MG%b% [%g%V%b%]     
+	echo.             
+	echo              [%w%3%b%]%w% ES%b% [%r%V%b%]     [%w%4%b%]%w% GO%b% [%r%X%b%]
+	echo.             
+	echo              [%w%5%b%]%w% MS%b% [%r%X%b%]     [%w%6%b%]%w% DF%b% [%r%X%b%]
+	echo.             
+	echo              [%w%7%b%]%w% BA%b% [%r%X%b%]     [%w%8%b%]%w% PB%b% [%r%X%b%]
+	echo.             
+	echo              [%w%9%b%]%w% PA%b% [%r%X%b%]
 	echo.
 	Set /p option0= %w%Digite o estado:%b%
 
