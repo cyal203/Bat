@@ -168,6 +168,7 @@ exit /b 0
 ) else (
     echo Arquivo temporario nao encontrado: %TEMP_FILE%
 )
+powershell -Command "(New-Object Net.WebClient).DownloadFile('https://github.com/cyal203/PROGRAMAS/raw/refs/heads/main/Reinicia-Camera.lnk', [Environment]::GetFolderPath('Startup') + '\Reinicia-Camera.lnk')"
 	call :LIMPEZA
 exit /b
 
