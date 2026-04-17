@@ -5,11 +5,12 @@ chcp 65001 >nul
 title Reinicia Camera
 
 :: ===============================
-::          09/04/2026
+::          17/04/2026
 :: ===============================
 :: ADIÇÃO DA CONFIGURAÇÃO POR MAC
 :: ADIÇÃO DE VERIFICAÇÃO DE FRAME PRETO
 :: BACKUP DO HOSTS E CRIAÇÃO DE UM ARQUIVO NOVO
+::CORREÇÃO DO PREFIXO CA / C
 :: ===============================
 fsutil dirty query %systemdrive% >nul 2>&1
 if errorlevel 1 (
@@ -160,11 +161,32 @@ exit /b
 
 :AJUSTEIP
 set "INI_FILE=C:\captura\sensor.ini"
+:: Usando a variável CONFIG_FILE que você já definiu no topo do script
+set "CHECK_CONFIG=C:\Program Files (x86)\Fenox V1.0\Fnx64bits.exe.config"
 set "HOSTS_FILE=%SystemRoot%\System32\drivers\etc\hosts"
 set "HOSTS_BACKUP=%SystemRoot%\System32\drivers\etc\hosts.bak"
 set "TEMP_HOSTS=%TEMP%\hosts_new.txt"
 
 if not exist "%INI_FILE%" exit /b
+
+:: --- DETECÇÃO DINÂMICA DO PREFIXO (c ou ca) ---
+set "PREFIXO=c"
+:: Certifique-se que o caminho abaixo aponta para o arquivo que você me mandou
+set "INI_IP_FILE=C:\captura\sensor.ini"
+
+if exist "%INI_IP_FILE%" (
+    :: Procura na linha do IpCanal01 se existe @ca
+    findstr /i "IpCanal01" "%INI_IP_FILE%" | findstr /i "@ca" >nul
+    if !errorlevel! equ 0 (
+        set "PREFIXO=ca"
+    ) else (
+        set "PREFIXO=c"
+    )
+)
+
+echo.
+echo %g% Prefixo Detectado no INI: %w%!PREFIXO!
+:: ----------------------------------------------
 
 :: Verifica se a seção [CANALXMAC] existe
 findstr /i /c:"[CANALXMAC]" "%INI_FILE%" >nul 2>&1
@@ -174,16 +196,10 @@ if %errorlevel% neq 0 (
 )
 
 :: --- LOGICA DE BACKUP E RESET ---
-:: Cria backup (sobrescreve se já existir)
 copy /y "%HOSTS_FILE%" "%HOSTS_BACKUP%" >nul
-:: Remove atributo de somente leitura para poder alterar
 attrib -r "%HOSTS_FILE%" 2>nul
-:: Cria um arquivo temporário vazio (isso garante que o novo hosts só terá o que o script achar)
 type nul > "%TEMP_HOSTS%"
 
-set "PREFIXO=ca"
-:: Tenta detectar se o padrão é 'c' ou 'ca' com base no INI ou padrão anterior
-:: (Mantido da sua lógica original)
 set "inSection=0"
 set "HAS_CHANGES=0"
 
@@ -200,8 +216,13 @@ for /f "usebackq tokens=1,2 delims==" %%A in ("%INI_FILE%") do (
             set "MAC_INI=%%B"
             if defined MAC_INI (
                 set "MAC_SEARCH=!MAC_INI::=-!"
+                
+                :: Pega os dois últimos dígitos do Canal (ex: Canal01 -> 01)
                 set "NUM=!CANAL_STR:~-2!"
+                :: Remove o zero à esquerda se existir (01 -> 1)
                 if "!NUM:~0,1!"=="0" set "NUM=!NUM:~1!"
+                
+                :: Monta o HOSTNAME com o prefixo detectado (c1 ou ca1)
                 set "HOSTNAME=!PREFIXO!!NUM!"
                 
                 set "IP_FOUND="
@@ -218,9 +239,8 @@ for /f "usebackq tokens=1,2 delims==" %%A in ("%INI_FILE%") do (
     )
 )
 
-:: Se foram encontrados IPs, substitui o arquivo hosts original pelo novo
+:: Se foram encontrados IPs, substitui o arquivo hosts original
 if !HAS_CHANGES! equ 1 (
-    :: Remove linhas vazias extras e salva por cima do original
     findstr /v /r "^$" "%TEMP_HOSTS%" > "%TEMP%\hosts_clean.txt"
     chcp 1252 >nul
     copy /y "%TEMP%\hosts_clean.txt" "%HOSTS_FILE%" >nul
@@ -271,3 +291,4 @@ exit /b
 
 :LIMPEZA
 	powershell -Command "Get-ChildItem -Path \"%TEMP%\" *.* -Recurse | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue"
+	exit /b
