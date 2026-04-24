@@ -1,6 +1,27 @@
 @echo off
+setlocal
+
+:: Nome que identifica seu script no Registro
+set "WINDOW_TITLE=MeuScriptConfigurado"
+
+:: Se o título da janela não for o esperado, configura e reinicia
+if "%~1" neq "forced" (
+    title %WINDOW_TITLE%
+    set "REG_KEY=HKCU\Console\%WINDOW_TITLE%"
+    
+    :: Aplica as configurações (sempre sobrescreve para garantir)
+    reg add "%REG_KEY%" /v "CodePage" /t REG_DWORD /d 65001 /f >nul
+    reg add "%REG_KEY%" /v "FaceName" /t REG_SZ /d "Consolas" /f >nul
+    reg add "%REG_KEY%" /v "FontSize" /t REG_DWORD /d 0x00180000 /f >nul
+    
+    :: Abre o script novamente passando um parâmetro para evitar loop infinito
+    start "%WINDOW_TITLE%" "%~f0" forced
+    exit
+)
 chcp 65001 >nul
-title Versão 1.7.5
+cls
+
+
 ::==========================================================================================================================
 ::      DATA
 ::    06-04-2026
@@ -12,6 +33,7 @@ title Versão 1.7.5
 :: 06/04 Relacionamento
 :: 07/04 Adicionado FenoxSM
 ::==========================================================================================================================
+	title Versão 1.7.5
 	set "params=%*"
 	cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
 	if "%Admin%"=="ops" goto :eof
