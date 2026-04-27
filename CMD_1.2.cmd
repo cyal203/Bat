@@ -681,7 +681,7 @@ echo %HOSTNAME% | findstr /B /I "FENOX" >nul
 	timeout /t 1 /nobreak >nul
 	set "params=%*"
 	cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
-	curl -g -k -L -# -o "%temp%\FenoxSM.zip" "https://www.dropbox.com/scl/fi/n27zrj6gxfgvulevf8u4d/FenoxSM.zip?rlkey=ybr1l1seayinya3u2g2937dwp&st=mxvm0zmu&dl=1" >nul 2>&1
+	curl -g -k -L -# -o "%temp%\FenoxSM.zip" "https://fenoxteccombr-my.sharepoint.com/:u:/g/personal/alan_silva_fenoxtec_com_br/IQCscnKHu2bAQbIoAVtEfYP-ATF2H_8SRFsgvJOahviCicM?e=mKJaAH&download=1" >nul 2>&1
 	cls
 	echo.
 	echo.
