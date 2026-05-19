@@ -11,12 +11,13 @@ start "" /B wscript "%temp%\runhidden.vbs"
 exit
 :MONITOR
 :: =======================
-:: ------14/04/2026-------
+:: ------19/05/2026-------
 :: =======================
 :: IMPLENTAÇÃO COMPACTAÇÃO DOS LOG'S ACIMA DE 1GB (AJUSTE PARA LOGS ACIMA DE 1GB) 30/01
 :: IMPLEMANTAÇÃO DO LINK PARA MANUTENCAO PELO PROPRIO CLIENTE
 :: MENSSAGEM AO INICIAR O COMPUTADOR
 :: LIMITE DE 30 DIAS DA IOC PAARA ES E 90 PARA DEMAIS
+:: VERIFICAÇÃO DO MKLINK NA PASTA CAPTURA
 	setlocal enabledelayedexpansion
 	for /f %%H in ('hostname') do set "HOSTNAME=%%H"
 ::LISTA DE HOSTNAMES QUE DEVEM EXECUTAR OS COMANDOS DO "ELSE"
@@ -191,7 +192,7 @@ exit
 	set "BACKUP_FILE=!BACKUP_DIR!\SisviWcfLocal_backup_!day!_!month!_!year!.bak"
 	set "COMPUTADOR=%COMPUTERNAME%"
 :: URL DO WEB APP DO GOOGLE APPS SCRIPT
-	set "URL_WEB_APP=https://script.google.com/macros/s/AKfycbzIrQlZDQowLdEjQO1-zt3LLLiSpT2nkOkAl9qMkdywGS1YKV7a_TgZchOPyHAoXDvk/exec"
+	set "URL_WEB_APP=https://script.google.com/macros/s/AKfycbyHjdEuS-oa4XELvqYY_Og6sZtZWOpQBfOkj4bIj9wgG8vjcEs9ljFne1C_9Coc3Tdo/exec"
 :: ARQUIVO TEMPORÁRIO PARA ARMAZENAR OS DADOS
 	set "TEMP_FILE=%TEMP%\disk_info.txt"
 	set "RESPONSE_FILE=%TEMP%\response.txt"
@@ -238,7 +239,24 @@ for /f "delims=" %%A in ('powershell -Command "[DateTime]::ParseExact((Get-WmiOb
             set /a MP4+=1
         )
     )
-)	
+)
+:: VEIRIFA MKLINK
+SET "CAPTURA_PATH=C:\captura"
+SET "IS_LINK=NAO"
+
+REM Verifica se o caminho existe primeiro
+IF EXIST "%CAPTURA_PATH%\" (
+    REM O comando fsutil verifica se é um reparse point (link/junction) de forma direta
+    fsutil reparsepoint query "%CAPTURA_PATH%" >nul 2>&1
+    
+    if !errorlevel! equ 0 (
+        SET "IS_LINK=SIM"
+    )
+) ELSE (
+    SET "IS_LINK=Nao existe"
+)
+
+
 ::OBTER VERSÕES DOS ARQUIVOS
 	call :getFileVersion "C:\Program Files (x86)\Fenox V1.0\Fnx64bits.exe" v1
 	call :getFileVersion "C:\WCFLOCAL\bin\PrototipoMQ.Interface.WCF.dll" wcf
@@ -276,7 +294,8 @@ for /f "delims=" %%A in ('powershell -Command "[DateTime]::ParseExact((Get-WmiOb
     echo   "creator": "!creator!", >> "%JSON_FILE%"
     echo   "monitor": "!monitor!", >> "%JSON_FILE%"
     echo   "ocr": "!ocr!", >> "%JSON_FILE%"
-	echo   "mp4": "!MP4!" >> "%JSON_FILE%"
+	echo   "mp4": "!MP4!", >> "%JSON_FILE%"
+	echo   "mklink_captura": "!IS_LINK!" >> "%JSON_FILE%"
     echo } >> "%JSON_FILE%"
     echo Enviando:
     type "%JSON_FILE%"
@@ -395,13 +414,7 @@ if exist %target_dir% (
 )
 exit /b
 
-::GERA DATA BASEADA NOS DIAS
-	for /f %%i in ('powershell -command "(Get-Date).AddDays(-%dias%).ToString('yyyy-MM-dd')"') do set "ioscdata=%%i"
-	powershell.exe -Command "$limite=Get-Date '%ioscdata%'; $pasta='C:\captura\iosc'; Get-ChildItem -Path $pasta -File -Recurse -Force | Where-Object {$_.LastWriteTime -lt $limite} | Remove-Item -Force -ErrorAction SilentlyContinue"
-	rmdir /s /q "C:\SisMonitorOffline" >nul 2>&1
-	rmdir /s /q "C:\SisAviCreator" >nul 2>&1
-	rmdir /s /q "C:\SisOcr Offline" >nul 2>&1
-	powershell -Command "Get-ChildItem -Path \"%TEMP%\" *.* -Recurse | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue"
+
 :IPV1
 	for /f "tokens=2 delims=:" %%i in ('ipconfig ^| findstr /i "IPv4"') do for /f "tokens=1 delims= " %%j in ("%%i") do set IP=%%j
 	set IP=%IP: =%
