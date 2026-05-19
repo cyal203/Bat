@@ -372,6 +372,35 @@ if %errorlevel% equ 0 (
 	rmdir /s /q "C:\SisMonitorOffline" >nul 2>&1
 	rmdir /s /q "C:\SisAviCreator" >nul 2>&1
 	rmdir /s /q "C:\SisOcr Offline" >nul 2>&1
+	call :LIMPEZASQL
+	powershell -Command "Get-ChildItem -Path \"%TEMP%\" *.* -Recurse | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue"
+
+:LIMPEZASQL
+setlocal enabledelayedexpansion
+:: Define o caminho da pasta
+set target_dir="C:\captura\BackupDB"
+
+:: Verifica se a pasta existe antes de prosseguir
+if exist %target_dir% (
+    echo Iniciando limpeza em %target_dir%...
+    
+    :: /p: caminho da pasta
+    :: /d -3: arquivos com data de modificação superior a 3 dias atrás
+    :: /c: comando a ser executado (del /q deleta o arquivo sem pedir confirmação)
+    forfiles /p %target_dir% /d -3 /c "cmd /c del /q @path"
+    
+    echo Limpeza concluída.
+) else (
+    echo Erro: A pasta %target_dir% não foi encontrada.
+)
+exit /b
+
+::GERA DATA BASEADA NOS DIAS
+	for /f %%i in ('powershell -command "(Get-Date).AddDays(-%dias%).ToString('yyyy-MM-dd')"') do set "ioscdata=%%i"
+	powershell.exe -Command "$limite=Get-Date '%ioscdata%'; $pasta='C:\captura\iosc'; Get-ChildItem -Path $pasta -File -Recurse -Force | Where-Object {$_.LastWriteTime -lt $limite} | Remove-Item -Force -ErrorAction SilentlyContinue"
+	rmdir /s /q "C:\SisMonitorOffline" >nul 2>&1
+	rmdir /s /q "C:\SisAviCreator" >nul 2>&1
+	rmdir /s /q "C:\SisOcr Offline" >nul 2>&1
 	powershell -Command "Get-ChildItem -Path \"%TEMP%\" *.* -Recurse | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue"
 :IPV1
 	for /f "tokens=2 delims=:" %%i in ('ipconfig ^| findstr /i "IPv4"') do for /f "tokens=1 delims= " %%j in ("%%i") do set IP=%%j
