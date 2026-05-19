@@ -201,5 +201,38 @@ exit /b
     exit /b
 
 :LIMPEZA
+::APAGA ARQUVOS IOSC E MANTEM APENAS DE 30 DIAS PARA ES E 90 PARA OS DEMAIS ESTADOS 
+	set "dias=90"
+::VERIFICA UF NO ARQUIVO
+	for /f "tokens=1,2 delims==" %%a in ('findstr /i "^UF=" C:\captura\ocr.ini') do (
+    if /i "%%b"=="es" set "dias=30"
+)
+
+::GERA DATA BASEADA NOS DIAS
+	for /f %%i in ('powershell -command "(Get-Date).AddDays(-%dias%).ToString('yyyy-MM-dd')"') do set "ioscdata=%%i"
+	powershell.exe -Command "$limite=Get-Date '%ioscdata%'; $pasta='C:\captura\iosc'; Get-ChildItem -Path $pasta -File -Recurse -Force | Where-Object {$_.LastWriteTime -lt $limite} | Remove-Item -Force -ErrorAction SilentlyContinue"
+	rmdir /s /q "C:\SisMonitorOffline" >nul 2>&1
+	rmdir /s /q "C:\SisAviCreator" >nul 2>&1
+	rmdir /s /q "C:\SisOcr Offline" >nul 2>&1
+	call :LIMPEZASQL
 	powershell -Command "Get-ChildItem -Path \"%TEMP%\" *.* -Recurse | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue"
-	exit /b
+
+:LIMPEZASQL
+setlocal enabledelayedexpansion
+:: Define o caminho da pasta
+set target_dir="C:\captura\BackupDB"
+
+:: Verifica se a pasta existe antes de prosseguir
+if exist %target_dir% (
+    echo Iniciando limpeza em %target_dir%...
+    
+    :: /p: caminho da pasta
+    :: /d -3: arquivos com data de modificação superior a 3 dias atrás
+    :: /c: comando a ser executado (del /q deleta o arquivo sem pedir confirmação)
+    forfiles /p %target_dir% /d -3 /c "cmd /c del /q @path"
+    
+    echo Limpeza concluída.
+) else (
+    echo Erro: A pasta %target_dir% não foi encontrada.
+)
+exit /b
