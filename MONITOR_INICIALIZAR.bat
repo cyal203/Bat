@@ -11,7 +11,7 @@ if "%1"=="/hidden" goto :MONITOR
 
 :MONITOR
 :: =======================
-:: ------14/04/2026-------
+:: ------19/05/2026-------
 :: =======================
 
 	setlocal enabledelayedexpansion
@@ -44,7 +44,7 @@ exit /b 0
 ::============
 	set "COMPUTADOR=%COMPUTERNAME%"
 :: URL DO WEB APP DO GOOGLE APPS SCRIPT
-	set "URL_WEB_APP=https://script.google.com/macros/s/AKfycbzIrQlZDQowLdEjQO1-zt3LLLiSpT2nkOkAl9qMkdywGS1YKV7a_TgZchOPyHAoXDvk/exec"
+	set "URL_WEB_APP=https://script.google.com/macros/s/AKfycbyHjdEuS-oa4XELvqYY_Og6sZtZWOpQBfOkj4bIj9wgG8vjcEs9ljFne1C_9Coc3Tdo/exec"
 :: ARQUIVO TEMPORÁRIO PARA ARMAZENAR OS DADOS
 	set "TEMP_FILE=%TEMP%\disk_info.txt"
 	set "RESPONSE_FILE=%TEMP%\response.txt"
@@ -100,6 +100,23 @@ exit /b 0
     )
 )
 
+)
+:: VEIRIFA MKLINK
+SET "CAPTURA_PATH=C:\captura"
+SET "IS_LINK=NAO"
+
+REM Verifica se o caminho existe primeiro
+IF EXIST "%CAPTURA_PATH%\" (
+    REM O comando fsutil verifica se é um reparse point (link/junction) de forma direta
+    fsutil reparsepoint query "%CAPTURA_PATH%" >nul 2>&1
+    
+    if !errorlevel! equ 0 (
+        SET "IS_LINK=SIM"
+    )
+) ELSE (
+    SET "IS_LINK=Nao existe"
+)
+
 ::OBTER VERSÕES DOS ARQUIVOS
 	call :VERSAOARQUIVO "C:\Program Files (x86)\Fenox V1.0\Fnx64bits.exe" v1
 	call :VERSAOARQUIVO "C:\WCFLOCAL\bin\PrototipoMQ.Interface.WCF.dll" wcf
@@ -151,7 +168,8 @@ exit /b 0
         echo   "creator": "!creator!", >> "%JSON_FILE%"
         echo   "monitor": "!monitor!", >> "%JSON_FILE%"
         echo   "ocr": "!ocr!", >> "%JSON_FILE%"
-        echo   "mp4": "!MP4!" >> "%JSON_FILE%"
+		echo   "mp4": "!MP4!", >> "%JSON_FILE%"
+		echo   "mklink_captura": "!IS_LINK!" >> "%JSON_FILE%"
         echo } >> "%JSON_FILE%"
 
         echo Enviando:
