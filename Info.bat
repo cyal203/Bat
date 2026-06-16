@@ -1,5 +1,5 @@
 @echo off
-:: 16/06/26
+:: 16/06/26 15:27
 setlocal enabledelayedexpansion
 
 :: Define o arquivo de saída
