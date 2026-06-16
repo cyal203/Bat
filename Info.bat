@@ -58,12 +58,23 @@ for /f "tokens=2 delims==" %%i in ('wmic path SoftwareLicensingProduct where "Ap
     if not "%%i"=="" set "windows_ativado=SIM"
 )
 
-:: 5. Versao do Windows
+:: 5. Versao do Windows (Via Registro através do PowerShell - Altamente Confiável)
 set "windows_versao=Desconhecida"
-for /f "tokens=2 delims==" %%i in ('wmic os get Caption /value 2^>nul') do (
-    set "windows_versao=%%i"
+for /f "usebackq delims=" %%i in (`powershell -command "(Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion').ProductName" 2^>nul`) do (
+    if not "%%i" Heather=="" set "windows_versao=%%i"
 )
-set "windows_versao=%windows_versao:Microsoft Windows =%"
+
+:: Se o ProductName retornar apenas "Windows 10..." mas a máquina for Windows 11 (bug comum do registro), validamos a Build:
+for /f "usebackq delims=" %%i in (`powershell -command "(Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion').CurrentBuild" 2^>nul`) do (
+    set /a build_num=%%i 2^>nul
+    if !build_num! geq 22000 (
+        set "windows_versao=!windows_versao:Windows 10=Windows 11!"
+    )
+)
+
+:: Simplifica o nome removendo termos redundantes
+set "windows_versao=%windows_versao:Microsoft =%"
+set "windows_versao=%windows_versao:Windows =%"
 
 ::MONTAR JSON
 (
