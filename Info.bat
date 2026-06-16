@@ -3,6 +3,9 @@ setlocal enabledelayedexpansion
 
 :: Define o arquivo de saída
 set "OUTPUT_FILE=info_sistema.txt"
+set "JSON_FILE=%TEMP%\info_sistema.txt"
+set "RESPONSE_FILE=%TEMP%\response.txt"
+set "URL_WEB_APP=https://script.google.com/macros/s/AKfycbzOvlDGGmmM3AU2FKz406L9joi4SXe7QwiSppM4NWTzoXP6PKH9B8J4AwWCo_OdCHux4w/exec"
 
 :: 1. Nome do Computador e Usuário Logado
 set "computador=%COMPUTERNAME%"
@@ -50,7 +53,7 @@ for /f "tokens=2 delims==" %%i in ('wmic os get Caption /value 2^>nul') do (
 )
 set "windows_versao=%windows_versao:Microsoft Windows =%"
 
-:: Gerar o arquivo TXT formatado
+::MONTAR JSON
 (
 echo { 
 echo   "computador": "%computador%", 
@@ -63,5 +66,21 @@ echo   "windows_ativado": "%windows_ativado%",
 echo   "windows_versao": "%windows_versao%" 
 echo }
 ) > "%OUTPUT_FILE%"
+
+
+::Enviando:
+        type "%JSON_FILE%"
+        curl --ssl-no-revoke -X POST -H "Content-Type: application/json" -d "@%OUTPUT_FILE%" "%URL_WEB_APP%" > "%RESPONSE_FILE%" 2>nul
+        echo === RESPOSTA DO SERVIDOR ===
+        if exist "%RESPONSE_FILE%" (
+            type "%RESPONSE_FILE%"
+        ) else (
+            echo Nenhuma resposta recebida
+        )
+        echo =============================
+    )
+) else (
+    echo Arquivo temporario nao encontrado: %TEMP_FILE%
+)
 
 exit /b
