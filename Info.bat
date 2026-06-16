@@ -64,6 +64,4 @@ echo   "windows_versao": "%windows_versao%"
 echo }
 ) > "%OUTPUT_FILE%"
 
-echo Arquivo %OUTPUT_FILE% gerado com sucesso!
-
 exit /b
