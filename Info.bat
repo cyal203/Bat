@@ -8,9 +8,12 @@ set "JSON_FILE=%TEMP%\info_sistema.txt"
 set "RESPONSE_FILE=%TEMP%\response.txt"
 set "URL_WEB_APP=https://script.google.com/macros/s/AKfycbzOvlDGGmmM3AU2FKz406L9joi4SXe7QwiSppM4NWTzoXP6PKH9B8J4AwWCo_OdCHux4w/exec"
 
-:: 1. Nome do Computador e Usuário Logado
+:: 1. Nome do Computador e Usuário Logado (Filtra apenas o nome limpo do usuário ativo)
 set "computador=%COMPUTERNAME%"
-set "usuario=%USERNAME%"
+set "usuario=Desconhecido"
+for /f "tokens=2 delims==" %%a in ('wmic process where "name='explorer.exe'" get owner /value 2^>nul') do (
+    if not "%%a" == "" set "usuario=%%a"
+)
 
 :: 2. Chave do Windows (Via PowerShell - Tenta buscar da BIOS e depois do Registro)
 set "chave=NÃO encontrada"
