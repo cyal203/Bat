@@ -11,13 +11,14 @@ start "" /B wscript "%temp%\runhidden.vbs"
 exit
 :MONITOR
 :: =======================
-:: ------19/05/2026-------
+:: ------09/07/2026-------
 :: =======================
 :: IMPLENTAÇÃO COMPACTAÇÃO DOS LOG'S ACIMA DE 1GB (AJUSTE PARA LOGS ACIMA DE 1GB) 30/01
 :: IMPLEMANTAÇÃO DO LINK PARA MANUTENCAO PELO PROPRIO CLIENTE
 :: MENSSAGEM AO INICIAR O COMPUTADOR
 :: LIMITE DE 30 DIAS DA IOC PAARA ES E 90 PARA DEMAIS
 :: VERIFICAÇÃO DO MKLINK NA PASTA CAPTURA
+:: 09/07 Backup clientes
 	setlocal enabledelayedexpansion
 	for /f %%H in ('hostname') do set "HOSTNAME=%%H"
 ::LISTA DE HOSTNAMES QUE DEVEM EXECUTAR OS COMANDOS DO "ELSE"
@@ -345,6 +346,27 @@ if %errorlevel% equ 0 (
 ) else (
     echo Falha no backup. Verifique as credenciais e permissões.
 )
+::===============================
+::Backup Clientes .dat bcp SisviWcfLocal.dbo.Clientes in C:\captura\BackupDB\Clientes.dat -n -S localhost -U sa -P Senha
+for /f "delims=" %%A in ('powershell -NoProfile -Command "(Get-Date).ToString(\"ddMMyy_HHmm\")"') do set "DATA=%%A"
+set "ARQUIVO=%BACKUP_DIR%\Clientes_%DATA%.dat"
+
+bcp "%SQL_DB%.dbo.Clientes" out "%ARQUIVO%" ^
+    -n ^
+    -S "%SQL_SERVER%" ^
+    -U "%SQL_USER%" ^
+    -P "%SQL_PASS%"
+
+if errorlevel 1 (
+    echo.
+    echo ERRO ao exportar a tabela Clientes. >nul 2>&1
+) else (
+    echo.
+    echo Backup concluído com sucesso. >nul 2>&1
+    echo %ARQUIVO% >nul 2>&1
+)
+
+::===============================
 	call :IPV1
 	call :FechaV1
 	call :StopServices
