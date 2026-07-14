@@ -400,11 +400,11 @@ if errorlevel 1 (
     exit /b
 
 :LIMPEZAA
-::APAGA ARQUVOS IOSC E MANTEM APENAS DE 30 DIAS PARA ES E 90 PARA OS DEMAIS ESTADOS 
-	set "dias=90"
+::APAGA ARQUVOS IOSC E MANTEM APENAS DE 60 DIAS PARA ES E 150 PARA OS DEMAIS ESTADOS 
+	set "dias=150"
 ::VERIFICA UF NO ARQUIVO
 	for /f "tokens=1,2 delims==" %%a in ('findstr /i "^UF=" C:\captura\ocr.ini') do (
-    if /i "%%b"=="es" set "dias=30"
+    if /i "%%b"=="es" set "dias=60"
 )
 
 ::GERA DATA BASEADA NOS DIAS
