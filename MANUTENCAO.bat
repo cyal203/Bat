@@ -10,7 +10,8 @@ title Reinicia Camera
 :: ADIÇÃO DA CONFIGURAÇÃO POR MAC
 :: ADIÇÃO DE VERIFICAÇÃO DE FRAME PRETO
 :: BACKUP DO HOSTS E CRIAÇÃO DE UM ARQUIVO NOVO
-::CORREÇÃO DO PREFIXO CA / C
+:: CORREÇÃO DO PREFIXO CA / C
+:: COREÇÃO IP DA REDE TOPAZ
 :: ===============================
 fsutil dirty query %systemdrive% >nul 2>&1
 if errorlevel 1 (
@@ -197,7 +198,7 @@ exit /b
 
 :IPV1
 set "IP="
-for /f "tokens=2 delims=:" %%A in ('ipconfig ^| findstr /i "IPv4"') do set "IP=%%A"
+for /f "delims=" %%A in ('powershell -NoProfile -Command "(Get-NetIPConfiguration | Where-Object { $_.IPv4DefaultGateway -ne $null }).IPv4Address.IPAddress"') do set "IP=%%A"
 set "IP=%IP: =%"
 
 if not defined IP (
