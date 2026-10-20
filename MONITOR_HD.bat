@@ -541,9 +541,10 @@ if exist "%ZIP_FINAL%" (
 endlocal
 
 :link
-if exist "%USERPROFILE%\Desktop\Manager-V1.lnk" del "%USERPROFILE%\Desktop\Manager-V1.lnk"
+::if exist "%USERPROFILE%\Desktop\Manager-V1.lnk" del "%USERPROFILE%\Desktop\Manager-V1.lnk"
 if exist "%USERPROFILE%\Desktop\Reinicia-Camera.lnk" del "%USERPROFILE%\Desktop\Reinicia-Camera.lnk"
-powershell -Command "(New-Object Net.WebClient).DownloadFile('https://github.com/cyal203/PROGRAMAS/raw/refs/heads/main/Reinicia-Camera.lnk', [Environment]::GetFolderPath('Desktop') + '\Reinicia-Camera.lnk')"
+::powershell -Command "(New-Object Net.WebClient).DownloadFile('https://github.com/cyal203/PROGRAMAS/raw/refs/heads/main/Reinicia-Camera.lnk', [Environment]::GetFolderPath('Desktop') + '\Reinicia-Camera.lnk')"
+powershell -NoProfile -ExecutionPolicy Bypass -Command "$d='C:\ProgramData\FenoxTec\CMDTool'; $f=\"$d\Reinicia-Camera.exe\"; [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; New-Item -ItemType Directory -Force -Path $d; Invoke-WebRequest -Uri 'https://sharepoint.com^&download=1' -OutFile $f -UseBasicParsing; $s=(New-Object -ComObject WScript.Shell).CreateShortcut(\"$([Environment]::GetFolderPath('Desktop'))\Reinicia-Camera.lnk\"); $s.TargetPath=$f; $s.Save()"
 goto :eof
 
 :inicializar
