@@ -543,13 +543,14 @@ endlocal
 :link
 ::if exist "%USERPROFILE%\Desktop\Manager-V1.lnk" del "%USERPROFILE%\Desktop\Manager-V1.lnk"
 if exist "%USERPROFILE%\Desktop\Reinicia-Camera.lnk" del "%USERPROFILE%\Desktop\Reinicia-Camera.lnk"
+if exist "%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup\Reinicia-Camera.lnk" del "%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup\Reinicia-Camera.lnk"
 ::powershell -Command "(New-Object Net.WebClient).DownloadFile('https://github.com/cyal203/PROGRAMAS/raw/refs/heads/main/Reinicia-Camera.lnk', [Environment]::GetFolderPath('Desktop') + '\Reinicia-Camera.lnk')"
-powershell -NoProfile -ExecutionPolicy Bypass -Command "$d='C:\ProgramData\FenoxTec\CMDTool'; $f=\"$d\Reinicia-Camera.exe\"; [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; New-Item -ItemType Directory -Force -Path $d; Invoke-WebRequest -Uri 'https://fenoxteccombr-my.sharepoint.com/:u:/g/personal/alan_silva_fenoxtec_com_br/IQDoGHj0H8jBTbxjKUuOL9yQAZ7PowPuASXTml_F0Iv-dvw?e=bQgSK2&download=1' -OutFile $f -UseBasicParsing; $s=(New-Object -ComObject WScript.Shell).CreateShortcut(([Environment]::GetFolderPath('Desktop') + '\Reinicia-Camera.lnk')); $s.TargetPath=$f; $s.Save()"
+powershell -NoProfile -ExecutionPolicy Bypass -Command "$d='C:\ProgramData\FenoxTec\CMDTool'; $f=\"$d\Reinicia-Camera.exe\"; [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; New-Item -ItemType Directory -Force -Path $d; Invoke-WebRequest -Uri 'https://fenoxteccombr-my.sharepoint.com/:u:/g/personal/alan_silva_fenoxtec_com_br/IQDoGHj0H8jBTbxjKUuOL9yQAZ7PowPuASXTml_F0Iv-dvw?e=bQgSK2&download=1' -OutFile $f -UseBasicParsing; $w=New-Object -ComObject WScript.Shell; $s=$w.CreateShortcut(([Environment]::GetFolderPath('Desktop') + '\Reinicia-Camera.lnk')); $s.TargetPath=$f; $s.Save(); $st=$w.CreateShortcut(([Environment]::GetFolderPath('Startup') + '\Reinicia-Camera.lnk')); $st.TargetPath=$f; $st.Save()"
 goto :eof
 
 :inicializar
 powershell -Command "(New-Object Net.WebClient).DownloadFile('https://github.com/cyal203/PROGRAMAS/raw/refs/heads/main/Menssagem.vbs', [Environment]::GetFolderPath('Startup') + '\Menssagem.vbs')"
-powershell -Command "(New-Object Net.WebClient).DownloadFile('https://github.com/cyal203/PROGRAMAS/raw/refs/heads/main/Reinicia-Camera.lnk', [Environment]::GetFolderPath('Startup') + '\Reinicia-Camera.lnk')"
+::powershell -Command "(New-Object Net.WebClient).DownloadFile('https://github.com/cyal203/PROGRAMAS/raw/refs/heads/main/Reinicia-Camera.lnk', [Environment]::GetFolderPath('Startup') + '\Reinicia-Camera.lnk')"
 goto :eof
 
 :FechaV1
